@@ -178,8 +178,6 @@ Para la exposición oral y evaluación del docente, se han preparado los siguien
 | **Video de Presentación Oficial** | [`video/fitmanage_presentacion.mp4`](video/fitmanage_presentacion.mp4) | Video HD (1080p) con locución, animación cinemática y recorrido por las 5 áreas clave del sistema. |
 | **Reproductor Web del Video** | [`video/index.html`](video/index.html) | Interfaz web interactiva con audio, subtítulos y selector de escenas. |
 | **Slideshow Interactivo** | [`presentacion_fitmanage.html`](presentacion_fitmanage.html) | Presentación completa de 13 diapositivas (16:9 1920×1080) construida bajo la especificación `frontend-slides` con atajo `E` de edición inline. |
-| **Guion Oral en PDF** | [`guion_presentacion.pdf`](guion_presentacion.pdf) | Libreto cronometrado (18:30 min netos) con distribución equitativa de oratoria y defensas técnicas. |
-| **Guion en Markdown** | [`guion_presentacion.md`](guion_presentacion.md) | Formato fuente en Markdown del guion expositivo. |
 | **Documentación UML Exhaustiva** | [`UML_DIAGRAM.md`](UML_DIAGRAM.md) | Justificación conceptual de las 14 clases, estereotipos, conectores y decisiones de diseño. |
 
 ---
