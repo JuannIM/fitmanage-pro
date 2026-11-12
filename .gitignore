@@ -23,3 +23,10 @@ graphify-out/cache/
 guion_presentacion.*
 scripts/generate_speech_pdf.py
 
+# Planes y reportes de auditoría internos
+PLAN*.md
+*PLAN*.md
+AUDIT*.md
+*AUDIT*.md
+
+
