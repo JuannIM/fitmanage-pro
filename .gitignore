@@ -1,3 +1,20 @@
+# Compilación y binarios
 bin/
+*.class
+
+# Archivos temporales y del sistema
 *.tmp
+*.log
 .DS_Store
+Thumbs.db
+
+# IDEs y editores
+.idea/
+*.iml
+.vscode/
+.project
+.settings/
+.classpath
+
+# Cache de herramientas de análisis y AST
+graphify-out/cache/

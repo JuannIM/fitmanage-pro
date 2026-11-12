@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>FitManage Pro - Guion de Exposición Oral y Defensa Académica</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  @page {
+    size: A4 portrait;
+    margin: 1.6cm 1.5cm 1.8cm 1.5cm;
+    @bottom-right {
+      content: "FitManage Pro | POO 2026";
+      font-size: 8pt;
+      color: #64748b;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 10pt;
+    line-height: 1.6;
+    color: #1e293b;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    color: #0f172a;
+    margin-top: 1.2em;
+    margin-bottom: 0.5em;
+    line-height: 1.25;
+  }
+
+  h1 {
+    font-size: 18pt;
+    font-weight: 800;
+    color: #1e3a8a;
+    border-bottom: 2.5px solid #2563eb;
+    padding-bottom: 6px;
+    margin-top: 0;
+  }
+
+  h2 {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #1e40af;
+    background: #f1f5f9;
+    border-left: 5px solid #2563eb;
+    padding: 6px 12px;
+    margin-top: 1.2em;
+    border-radius: 0 4px 4px 0;
+  }
+
+  h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #334155;
+    margin-top: 1em;
+  }
+
+  p {
+    margin-top: 0.4em;
+    margin-bottom: 0.6em;
+    text-align: justify;
+  }
+
+  blockquote {
+    margin: 1em 0;
+    padding: 10px 16px;
+    background: #fefce8;
+    border-left: 4px solid #f59e0b;
+    border-radius: 4px;
+    color: #78350f;
+    font-size: 9.5pt;
+    font-style: italic;
+  }
+
+  blockquote strong {
+    color: #b45309;
+    font-style: normal;
+  }
+
+  /* Acotaciones Escénicas */
+  ul li em {
+    color: #475569;
+  }
+
+  ul {
+    margin: 0.4em 0 0.8em 1.4em;
+    padding: 0;
+  }
+
+  li {
+    margin-bottom: 0.3em;
+  }
+
+  /* Tablas de cronograma */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 8.5pt;
+  }
+
+  th, td {
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    text-align: left;
+  }
+
+  th {
+    background: #1e293b;
+    color: #ffffff;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 7.5pt;
+    letter-spacing: 0.5px;
+  }
+
+  tr:nth-child(even) {
+    background: #f8fafc;
+  }
+
+  /* Código */
+  code {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-size: 8.5pt;
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 2px 4px;
+    border-radius: 3px;
+    border: 1px solid #e2e8f0;
+  }
+
+  pre {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 10px 14px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 8.5pt;
+    line-height: 1.4;
+    margin: 0.8em 0;
+  }
+
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: none;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 1.2em 0;
+  }
+
+  /* Saltos de página por expositor */
+  .page-break {
+    page-break-before: always;
+    break-before: page;
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Header y Footer impresos */
+  .doc-header {
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 4px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 8pt;
+    color: #64748b;
+  }
+
+  .doc-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 4px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 7.5pt;
+    color: #94a3b8;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <span>FitManage Pro &bull; Sistema Integral de Gestión para Club Deportivo</span>
+  <span>Cátedra POO 2026 &bull; Java 21 SE</span>
+</div>
+
+<div class="content">
+<h1>GUION DE EXPOSICIÓN ORAL Y DEFENSA ACADÉMICA</h1>
+<h2>FitManage Pro - Sistema Integral de Gestión para Club Deportivo (Java 21 SE)</h2>
+<blockquote>
+<p><strong>Cátedra:</strong> Programación Orientada a Objetos / Laboratorio de Software<br />
+<strong>Integrantes y Expositores:</strong> Juan, Rocio, Merlina, Alfonsina, Sara, Joel<br />
+<strong>Duración Máxima de Exposición:</strong> 20 minutos (18:30 discurso neto + 01:30 buffer de preguntas)<br />
+<strong>Versión Oficial:</strong> 1.0.0 LTS - Convocatoria Noviembre 2026<br />
+<strong>Entregables Vinculados:</strong> <code>presentacion_fitmanage.html</code>, <code>UML_DIAGRAM.md</code>, <code>PLAN_PRESENTACION_SLIDES.md</code></p>
+</blockquote>
+<hr />
+<h3>CRONOGRAMA MAESTRO Y TIEMPOS POR EXPOSITOR</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Bloque</th>
+<th style="text-align: left;">Expositor</th>
+<th style="text-align: left;">Módulo Principal y Eje Temático</th>
+<th style="text-align: left;">Diapositivas</th>
+<th style="text-align: left;">Tiempo Asignado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>01</strong></td>
+<td style="text-align: left;"><strong>JUAN</strong></td>
+<td style="text-align: left;">Apertura, Visión, Arquitectura 4 Capas, Jerarquía <code>Persona</code></td>
+<td style="text-align: left;">Slides 01, 02, 03, 04</td>
+<td style="text-align: left;">00:00 - 03:15 (3m 15s)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>02</strong></td>
+<td style="text-align: left;"><strong>ROCIO</strong></td>
+<td style="text-align: left;">Dominio Deportivo, Composición Fuerte (<code>Rutina *-- Ejercicio</code>), Tonelaje</td>
+<td style="text-align: left;">Slide 05</td>
+<td style="text-align: left;">03:15 - 06:15 (3m 00s)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>03</strong></td>
+<td style="text-align: left;"><strong>MERLINA</strong></td>
+<td style="text-align: left;">Clases Grupales, Agregación Débil (<code>o--</code>), Aforo y <code>CupoAgotadoException</code></td>
+<td style="text-align: left;">Slide 06</td>
+<td style="text-align: left;">06:15 - 09:15 (3m 00s)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>04</strong></td>
+<td style="text-align: left;"><strong>ALFONSINA</strong></td>
+<td style="text-align: left;">Facturación Polimórfica (<code>Facturable</code>), Membresías, Antigüedad (10%)</td>
+<td style="text-align: left;">Slide 07</td>
+<td style="text-align: left;">09:15 - 12:15 (3m 00s)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>05</strong></td>
+<td style="text-align: left;"><strong>SARA</strong></td>
+<td style="text-align: left;">GUI Java Swing, CardLayout, ThemeConfig, Badges y Molinete Virtual</td>
+<td style="text-align: left;">Slides 08, 09</td>
+<td style="text-align: left;">12:15 - 15:15 (3m 00s)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>06</strong></td>
+<td style="text-align: left;"><strong>JOEL</strong></td>
+<td style="text-align: left;">Persistencia Atómica JSON, Tests (7/7), Graphify y Cierre Grupal</td>
+<td style="text-align: left;">Slides 10, 11, 12, 13</td>
+<td style="text-align: left;">15:15 - 18:30 (3m 15s)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>07</strong></td>
+<td style="text-align: left;"><strong>EQUIPO</strong></td>
+<td style="text-align: left;">Buffer de Contingencia y Ronda Abierta de Preguntas del Jurado</td>
+<td style="text-align: left;">Slide 13</td>
+<td style="text-align: left;">18:30 - 20:00 (1m 30s)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<div class="page-break"></div>
+
+<h2>BLOQUE 1: JUAN — APERTURA, ARQUITECTURA Y JERARQUÍA PERSONA</h2>
+<p><strong>Tiempo asignado:</strong> 03 minutos 15 segundos (00:00 a 03:15)<br />
+<strong>Diapositivas:</strong> <code>Slide 01: Portada Ejecutiva</code> | <code>Slide 02: Dominio y 4 Capas</code> | <code>Slide 03: Diagrama UML Integral</code> | <code>Slide 04: Jerarquía Persona</code><br />
+<strong>Clases Java Clave:</strong> <code>com.clubdeportivo.model.Persona</code>, <code>com.clubdeportivo.model.Socio</code>, <code>com.clubdeportivo.model.Autenticable</code>, <code>com.clubdeportivo.model.TipoAcceso</code></p>
+<h3>Acotaciones Escénicas Iniciales</h3>
+<ul>
+<li>[00:00] <em>Juan se ubica en el centro del estrado, postura erguida, contacto visual sereno con los miembros del jurado. Tono seguro, cordial y profesional.</em></li>
+<li>[00:08] <em>Avanza a la Slide 02 con click o tecla Flecha Derecha. Señala el flujo unidireccional de capas.</em></li>
+<li>[01:10] <em>Avanza a la Slide 03. Permite 3 segundos de apreciación del gran Diagrama UML vectorial y sitúa el cuadrante superior izquierdo.</em></li>
+<li>[01:50] <em>Avanza a la Slide 04. Modula la voz hacia un tono analítico al justificar la abstracción ontológica.</em></li>
+</ul>
+<h3>Discurso de Exposición</h3>
+<p><strong>[00:00 - 00:45] Introducción y Planteo del Problema</strong><br />
+"Buenos días profesores y miembros del tribunal evaluador. Junto a mi equipo —Rocio, Merlina, Alfonsina, Sara y Joel— nos complace presentar <strong>FitManage Pro</strong>, una solución integral de software diseñada para transformar la gestión deportiva y administrativa de un club moderno.</p>
+<p>En el contexto actual, los centros de entrenamiento sufren cuellos de botella críticos: falta de trazabilidad en las cuotas sociales, sobreventa de cupos en salones de fitness, descontrol en el ingreso físico y pérdida de planes de entrenamiento. Frente a esto, nos planteamos un desafío de ingeniería riguroso: construir un sistema robusto, reactivo, sin dependencias externas pesadas, desarrollado 100% en <strong>Java 21 SE</strong>, que exhiba la máxima pureza en principios de Programación Orientada a Objetos."</p>
+<p><strong>[00:45 - 01:30] Arquitectura en 4 Capas y Desacoplamiento</strong><br />
+"Para estructurar este sistema, concebimos una arquitectura multicapa estrictamente desacoplada:
+1. En la cúspide, la <strong>Capa de Presentación (GUI)</strong>, implementada con Java Swing nativo bajo el patrón CardLayout.
+2. La <strong>Capa de Servicios de Negocio (<code>service</code>)</strong>, que orquesta la lógica transaccional, valida accesos y computa liquidaciones.
+3. La <strong>Capa de Acceso a Datos o Repositorios (<code>repository</code>)</strong>, que define contratos mediante la interfaz genérica <code>IRepository&lt;T&gt;</code>.
+4. Y en la base, nuestro <strong>Dominio Puro (<code>model</code>)</strong> respaldado por un motor de persistencia atómica en JSON.</p>
+<p>Como observan en nuestro Diagrama de Clases UML completo en pantalla, la separación de responsabilidades es absoluta: la vista nunca interactúa directamente con los archivos físicos, garantizando alta cohesión y bajo acoplamiento."</p>
+<p><strong>[01:30 - 02:45] Jerarquía de Herencia: La Clase Base Abstracta <code>Persona</code></strong><br />
+"Centrándonos en el modelado ontológico de los actores, diseñamos la clase abstracta <code>Persona</code>. En el mundo real de un club no existe una 'persona genérica'; toda entidad que interactúa es un <code>Socio</code> activo o un <code>Instructor</code> profesional. Por ello, <code>Persona</code> se declara <code>abstract</code>, impidiendo su instanciación aislada.</p>
+<p>Aplicamos un encapsulamiento metódico: sus atributos troncales —<code>id</code>, <code>dni</code>, <code>nombre</code>, <code>apellido</code>, <code>email</code>, <code>telefono</code> y fechas clave— están definidos con modificador de acceso <code>protected (#)</code>. Esto permite que las subclases <code>Socio</code> e <code>Instructor</code> hereden y operen directamente sobre su estado identitario sin exponerlo indiscriminadamente al resto del sistema.</p>
+<p>Asimismo, <code>Persona</code> provee comportamiento concreto compartido como <code>calcularEdad()</code>, resolviendo la diferencia cronológica con <code>LocalDate.now()</code> sin duplicación de código. Y para forzar el polimorfismo dinámico en tiempo de compilación, definimos métodos abstractos como <code>mostrarDetalle()</code>, <code>getRol()</code> y <code>validarIngreso(TipoAcceso tipo)</code>. Cada subclase asume la responsabilidad ineludible de implementar su propia lógica de validación e impresión."</p>
+<p><strong>[02:45 - 03:15] Síntesis y Transición</strong><br />
+"De este modo, <code>Socio</code> implementa las reglas de cuota al día, mientras que <code>Instructor</code> exhibe sus legajos y especialidad deportiva. Pero un socio no solo asiste al club: entrena mediante cargas físicas dosificadas. Para profundizar en cómo modelamos el entrenamiento mediante composición fuerte, le cedo la palabra a mi compañera Rocio."</p>
+<h3>Defensa de Cátedra (Pregunta Típica del Jurado)</h3>
+<blockquote>
+<p><strong>Profesor:</strong> <em>"¿Por qué declararon <code>Persona</code> como clase <code>abstract</code> en lugar de una interfaz o una clase concreta? ¿Por qué no usar composición con el patrón Role o State para modelar los roles de Socio e Instructor?"</em><br />
+<strong>Respuesta de Juan:</strong> *"Declaramos <code>Persona</code> abstracta porque en el dominio ontológico de un club deportivo no existe una 'persona genérica'; todo individuo que ingresa al sistema tiene un rol concreto e intransferible. Instanciar <code>new Persona()</code> carece de semántica de negocio. La herencia nos permite reutilizar estado común fuertemente tipado (<code>id</code>, <code>dni</code>, <code>nombre</code>, <code>email</code>, <code>fechaNacimiento</code>) y comportamiento concreto compartido como <code>calcularEdad()</code>, mientras forzamos polimórficamente a través de métodos abstractos como <code>mostrarDetalle()</code> que cada subclase exhiba sus particularidades. Si bien el patrón State o Decorator permitiría mutar de rol en tiempo de ejecución, en este alcance académico la especialización rígida garantiza integridad referencial, tipado seguro y prevención de estados inconsistentes en tiempo de compilación."</p>
+</blockquote>
+<hr />
+<div class="page-break"></div>
+
+<h2>BLOQUE 2: ROCIO — MÓDULO DE RUTINAS, COMPOSICIÓN FUERTE Y TONELAJE</h2>
+<p><strong>Tiempo asignado:</strong> 03 minutos 00 segundos (03:15 a 06:15)<br />
+<strong>Diapositivas:</strong> <code>Slide 05: Composición Fuerte: Rutina, Ejercicios y Cálculo de Tonelaje</code><br />
+<strong>Clases Java Clave:</strong> <code>com.clubdeportivo.model.Rutina</code>, <code>com.clubdeportivo.model.Ejercicio</code>, <code>com.clubdeportivo.model.GrupoMuscular</code>, <code>com.clubdeportivo.service.RutinaService</code></p>
+<h3>Acotaciones Escénicas</h3>
+<ul>
+<li>[03:15] <em>Rocio toma la posta con seguridad, da un paso al frente y apunta con el puntero al rombo negro sólido en la diapositiva 05.</em></li>
+<li>[04:10] <em>Enfoca la mirada en el docente al enunciar la fórmula matemática de tonelaje acumulado.</em></li>
+<li>[05:20] <em>Muestra naturalidad y fluidez técnica al relacionar la composición UML con el ciclo de vida de los objetos en memoria.</em></li>
+</ul>
+<h3>Discurso de Exposición</h3>
+<p><strong>[03:15 - 04:00] Composición Fuerte vs Agregación: Definición Formal</strong><br />
+"Muchas gracias Juan. Al abordar el subsistema de acondicionamiento físico, nos encontramos con una decisión de diseño fundamental en UML: ¿cómo se relaciona una <code>Rutina</code> de entrenamiento con los <code>Ejercicios</code> que la componen?</p>
+<p>Optamos deliberadamente por una <strong>Composición Fuerte</strong>, representada en el diagrama con un <strong>rombo negro relleno</strong> en el extremo de <code>Rutina</code> (<code>Rutina 1 *-- 1..* Ejercicio</code>). En términos de POO, la composición denota una relación 'parte-todo' caracterizada por la dependencia existencial irrestricta de las partes respecto del todo. Un <code>Ejercicio</code> dentro de nuestro modelo no representa un concepto de enciclopedia estática; representa una prescripción técnica individualizada: series, repeticiones planificadas, carga en kilogramos y segundos de descanso para un socio particular."</p>
+<p><strong>[04:00 - 04:50] Ciclo de Vida y Encapsulamiento en Memoria</strong><br />
+"¿Qué consecuencias prácticas tiene esta decisión en el código Java?<br />
+En primer lugar, el ciclo de vida está indisolublemente ligado: un <code>Ejercicio</code> no tiene razón de existir de manera autónoma fuera de su <code>Rutina</code>. Si una rutina es eliminada del sistema o dada de baja por un instructor, todas sus instancias anidadas de <code>Ejercicio</code> pierden su anclaje en el grafo de objetos y son recolectadas automáticamente por el Garbage Collector de la JVM. </p>
+<p>En segundo lugar, la <code>Rutina</code> actúa como la Raíz del Agregado (<em>Aggregate Root</em>). El acceso a la lista interna de ejercicios se encuentra estrictamente encapsulado: no exponemos colecciones mutables directamente. La clase <code>Rutina</code> provee métodos protectores como <code>agregarEjercicio(Ejercicio e)</code> y <code>eliminarEjercicio(String ejercicioId)</code>, los cuales validan que la rutina mantenga siempre un estado consistente."</p>
+<p><strong>[04:50 - 05:45] Algoritmo de Negocio: Cálculo de Tonelaje Global</strong><br />
+"Esta cohesión estructural nos permite implementar métricas biométricas de alto valor para los preparadores físicos. La clase <code>Ejercicio</code> implementa el método <code>calcularVolumenTotal()</code>, el cual computa:
+$$\text{Volumen Ejercicio} = \text{Series} \times \text{Repeticiones} \times \text{PesoSugeridoKg}$$</p>
+<p>A su vez, la <code>Rutina</code> delega polimórficamente este cálculo e itera sobre su composición interna mediante el método <code>calcularVolumenGlobal()</code>. Si un socio ejecuta 4 series de 10 repeticiones con 100 kg en Press de Banca, y luego 3 series de 12 repeticiones con 20 kg en Aperturas, la rutina totaliza dinámicamente:
+$$(4 \times 10 \times 100) + (3 \times 12 \times 20) = 4.000 + 720 = 4.720\text{ kg de volumen acumulado}.$$
+Este cálculo es evaluado en tiempo real en nuestra suite automatizada, garantizando precisión numérica absoluta."</p>
+<p><strong>[05:45 - 06:15] Cierre y Pase a Agregación Débil</strong><br />
+"Como vemos, la composición fuerte garantiza integridad y encapsulamiento ontológico. Sin embargo, en el club existen relaciones donde los objetos deben preservar su total independencia existencial. Para analizar la contracara de esta relación en las Clases Grupales, le doy la palabra a Merlina."</p>
+<h3>Defensa de Cátedra (Pregunta Típica del Jurado)</h3>
+<blockquote>
+<p><strong>Profesor:</strong> <em>"¿Qué diferencia práctica hay entre agregación y composición en este caso? Si elimino una Rutina en el sistema, ¿qué ocurre con sus ejercicios a nivel de persistencia en disco y a nivel de memoria?"</em><br />
+<strong>Respuesta de Rocio:</strong> *"La composición modela una relación 'parte-todo' con ciclo de vida coincidente. En memoria, la clase <code>Rutina</code> instancia y contiene su lista interna <code>List&lt;Ejercicio&gt; ejercicios</code>. Si la instancia de <code>Rutina</code> es eliminada, sus ejercicios pierden sus referencias vivas y el Garbage Collector de Java libera su espacio. A nivel de persistencia en disco, en nuestro archivo <code>rutinas.json</code>, los ejercicios no residen en una tabla o archivo independiente; están embebidos como nodos hijos JSON dentro del objeto padre Rutina. Al borrar la rutina, su subárbol JSON desaparece atómicamente. Si hubiéramos empleado agregación débil, el ejercicio tendría una identidad global independiente y persistiría en un catálogo general, lo cual distorsionaría el dominio porque una prescripción de 4x10 a 80kg es privativa de ese plan."</p>
+</blockquote>
+<hr />
+<div class="page-break"></div>
+
+<h2>BLOQUE 3: MERLINA — CLASES GRUPALES, AGREGACIÓN DÉBIL Y EXCEPCIONES</h2>
+<p><strong>Tiempo asignado:</strong> 03 minutos 00 segundos (06:15 a 09:15)<br />
+<strong>Diapositivas:</strong> <code>Slide 06: Agregación Débil, Control de Aforo y Manejo de Excepciones</code><br />
+<strong>Clases Java Clave:</strong> <code>com.clubdeportivo.model.ClaseGrupal</code>, <code>com.clubdeportivo.model.CupoAgotadoException</code>, <code>com.clubdeportivo.model.Disciplina</code>, <code>com.clubdeportivo.service.ClaseService</code></p>
+<h3>Acotaciones Escénicas</h3>
+<ul>
+<li>[06:15] <em>Merlina asume el control del escenario. Señala en la diapositiva 06 los rombos blancos vacíos entre ClaseGrupal, Instructor y Socio.</em></li>
+<li>[07:20] <em>Eleva el tono con énfasis didáctico al explicar la diferencia entre devolver <code>boolean</code> o lanzar una excepción de negocio.</em></li>
+<li>[08:30] <em>Presenta con orgullo el fragmento de código de <code>CupoAgotadoException</code>.</em></li>
+</ul>
+<h3>Discurso de Exposición</h3>
+<p><strong>[06:15 - 07:05] Agregación Débil: Independencia de Ciclos de Vida</strong><br />
+"Muchas gracias Rocio. En contraste directo con la composición recién explicada, el módulo de actividades grupales requería modelar una relación no destructiva. En un club, una clase colectiva de Spinning, Yoga o CrossFit congrega a un <code>Instructor</code> que la coordina y a múltiples <code>Socios</code> que asisten a ella.</p>
+<p>En UML modelamos esto mediante <strong>Agregación Débil</strong>, representada por el <strong>rombo blanco transparente o hueco</strong> en el extremo de <code>ClaseGrupal</code> (<code>ClaseGrupal 1 o-- 0..1 Instructor</code> y <code>ClaseGrupal 1 o-- 0..* Socio</code>).<br />
+¿Por qué agregación y no composición? Porque las partes poseen ciclos de vida completamente independientes del todo. Si el club suspende una clase de Spinning por mantenimiento de sala o lluvia, el profesor no es despedido de la institución ni los socios inscriptos son dados de baja de la base de datos. La clase únicamente referencia identidades que existen previamente por derecho propio."</p>
+<p><strong>[07:05 - 08:00] Regla de Negocio: Control de Aforo y Aislamiento</strong><br />
+"La clase <code>ClaseGrupal</code> custodia celosamente sus invariantes de aforo. Cada actividad cuenta con atributos como <code>cupoMaximo</code>, <code>disciplina</code>, <code>diaSemana</code>, <code>horaInicio</code> y una lista interna <code>List&lt;Socio&gt; sociosInscriptos</code>.</p>
+<p>Para inscribir a un miembro, la clase expone el método:</p>
+<pre><code class="language-java">public synchronized boolean inscribirSocio(Socio socio) throws CupoAgotadoException
+</code></pre>
+<p>El método opera bajo una verificación preventiva: primero comprueba que el socio no se encuentre inscripto previamente. Luego, evalúa si la cantidad actual de inscriptos ha alcanzado o superado el <code>cupoMaximo</code>. Si aún restan cupos, incorpora la referencia y actualiza las vacantes. Pero si el límite físico de la sala está saturado, el sistema no recurre a soluciones frágiles."</p>
+<p><strong>[08:00 - 08:45] La Excepción de Negocio: <code>CupoAgotadoException</code></strong><br />
+"En lugar de devolver un simple valor <code>false</code> o silenciar el problema, diseñamos la excepción verificada de negocio <code>CupoAgotadoException</code>, la cual extiende directamente de <code>java.lang.Exception</code>. </p>
+<p>Esta decisión responde al principio de <strong>Fallo Rápido (Fail-Fast)</strong> y hace explícito el contrato en tiempo de compilación. Cuando el cupo se satura, el método aborta la operación y lanza:</p>
+<pre><code class="language-java">throw new CupoAgotadoException(&quot;Cupo agotado para la clase: &quot; + nombre + &quot; (Máx: &quot; + cupoMaximo + &quot;)&quot;);
+</code></pre>
+<p>Esto fuerza a la capa superior —sea nuestro <code>ClaseService</code> o el controlador visual <code>ClasesPanel</code>— a capturar formalmente el escenario mediante bloques <code>try-catch</code>, registrando la advertencia y desplegando un diálogo de alerta rojo en la interfaz sin corromper los datos."</p>
+<p><strong>[08:45 - 09:15] Conexión y Pase a Finanzas</strong><br />
+"Este control estricto de excepciones fue probado exitosamente en nuestro test unitario número 3, donde intentamos forzar la inscripción de un 4to socio en una clase limitada a 3 plazas, capturando la excepción esperada. Ahora bien, para que un socio disfrute de estas clases, debe mantener regularizada su condición arancelaria. Le cedo la palabra a Alfonsina para explicar el módulo de Facturación y Membresías."</p>
+<h3>Defensa de Cátedra (Pregunta Típica del Jurado)</h3>
+<blockquote>
+<p><strong>Profesor:</strong> <em>"¿Por qué implementaron <code>CupoAgotadoException</code> como una excepción verificada (<code>checked</code>) en lugar de devolver <code>false</code> o usar <code>RuntimeException</code> / <code>IllegalStateException</code>?"</em><br />
+<strong>Respuesta de Merlina:</strong> *"Optamos por una excepción verificada de dominio (<code>checked exception</code>) para forzar el tratamiento del error en tiempo de compilación según las buenas prácticas de Java. Si devolviéramos un booleano <code>false</code>, un programador en la capa de interfaz podría omitir involuntariamente la comprobación del valor de retorno (<code>if (!resultado)</code>), permitiendo que el flujo continúe como si la inscripción se hubiera concretado. En cambio, con una checked exception, el compilador exige la presencia del bloque <code>try-catch</code>, asegurando que la UI despliegue una alerta semafórica adecuada al operador y evitando inconsistencias físicas en la capacidad de las instalaciones."</p>
+</blockquote>
+<hr />
+<div class="page-break"></div>
+
+<h2>BLOQUE 4: ALFONSINA — MEMBRESÍAS, INTERFAZ FACTURABLE Y BENEFICIOS</h2>
+<p><strong>Tiempo asignado:</strong> 03 minutos 00 segundos (09:15 a 12:15)<br />
+<strong>Diapositivas:</strong> <code>Slide 07: Polimorfismo de Facturación, Antigüedad (10%) y Comprobantes</code><br />
+<strong>Clases Java Clave:</strong> <code>com.clubdeportivo.model.Facturable</code>, <code>com.clubdeportivo.model.Membresia</code>, <code>com.clubdeportivo.model.Pago</code>, <code>com.clubdeportivo.service.FacturacionService</code>, <code>com.clubdeportivo.model.TipoMembresia</code></p>
+<h3>Acotaciones Escénicas</h3>
+<ul>
+<li>[09:15] <em>Alfonsina toma la palabra con dicción clara y ritmo pausado. Señala el contrato <code>Facturable</code> en la parte superior de la diapositiva.</em></li>
+<li>[10:15] <em>Destaca con gestos la importancia de la regla de negocio de 12 meses de antigüedad y el cálculo exacto de la cuota.</em></li>
+<li>[11:15] <em>Explica cómo la interfaz <code>Facturable</code> abre el sistema a futuras expansiones comerciales sin modificar código existente.</em></li>
+</ul>
+<h3>Discurso de Exposición</h3>
+<p><strong>[09:15 - 10:05] El Contrato Desacoplado: La Interfaz <code>Facturable</code></strong><br />
+"Muchas gracias Merlina. La sostenibilidad de cualquier club deportivo reside en su gestión financiera. Desde el inicio, nuestro equipo decidió que el módulo de cobranzas no debía estar acoplado exclusivamente a la figura del <code>Socio</code>. Para lograrlo, recurrimos a una de las herramientas más poderosas de la POO: la abstracción mediante interfaces.</p>
+<p>Definimos la interfaz formal <code>Facturable</code>, la cual estipula cuatro métodos esenciales:
+1. <code>calcularMontoTotal()</code>: Determina la tarifa neta final a facturar.
+2. <code>generarComprobante()</code>: Emite una cadena estructurada que formaliza el recibo impositivo.
+3. <code>estaAlDia()</code>: Retorna un booleano sobre la regularidad contable.
+4. <code>aplicarDescuento(double porcentaje)</code>: Permite imputar bonificaciones comerciales.</p>
+<p>Al hacer que <code>Socio</code> implemente <code>Facturable</code>, nuestro servicio <code>FacturacionService</code> puede liquidar cuotas de manera puramente polimórfica sin conocer detalles íntimos de la persona."</p>
+<p><strong>[10:05 - 11:00] Membresías y la Regla del 10% por Antigüedad</strong><br />
+"Cada socio posee asociada una <code>Membresia</code>, tipificada mediante el enum <code>TipoMembresia</code> (<code>PASE_LIBRE</code>, <code>MUSCULACION</code>, <code>CLASES_GRUPALES</code>, <code>VIP_TOTAL</code>), cada una con su precio base estandarizado.</p>
+<p>Sobre esta base impositiva, implementamos una regla de negocio fundamental exigida por la cátedra: <strong>fidelización por antigüedad</strong>. Al invocar <code>socio.calcularMontoTotal()</code>, el método realiza una introspección cronológica:</p>
+<pre><code class="language-java">long mesesAntiguedad = ChronoUnit.MONTHS.between(fechaRegistro, LocalDate.now());
+if (mesesAntiguedad &gt;= 12) {
+    montoTotal = montoBase * 0.90; // 10% de descuento automático
+}
+</code></pre>
+<p>Si un socio acumula más de 12 meses ininterrumpidos en el club, el sistema aplica automáticamente un descuento del 10%. Por ejemplo, una membresía VIP de $15.000 pasa automáticamente a costar $13.500. Esta lógica fue validada con precisión en nuestro Test Unitario N° 4, contrastando tanto socios antiguos como nuevos."</p>
+<p><strong>[11:00 - 11:45] Emisión de Comprobantes y Transaccionalidad de Pagos</strong><br />
+"Cuando se efectiviza un cobro, se instancia la entidad <code>Pago</code>, registrando número correlativo de recibo, marca temporal <code>LocalDateTime.now()</code>, método de pago (<code>EFECTIVO</code>, <code>TARJETA_DEBITO</code>, <code>TRANSFERENCIA</code>) y referencia al socio.</p>
+<p>El método <code>generarComprobante()</code> emite una constancia digital auditada con código alfanumérico correlativo, actualizando en memoria el estado del socio a <code>EstadoCuota.AL_DIA</code>. Si un socio registra cuotas impagas, el sistema lo marca automáticamente como <code>PENDIENTE</code> o <code>VENCIDO</code>, inhabilitando su acceso físico en el molinete."</p>
+<p><strong>[11:45 - 12:15] Cierre y Pase a la Interfaz Visual</strong><br />
+"Gracias a este diseño, el sistema está abierto a la extensión y cerrado a la modificación (Principio Open/Closed de SOLID): mañana el club podría vender suplementos o alquilar quinchos implementando <code>Facturable</code> sin alterar una sola línea del motor de facturación. Ahora, para descubrir cómo interactúa el personal del club con estas funciones, le doy la palabra a Sara con la interfaz gráfica Swing."</p>
+<h3>Defensa de Cátedra (Pregunta Típica del Jurado)</h3>
+<blockquote>
+<p><strong>Profesor:</strong> <em>"¿Por qué declararon <code>Facturable</code> como una <code>interface</code> en lugar de una clase abstracta? ¿Por qué no heredar de una clase <code>EntidadComercial</code>?"</em><br />
+<strong>Respuesta de Alfonsina:</strong> *"La decisión obedece a dos pilares fundamentales: la limitación de Java respecto a la herencia simple y el Principio de Segregación de Interfaces (ISP). La clase <code>Socio</code> ya hereda de <code>Persona</code>; si <code>Facturable</code> fuera una clase abstracta, Java nos impediría heredarla simultáneamente. Por otro lado, una interfaz representa una capacidad o contrato de comportamiento ('puede ser facturado'), no una relación taxonómica de identidad ('es un'). Al utilizar una interfaz, desacoplamos totalmente la facturación del árbol de personas: mañana podemos facturar el alquiler de una cancha de pádel o la venta de un pase diario de visita sin forzarlos a ser personas."</p>
+</blockquote>
+<hr />
+<div class="page-break"></div>
+
+<h2>BLOQUE 5: SARA — INTERFAZ GRÁFICA SWING, THEME CONFIG Y MOLINETE VIRTUAL</h2>
+<p><strong>Tiempo asignado:</strong> 03 minutos 00 segundos (12:15 a 15:15)<br />
+<strong>Diapositivas:</strong> <code>Slide 08: Interfaz Gráfica Swing: CardLayout, ThemeConfig y Badges</code> | <code>Slide 09: Molinete Virtual y Control de Acceso</code><br />
+<strong>Clases Java Clave:</strong> <code>com.clubdeportivo.gui.MainFrame</code>, <code>com.clubdeportivo.gui.theme.ThemeConfig</code>, <code>com.clubdeportivo.gui.components.StatusBadgeCellRenderer</code>, <code>com.clubdeportivo.gui.CheckInDialog</code>, <code>com.clubdeportivo.service.AccesoService</code></p>
+<h3>Acotaciones Escénicas</h3>
+<ul>
+<li>[12:15] <em>Sara avanza con entusiasmo y profesionalismo. Muestra en pantalla las capturas de la GUI real de FitManage Pro.</em></li>
+<li>[13:10] <em>Destaca la transición sin parpadeos lograda gracias al CardLayout.</em></li>
+<li>[14:05] <em>Avanza a la Slide 09 y describe con pasión el funcionamiento interactivo del simulador de molinete virtual.</em></li>
+</ul>
+<h3>Discurso de Exposición</h3>
+<p><strong>[12:15 - 13:00] Arquitectura GUI: Single Window y CardLayout</strong><br />
+"Muchas gracias Alfonsina. Un software robusto pierde su valor si su interfaz de usuario resulta tosca, confusa o inestable. Para FitManage Pro diseñamos una experiencia visual de escritorio sofisticada, construida en <strong>Java Swing nativo</strong>, evitando la típica proliferación desordenada de múltiples ventanas <code>JFrame</code> flotantes.</p>
+<p>Nuestra arquitectura visual descansa en la clase <code>MainFrame</code>, la cual implementa un panel lateral de navegación o <em>Sidebar</em> vinculado a un panel contenedor central gobernado por un <strong><code>CardLayout</code></strong>. Cada módulo funcional —Socios, Clases, Rutinas, Pagos y Asistencias— reside en su propio panel especializado (<code>JPanel</code>). Cuando el operador selecciona una opción en el menú, el <code>CardLayout</code> conmuta instantáneamente el panel visible en memoria, brindando una experiencia fluida, reactiva y limpia, exactamente idéntica a la navegación de una aplicación web moderna tipo SPA."</p>
+<p><strong>[13:00 - 13:50] Estandarización Visual: ThemeConfig y Badges Cromáticos</strong><br />
+"Para erradicar la estética anticuada que suele asociarse a Swing, creamos la clase utilitaria <code>ThemeConfig</code>. Centralizamos en ella una paleta cromática profesional de alto contraste denominada <em>Obsidian Slate / Electric Blue</em>, fuentes tipográficas escaladas (<code>Segoe UI</code> / <code>SansSerif</code>) y constantes dimensionales para bordes y rellenos.</p>
+<p>Asimismo, enriquecimos las tablas de datos (<code>JTable</code>) mediante componentes customizados. Desarrollamos el <code>StatusBadgeCellRenderer</code>, un renderizador de celdas que dibuja insignias redondeadas tipo píldora (<em>badges</em>) con semáforo cromático:
+- <strong>Verde Esmeralda</strong> para socios con cuota <code>AL_DIA</code>.
+- <strong>Rojo Coral</strong> para socios con cuota <code>VENCIDO</code>.
+- <strong>Ámbar Dorado</strong> para estados <code>PENDIENTE</code>.
+Esto permite que el recepcionista del club identifique la condición administrativa del socio en menos de 50 milisegundos de vistazo visual."</p>
+<p><strong>[13:50 - 14:45] El Molinete Virtual: <code>CheckInDialog</code> y Validación en Tiempo Real</strong><br />
+"La culminación de nuestra interfaz es el <strong>Simulador de Molinete Virtual (<code>CheckInDialog</code>)</strong>. En un gimnasio real, el control de acceso en molinetes físicos es el punto de mayor fricción operativa. </p>
+<p>Cuando se ingresa un DNI o número de socio en el diálogo, este delega la evaluación a <code>AccesoService.validarIngresoGeneral(dni)</code>. El servicio recupera al socio y consulta polimórficamente su estado:
+1. Si el socio está <code>AL_DIA</code>, el molinete enciende un halo <strong>Verde</strong>, emite el sonido virtual de apertura, desbloquea el acceso e inserta una nueva <code>Asistencia</code> válida con marca temporal auditada.
+2. Si el socio tiene cuota <code>VENCIDO</code>, el sistema pinta el semáforo en <strong>Rojo</strong>, muestra la deuda en pantalla y deniega el paso con estado <code>DENEGADO_CUOTA_VENCIDA</code>.
+3. Si el socio intenta ingresar a una clase grupal particular, el sistema valida adicionalmente que posea membresía habilitante y que la sala no supere su aforo."</p>
+<p><strong>[14:45 - 15:15] Cierre y Pase a Persistencia y Calidad</strong><br />
+"Toda esta interacción gráfica opera de manera desacoplada: los paneles jamás tocan archivos ni manipulan JSON; interactúan exclusivamente con la capa de Servicios. Para revelar el motor de datos subyacente que hace posible esta magia sin bases de datos externas, le cedo la palabra a Joel."</p>
+<h3>Defensa de Cátedra (Pregunta Típica del Jurado)</h3>
+<blockquote>
+<p><strong>Profesor:</strong> <em>"¿Por qué eligieron Swing con <code>CardLayout</code> en lugar de abrir ventanas <code>JDialog</code> o <code>JFrame</code> independientes? ¿Cómo evitan que la interfaz gráfica se freeze o congele al procesar datos?"</em><br />
+<strong>Respuesta de Sara:</strong> <em>"Elegimos <code>CardLayout</code> dentro de un único <code>MainFrame</code> para garantizar una experiencia de usuario cohesionada y profesional, evitando la saturación del escritorio con múltiples ventanas que compiten por el foco del usuario. Para evitar que la interfaz se congele, aplicamos el estricto respeto del EDT (</em>Event Dispatch Thread*): las operaciones de interfaz se canalizan mediante <code>SwingUtilities.invokeLater()</code>, y los servicios de negocio resuelven sus consultas en memoria de forma inmediata gracias a los repositorios indexados por mapa hash. De haber operaciones de red pesadas, SwingWorker sería la solución natural, pero nuestro motor de persistencia atómica responde en menos de 5 milisegundos."</p>
+</blockquote>
+<hr />
+<div class="page-break"></div>
+
+<h2>BLOQUE 6: JOEL — PERSISTENCIA ATÓMICA JSON, TESTS, GRAPHIFY Y CIERRE</h2>
+<p><strong>Tiempo asignado:</strong> 03 minutos 15 segundos (15:15 a 18:30)<br />
+<strong>Diapositivas:</strong> <code>Slide 10: Persistencia Atómica JSON</code> | <code>Slide 11: Tests Automatizados y Graphify</code> | <code>Slide 12: Trazabilidad y Defensa</code> | <code>Slide 13: Conclusiones y Cierre</code><br />
+<strong>Clases Java Clave:</strong> <code>com.clubdeportivo.util.JsonPersistenceEngine</code>, <code>com.clubdeportivo.repository.IRepository</code>, <code>com.clubdeportivo.test.SistemaTest</code>, <code>scripts/test.sh</code></p>
+<h3>Acotaciones Escénicas</h3>
+<ul>
+<li>[15:15] <em>Joel se incorpora con aplomo técnico. Tono analítico y riguroso. Muestra el flujo de escritura segura en la Slide 10.</em></li>
+<li>[16:05] <em>Pasa a la Slide 11, señalando el badge verde 7/7 tests y las métricas de Graphify.</em></li>
+<li>[17:20] <em>Avanza a la Slide 12 y 13. El equipo completo se coloca a su lado para el saludo final.</em></li>
+</ul>
+<h3>Discurso de Exposición</h3>
+<p><strong>[15:15 - 16:15] Persistencia Atómica en JSON: <code>JsonPersistenceEngine</code></strong><br />
+"Muchas gracias Sara. Llegamos al corazón de la persistencia de FitManage Pro. La consigna de la cátedra prohibía el uso de bases de datos externas o librerías de terceros como Jackson o Gson. Debíamos desarrollar un motor autónomo utilizando <strong>Java SE puro</strong>.</p>
+<p>Para ello creé <code>JsonPersistenceEngine</code>, un parser y serializador recursivo capaz de transformar grafos de objetos en archivos JSON legibles y viceversa. Pero enfrentábamos un riesgo crítico: ¿qué ocurre si el club sufre un corte de suministro eléctrico o una caída del sistema exactamente en el instante en que se está guardando <code>socios.json</code>? En un guardado tradicional, el archivo quedaría truncado y la base de datos completa se corrompería.</p>
+<p>Para resolverlo, implementé el patrón de <strong>Escritura Atómica en Dos Fases</strong>:
+1. El motor escribe la información en un archivo temporal con sufijo <code>.tmp</code> (<code>socios.json.tmp</code>).
+2. Fuerza el vaciado de los búferes del sistema operativo al disco físico invocando <code>channel.force(true)</code>.
+3. Una vez garantizada la integridad física del temporal, se ejecuta la operación:</p>
+<pre><code class="language-java">Files.move(tempFile, targetFile, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+</code></pre>
+<p>En sistemas de archivos modernos POSIX y NTFS, el renombramiento a nivel de inodo es atómico e indivisible: tarda microsegundos. El archivo previo jamás se destruye hasta que el nuevo está 100% asegurado."</p>
+<p><strong>[16:15 - 17:15] Suite de Pruebas Automatizadas (7/7 Tests) y Graphify</strong><br />
+"La calidad de un sistema no se presume; se demuestra empíricamente. Diseñamos una suite de pruebas automatizadas independiente en <code>SistemaTest.java</code>, ejecutable mediante <code>scripts/test.sh</code>. </p>
+<p>La suite valida sin frameworks externos los 7 requerimientos troncales:
+1. Herencia y Polimorfismo en <code>Persona</code> y <code>Socio</code>.
+2. Composición Fuerte en <code>Rutina</code> y cálculo de 4.720 kg de tonelaje.
+3. Rechazo estricto de aforo y disparo de <code>CupoAgotadoException</code>.
+4. Regla del 10% de descuento por antigüedad en <code>Facturable</code>.
+5. Validación de semáforo en molinete virtual (<code>AccesoService</code>).
+6. Persistencia JSON Round-Trip con verificación atómica.
+7. Autenticación y liquidación de honorarios docentes.
+Los 7 tests arrojan <strong>100% de éxito [PASS] con cero fallos</strong>.</p>
+<p>Complementariamente, auditamos el código fuente con la herramienta de grafos de conocimiento <strong>Graphify</strong>. El grafo resultante procesó 852 nodos y 2.168 relaciones. El análisis de ciclos de dependencias arrojó exactamente cero ciclos entre paquetes (<code>gui -&gt; service -&gt; repository -&gt; model</code>), comprobando que se preservó una arquitectura en capas inmaculada."</p>
+<p><strong>[17:15 - 18:30] Conclusiones Finales y Cierre del Equipo</strong><br />
+"Para concluir nuestra exposición: FitManage Pro demuestra que no se requieren frameworks pesados ni dependencias externas para construir un software de gestión deportiva de nivel profesional, mantenible, seguro y escalable. </p>
+<p>Hemos aplicado con rigor supremo la abstracción ontológica, el encapsulamiento protegido, el polimorfismo dinámico forzado, la distinción formal entre agregación débil y composición fuerte, el manejo tipado de excepciones y la persistencia atómica.</p>
+<p>A nombre de Juan, Rocio, Merlina, Alfonsina, Sara y quien les habla, les agradecemos profundamente su atención durante estos 18 minutos y quedamos a total disposición del tribunal evaluador para responder sus preguntas y proceder con la demostración interactiva en vivo. Muchas gracias."</p>
+<h3>Defensa de Cátedra (Pregunta Típica del Jurado)</h3>
+<blockquote>
+<p><strong>Profesor:</strong> <em>"¿Qué garantiza la persistencia atómica en su motor JSON? ¿Qué pasaría si la computadora se apaga exactamente mientras se escribe un archivo?"</em><br />
+<strong>Respuesta de Joel:</strong> *"El método <code>saveToFileAtomic()</code> escribe primero todo el contenido en un archivo temporal con sufijo <code>.tmp</code> invocando <code>channel.force(true)</code> para volcar el búfer de memoria a disco físico. Únicamente si esa escritura concluye con éxito, se ejecuta <code>Files.move(..., ATOMIC_MOVE)</code>. En sistemas de archivos compatibles con POSIX como Linux ext4, el renombre atómico es una operación del inodo que tarda microsegundos y es indivisible: o queda el archivo previo intacto o queda el nuevo. Es imposible que el archivo de datos (<code>socios.json</code>, <code>pagos.json</code>) quede truncado a la mitad o corrupto."</p>
+</blockquote>
+<hr />
+<div class="page-break"></div>
+
+<h2>BLOQUE 7: RONDA DE PREGUNTAS DEL JURADO Y BUFFER DE CONTINGENCIA</h2>
+<p><strong>Tiempo remanente:</strong> 01 minuto 30 segundos a 02 minutos (18:30 a 20:00)<br />
+<strong>Diapositiva:</strong> <code>Slide 13: Conclusiones, Logros Técnicos y Ronda de Preguntas</code></p>
+<h3>Matriz Rápida de Respuestas de Apoyo</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Área de Pregunta</th>
+<th style="text-align: left;">Integrante Responsable</th>
+<th style="text-align: left;">Concepto Clave a Defender</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>¿Por qué Java SE puro sin Spring/Lombok?</strong></td>
+<td style="text-align: left;">Juan / Joel</td>
+<td style="text-align: left;">Demostración didáctica de la mecánica interna de POO, JVM pura y ausencia de magia de frameworks.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>¿Cómo agregan un nuevo tipo de ejercicio?</strong></td>
+<td style="text-align: left;">Rocio</td>
+<td style="text-align: left;">Extensibilidad en <code>GrupoMuscular</code> (enum) y parametrización de carga en <code>Ejercicio</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>¿Qué pasa con inscripciones concurrentes?</strong></td>
+<td style="text-align: left;">Merlina</td>
+<td style="text-align: left;">Métodos <code>synchronized</code> en <code>ClaseGrupal</code> para prevenir condiciones de carrera (<em>race conditions</em>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>¿Cómo se expande la facturación a otros productos?</strong></td>
+<td style="text-align: left;">Alfonsina</td>
+<td style="text-align: left;">Crear clases como <code>ArticuloTienda</code> o <code>AlquilerCancha</code> que implementen <code>Facturable</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>¿Por qué no usar JavaFX en lugar de Swing?</strong></td>
+<td style="text-align: left;">Sara</td>
+<td style="text-align: left;">Swing está 100% incorporado en el OpenJDK sin módulos externos <code>openjfx</code>, asegurando portabilidad inmediata.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>¿Cómo escala la persistencia con 100.000 socios?</strong></td>
+<td style="text-align: left;">Joel</td>
+<td style="text-align: left;">Migrar la implementación de <code>IRepository&lt;T&gt;</code> a JDBC/SQL sin alterar la capa de servicios ni la GUI.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Fin del Guion Oficial de Exposición.</em></p>
+</div>
+
+</body>
+</html>

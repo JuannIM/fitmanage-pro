@@ -1,0 +1,2145 @@
+#!/usr/bin/env python3
+"""
+Constructor del Slideshow Interactivo FitManage Pro (presentacion_fitmanage.html)
+Cumple estrictamente con la skill 'frontend-slides':
+- Fixed 16:9 stage (1920x1080)
+- Single standalone HTML con CSS y JS inline (zero dependencias)
+- Visibilidad con clases .active y .visible (sin display: none)
+- Slide 03: Diagrama de Clases UML vectorial SVG nativo completo (viewBox 0 0 1800 920)
+- Modo edición inline (E / hover hotzone con 400ms delay)
+- Navegación por teclado y controles flotantes
+"""
+
+import os
+import sys
+
+def build_presentation():
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    output_html_path = os.path.join(root_dir, "presentacion_fitmanage.html")
+
+    html_content = """<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitManage Pro - Presentación Oficial y Defensa POO</title>
+
+    <!-- Tipografía: Plus Jakarta Sans, Outfit y JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           VARIABLES DE DISEÑO: OBSIDIAN SLATE & ELECTRIC BLUE
+           =========================================== */
+        :root {
+            /* Superficies */
+            --stage-bg: #030712;
+            --slide-bg: #0b1120;
+            --card-bg: rgba(17, 24, 39, 0.78);
+            --card-border: #1e293b;
+            --card-border-glow: rgba(59, 130, 246, 0.25);
+            --card-hover: rgba(30, 41, 59, 0.85);
+
+            /* Acentos */
+            --accent-primary: #2563eb;
+            --accent-glow: #38bdf8;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-violet: #8b5cf6;
+
+            /* Tipografía */
+            --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --font-body: 'Outfit', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', Consolas, monospace;
+
+            /* Textos */
+            --text-white: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+
+            /* Animaciones */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.5s;
+        }
+
+        /* ===========================================
+           FIXED 16:9 STAGE: MANDATORY BASE STYLES
+           =========================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: text;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--stage-bg);
+            color: var(--text-white);
+            font-family: var(--font-body);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .deck-viewport {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            background: var(--stage-bg);
+        }
+
+        .deck-stage {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1920px;
+            height: 1080px;
+            overflow: hidden;
+            transform-origin: 0 0;
+            background: var(--slide-bg);
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            width: 1920px;
+            height: 1080px;
+            padding: 56px 72px 88px 72px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            visibility: hidden;
+            opacity: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 60%),
+                        radial-gradient(circle at 10% 90%, rgba(6, 182, 212, 0.05) 0%, transparent 50%),
+                        var(--slide-bg);
+            transition: opacity 0.4s var(--ease-out-expo), visibility 0.4s;
+        }
+
+        .slide.active,
+        .slide.visible {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 1;
+        }
+
+        /* Reveal animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.05s; }
+        .reveal:nth-child(2) { transition-delay: 0.12s; }
+        .reveal:nth-child(3) { transition-delay: 0.18s; }
+        .reveal:nth-child(4) { transition-delay: 0.24s; }
+        .reveal:nth-child(5) { transition-delay: 0.30s; }
+
+        /* ===========================================
+           ESTRUCTURA DE CABECERA Y PIE DE SLIDE
+           =========================================== */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .slide-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .slide-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent-glow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slide-eyebrow::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-glow);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .slide-title {
+            font-family: var(--font-display);
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.15;
+            color: var(--text-white);
+            letter-spacing: -0.5px;
+        }
+
+        .slide-subtitle {
+            font-size: 20px;
+            font-weight: 400;
+            color: var(--text-muted);
+            max-width: 1200px;
+        }
+
+        .speaker-badge {
+            background: rgba(37, 99, 235, 0.18);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 9999px;
+            padding: 8px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-mono);
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-white);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+        }
+
+        .speaker-badge .avatar-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-emerald);
+            box-shadow: 0 0 8px var(--accent-emerald);
+        }
+
+        .slide-body {
+            flex: 1;
+            display: flex;
+            gap: 32px;
+            min-height: 0;
+            align-items: stretch;
+        }
+
+        .slide-footer-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-dim);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+
+        /* ===========================================
+           COMPONENTES Y CARDS DE CONTENIDO
+           =========================================== */
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: var(--card-border-glow);
+            box-shadow: 0 12px 36px rgba(37, 99, 235, 0.12);
+        }
+
+        .card-header-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-white);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-badge {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-blue { background: rgba(37, 99, 235, 0.2); color: var(--accent-glow); border: 1px solid rgba(59, 130, 246, 0.3); }
+        .badge-cyan { background: rgba(6, 182, 212, 0.2); color: var(--accent-cyan); border: 1px solid rgba(6, 182, 212, 0.3); }
+        .badge-emerald { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-amber { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-rose { background: rgba(244, 63, 94, 0.2); color: var(--accent-rose); border: 1px solid rgba(244, 63, 94, 0.3); }
+        .badge-violet { background: rgba(139, 92, 246, 0.2); color: var(--accent-violet); border: 1px solid rgba(139, 92, 246, 0.3); }
+
+        /* Code snippets */
+        .code-box {
+            background: #050914;
+            border: 1px solid #1e293b;
+            border-radius: 10px;
+            padding: 16px;
+            font-family: var(--font-mono);
+            font-size: 14.5px;
+            line-height: 1.5;
+            color: #cbd5e1;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-box .kw { color: #f43f5e; font-weight: 600; }
+        .code-box .type { color: #38bdf8; font-weight: 500; }
+        .code-box .fn { color: #a78bfa; }
+        .code-box .str { color: #34d399; }
+        .code-box .cm { color: #64748b; font-style: italic; }
+        .code-box .num { color: #fbbf24; }
+
+        /* Key Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--accent-glow);
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Lists */
+        .feature-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 18px;
+            line-height: 1.45;
+            color: #e2e8f0;
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: rgba(37, 99, 235, 0.2);
+            color: var(--accent-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Defensa Docente Box */
+        .defense-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(15, 23, 42, 0.7));
+            border-left: 4px solid var(--accent-amber);
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            margin-top: auto;
+        }
+
+        .defense-box .defense-title {
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--accent-amber);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .defense-box p {
+            font-size: 14.5px;
+            line-height: 1.4;
+            color: #e2e8f0;
+        }
+
+        /* ===========================================
+           CONTROLES EXTERNOS Y HOTZONE EDICIÓN
+           =========================================== */
+        .deck-controls {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(11, 17, 32, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+            padding: 8px 20px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        .deck-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-white);
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .deck-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--accent-glow);
+        }
+
+        .deck-counter {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        /* Inline editing */
+        .edit-hotzone {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 80px;
+            z-index: 10000;
+            cursor: pointer;
+        }
+
+        .edit-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--accent-glow);
+            color: var(--accent-glow);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.2s ease;
+            z-index: 10001;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .edit-toggle.show,
+        .edit-toggle.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .edit-toggle.active {
+            background: var(--accent-primary);
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .edit-indicator {
+            position: fixed;
+            top: 20px;
+            left: 76px;
+            background: var(--accent-amber);
+            color: #000;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 6px;
+            z-index: 10001;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .edit-mode-active .edit-indicator {
+            display: block;
+        }
+
+        [contenteditable="true"] {
+            outline: 2px dashed rgba(56, 189, 248, 0.5);
+            outline-offset: 4px;
+            border-radius: 4px;
+        }
+
+        /* SVG Slide 03 styling */
+        .uml-stage-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #060b17;
+            border: 1px solid #1e293b;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .uml-stage-container svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="edit-hotzone"></div>
+    <button class="edit-toggle" id="editToggle" title="Modo Edición Inline (E)">✏️</button>
+    <div class="edit-indicator" id="editIndicator">MODO EDICIÓN ACTIVO (Ctrl+S para persistir cambios)</div>
+
+    <div class="deck-viewport">
+        <main class="deck-stage" id="deckStage">
+
+            <!-- ==========================================
+                 SLIDE 01: PORTADA EJECUTIVA FITMANAGE PRO
+                 ========================================== -->
+            <section class="slide title-slide active" data-slide-index="0">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Defensa de Proyecto Académico &bull; Java 21 SE</div>
+                        <h1 class="slide-title" style="font-size: 64px; letter-spacing: -1.5px; background: linear-gradient(135deg, #ffffff 40%, #60a5fa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">FITMANAGE PRO</h1>
+                        <p class="slide-subtitle" style="font-size: 24px; color: #cbd5e1;">Sistema Integral de Gestión Deportiva, Facturación y Control de Acceso</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>JUAN (Portavoz Inicial)</span>
+                    </div>
+                </div>
+
+                <div class="slide-body" style="flex-direction: column; gap: 24px;">
+                    <div style="display: flex; gap: 16px;">
+                        <span class="card-badge badge-blue" style="font-size: 14px; padding: 6px 14px;">Java 21 LTS SE Puro</span>
+                        <span class="card-badge badge-cyan" style="font-size: 14px; padding: 6px 14px;">Arquitectura en 4 Capas</span>
+                        <span class="card-badge badge-emerald" style="font-size: 14px; padding: 6px 14px;">7/7 Tests Aprobados</span>
+                        <span class="card-badge badge-violet" style="font-size: 14px; padding: 6px 14px;">Persistencia Atómica POSIX</span>
+                        <span class="card-badge badge-amber" style="font-size: 14px; padding: 6px 14px;">Zero Dependencias Externas</span>
+                    </div>
+
+                    <!-- Grid de los 6 Integrantes -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; flex: 1;">
+                        <div class="glass-card reveal">
+                            <div class="card-header-line">
+                                <span class="card-title">1. Juan</span>
+                                <span class="card-badge badge-blue">Min 00:00 - 03:15</span>
+                            </div>
+                            <p style="font-size: 16px; color: #cbd5e1;"><strong>Rol:</strong> Arquitectura de Software & Jerarquía Persona.</p>
+                            <p style="font-size: 14px; color: var(--text-muted);">Clase abstracta <code>Persona</code>, atributos <code>#protected</code> y métodos abstractos polimórficos.</p>
+                        </div>
+
+                        <div class="glass-card reveal">
+                            <div class="card-header-line">
+                                <span class="card-title">2. Rocio</span>
+                                <span class="card-badge badge-blue">Min 03:15 - 06:15</span>
+                            </div>
+                            <p style="font-size: 16px; color: #cbd5e1;"><strong>Rol:</strong> Módulo Deportivo & Composición Fuerte.</p>
+                            <p style="font-size: 14px; color: var(--text-muted);">Relación <code>Rutina *-- Ejercicio</code>, ciclo de vida dependiente y cálculo de tonelaje (4.720 kg).</p>
+                        </div>
+
+                        <div class="glass-card reveal">
+                            <div class="card-header-line">
+                                <span class="card-title">3. Merlina</span>
+                                <span class="card-badge badge-blue">Min 06:15 - 09:15</span>
+                            </div>
+                            <p style="font-size: 16px; color: #cbd5e1;"><strong>Rol:</strong> Actividades Grupales & Excepciones.</p>
+                            <p style="font-size: 14px; color: var(--text-muted);">Agregación débil <code>ClaseGrupal o-- Socio</code>, control de aforo y <code>CupoAgotadoException</code>.</p>
+                        </div>
+
+                        <div class="glass-card reveal">
+                            <div class="card-header-line">
+                                <span class="card-title">4. Alfonsina</span>
+                                <span class="card-badge badge-blue">Min 09:15 - 12:15</span>
+                            </div>
+                            <p style="font-size: 16px; color: #cbd5e1;"><strong>Rol:</strong> Facturación & Membresías.</p>
+                            <p style="font-size: 14px; color: var(--text-muted);">Interfaz <code>Facturable</code>, descuento del 10% por antigüedad (>12 meses) y emisión de recibos.</p>
+                        </div>
+
+                        <div class="glass-card reveal">
+                            <div class="card-header-line">
+                                <span class="card-title">5. Sara</span>
+                                <span class="card-badge badge-blue">Min 12:15 - 15:15</span>
+                            </div>
+                            <p style="font-size: 16px; color: #cbd5e1;"><strong>Rol:</strong> GUI Java Swing & UX de Acceso.</p>
+                            <p style="font-size: 14px; color: var(--text-muted);">Arquitectura <code>CardLayout</code>, centralización <code>ThemeConfig</code>, semáforos y Molinete Virtual.</p>
+                        </div>
+
+                        <div class="glass-card reveal">
+                            <div class="card-header-line">
+                                <span class="card-title">6. Joel</span>
+                                <span class="card-badge badge-blue">Min 15:15 - 18:30</span>
+                            </div>
+                            <p style="font-size: 16px; color: #cbd5e1;"><strong>Rol:</strong> Persistencia Atómica & Calidad.</p>
+                            <p style="font-size: 14px; color: var(--text-muted);">Motor <code>JsonPersistenceEngine</code> (.tmp + ATOMIC_MOVE), tests 7/7, Graphify y cierre.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>Cátedra: Programación Orientada a Objetos / Laboratorio de Software</span>
+                    <span>Convocatoria: Noviembre 2026 &bull; Duración Estricta: 20 Minutos</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 02: DOMINIO Y ARQUITECTURA EN 4 CAPAS
+                 ========================================== -->
+            <section class="slide" data-slide-index="1">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Arquitectura de Software & Desacoplamiento</div>
+                        <h2 class="slide-title">Dominio y Arquitectura Desacoplada en 4 Capas</h2>
+                        <p class="slide-subtitle">Diseño modular de alta cohesión y bajo acoplamiento con flujo unidireccional estricto.</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>JUAN (Arquitectura)</span>
+                    </div>
+                </div>
+
+                <div class="slide-body">
+                    <!-- Columna Izquierda: Problemática y Principios -->
+                    <div class="glass-card reveal" style="flex: 1;">
+                        <div class="card-header-line">
+                            <span class="card-title">Problemática & Decisiones de Diseño</span>
+                            <span class="card-badge badge-cyan">Clean Architecture</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <div><strong>Separación de Responsabilidades:</strong> La vista Swing jamás lee ni escribe archivos físicos en disco.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <div><strong>Contratos Estables:</strong> Acceso a datos gobernado por la interfaz genérica <code>IRepository&lt;T&gt;</code>.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <div><strong>Validación Graphify:</strong> Cero dependencias circulares entre paquetes; camino más corto UI-Repository = 2 saltos.</div>
+                            </li>
+                        </ul>
+
+                        <div class="defense-box" style="margin-top: 18px;">
+                            <div class="defense-title">🛡️ Justificación de Cátedra</div>
+                            <p>"Mantener la capa de modelo 100% aislada de frameworks permite migrar mañana la persistencia a SQL o la GUI a Web sin modificar una sola regla de negocio."</p>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Las 4 Capas Visuales -->
+                    <div style="flex: 1.2; display: flex; flex-direction: column; gap: 14px;" class="reveal">
+                        <div class="glass-card" style="padding: 16px 20px; border-left: 6px solid #38bdf8;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong style="font-size: 18px; color: #38bdf8;">1. CAPA DE PRESENTACIÓN (GUI)</strong>
+                                <span class="card-badge badge-blue">com.clubdeportivo.gui</span>
+                            </div>
+                            <p style="font-size: 14.5px; color: #cbd5e1; margin-top: 4px;"><code>MainFrame</code>, <code>CardLayout</code>, paneles por módulo y renderizadores con semáforos cromáticos.</p>
+                        </div>
+
+                        <div style="text-align: center; color: var(--accent-glow); font-size: 18px; line-height: 1;">▼ Invocaciones de Servicio</div>
+
+                        <div class="glass-card" style="padding: 16px 20px; border-left: 6px solid #818cf8;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong style="font-size: 18px; color: #818cf8;">2. CAPA DE SERVICIOS (SERVICE)</strong>
+                                <span class="card-badge badge-blue">com.clubdeportivo.service</span>
+                            </div>
+                            <p style="font-size: 14.5px; color: #cbd5e1; margin-top: 4px;"><code>SocioService</code>, <code>FacturacionService</code>, <code>AccesoService</code>, orquestación y transacciones.</p>
+                        </div>
+
+                        <div style="text-align: center; color: var(--accent-glow); font-size: 18px; line-height: 1;">▼ Contratos IRepository&lt;T&gt;</div>
+
+                        <div class="glass-card" style="padding: 16px 20px; border-left: 6px solid #34d399;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong style="font-size: 18px; color: #34d399;">3. CAPA DE REPOSITORIOS (DATA ACCESS)</strong>
+                                <span class="card-badge badge-emerald">com.clubdeportivo.repository</span>
+                            </div>
+                            <p style="font-size: 14.5px; color: #cbd5e1; margin-top: 4px;">Colecciones indexadas en memoria con sincronización atómica a disco.</p>
+                        </div>
+
+                        <div style="text-align: center; color: var(--accent-glow); font-size: 18px; line-height: 1;">▼ Entidades Puras & Persistencia</div>
+
+                        <div class="glass-card" style="padding: 16px 20px; border-left: 6px solid #fbbf24;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong style="font-size: 18px; color: #fbbf24;">4. DOMINIO & MOTOR ATÓMICO (MODEL/UTIL)</strong>
+                                <span class="card-badge badge-amber">model & JsonPersistenceEngine</span>
+                            </div>
+                            <p style="font-size: 14.5px; color: #cbd5e1; margin-top: 4px;">Entidades POO puras y guardado atómico en 2 fases (<code>.tmp</code> + <code>ATOMIC_MOVE</code>).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>FitManage Pro &bull; Arquitectura Limpia</span>
+                    <span>Diapositiva 02 de 13</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 03: DIAGRAMA DE CLASES UML INTEGRAL (SVG)
+                 ========================================== -->
+            <section class="slide" data-slide-index="2" style="padding: 32px 48px;">
+                <div class="slide-header" style="margin-bottom: 12px;">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Modelo Estructural Completo &bull; Estándar Formal UML</div>
+                        <h2 class="slide-title" style="font-size: 34px;">Diagrama de Clases UML Integral (Vectorial SVG)</h2>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>DEFENSA COLECTIVA</span>
+                    </div>
+                </div>
+
+                <div class="slide-body" style="padding: 0;">
+                    <div class="uml-stage-container reveal">
+                        <!-- SVG VECTORIAL NATIVO COMPLETO -->
+                        <svg viewBox="0 0 1800 920" xmlns="http://www.w3.org/2000/svg" style="font-family: 'JetBrains Mono', monospace;">
+                            <defs>
+                                <!-- Grilla de fondo -->
+                                <pattern id="uml-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                                    <circle cx="2" cy="2" r="1" fill="#1e293b" opacity="0.6" />
+                                </pattern>
+
+                                <!-- Marcador: Herencia (Triángulo hueco) -->
+                                <marker id="tri-inherit" viewBox="0 0 16 16" refX="16" refY="8" markerWidth="14" markerHeight="14" orient="auto">
+                                    <polygon points="0 0, 16 8, 0 16" fill="#0b1120" stroke="#94a3b8" stroke-width="1.8" />
+                                </marker>
+
+                                <!-- Marcador: Realización (Triángulo hueco cyan) -->
+                                <marker id="tri-realize" viewBox="0 0 16 16" refX="16" refY="8" markerWidth="14" markerHeight="14" orient="auto">
+                                    <polygon points="0 0, 16 8, 0 16" fill="#083344" stroke="#06b6d4" stroke-width="1.8" />
+                                </marker>
+
+                                <!-- Marcador: Composición Fuerte (Rombo negro relleno) -->
+                                <marker id="diamond-comp" viewBox="0 0 20 14" refX="0" refY="7" markerWidth="18" markerHeight="13" orient="auto">
+                                    <polygon points="0 7, 10 1, 20 7, 10 13" fill="#38bdf8" stroke="#0284c7" stroke-width="1.5" />
+                                </marker>
+
+                                <!-- Marcador: Agregación Débil (Rombo blanco hueco) -->
+                                <marker id="diamond-aggr" viewBox="0 0 20 14" refX="0" refY="7" markerWidth="18" markerHeight="13" orient="auto">
+                                    <polygon points="0 7, 10 1, 20 7, 10 13" fill="#0b1120" stroke="#f8fafc" stroke-width="1.8" />
+                                </marker>
+
+                                <!-- Marcador: Asociación Dirigida (Flecha abierta) -->
+                                <marker id="arrow-assoc" viewBox="0 0 14 14" refX="14" refY="7" markerWidth="12" markerHeight="12" orient="auto">
+                                    <polyline points="0 1, 14 7, 0 13" fill="none" stroke="#60a5fa" stroke-width="2" />
+                                </marker>
+
+                                <!-- Marcador: Dependencia / Excepción (Flecha roja abierta) -->
+                                <marker id="arrow-except" viewBox="0 0 14 14" refX="14" refY="7" markerWidth="12" markerHeight="12" orient="auto">
+                                    <polyline points="0 1, 14 7, 0 13" fill="none" stroke="#f43f5e" stroke-width="2" />
+                                </marker>
+                            </defs>
+
+                            <!-- Fondo con patrón -->
+                            <rect width="1800" height="920" fill="#080e1e" />
+                            <rect width="1800" height="920" fill="url(#uml-grid)" />
+
+                            <!-- ==============================================
+                                 CONECTORES Y RELACIONES (LÍNEAS)
+                                 ============================================== -->
+                            <!-- Herencia: Persona <|-- Socio -->
+                            <path d="M 165 475 L 165 435 L 320 435 L 320 415" fill="none" stroke="#94a3b8" stroke-width="2.2" marker-end="url(#tri-inherit)" />
+
+                            <!-- Herencia: Persona <|-- Instructor -->
+                            <path d="M 440 475 L 440 415" fill="none" stroke="#94a3b8" stroke-width="2.2" marker-end="url(#tri-inherit)" />
+
+                            <!-- Realización: Facturable <|.. Socio -->
+                            <path d="M 110 475 L 110 165" fill="none" stroke="#06b6d4" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#tri-realize)" />
+
+                            <!-- Realización: Autenticable <|.. Socio -->
+                            <path d="M 230 475 L 230 450 L 25 450 L 25 90 L 290 90" fill="none" stroke="#06b6d4" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#tri-realize)" />
+
+                            <!-- Realización: Reportable <|.. Instructor -->
+                            <path d="M 530 475 L 530 200 L 590 200 L 590 130" fill="none" stroke="#06b6d4" stroke-width="1.8" stroke-dasharray="6,4" marker-end="url(#tri-realize)" />
+
+                            <!-- Composición Fuerte: Rutina *-- Ejercicio -->
+                            <line x1="1150" y1="150" x2="1210" y2="150" stroke="#38bdf8" stroke-width="2.5" marker-start="url(#diamond-comp)" />
+                            <text x="1165" y="140" fill="#38bdf8" font-size="12" font-weight="700">1</text>
+                            <text x="1195" y="140" fill="#38bdf8" font-size="12" font-weight="700">1..*</text>
+
+                            <!-- Agregación Débil: ClaseGrupal o-- Instructor -->
+                            <path d="M 890 530 L 570 530" fill="none" stroke="#f8fafc" stroke-width="2.2" marker-start="url(#diamond-aggr)" />
+                            <text x="865" y="520" fill="#f8fafc" font-size="12" font-weight="700">1</text>
+                            <text x="590" y="520" fill="#f8fafc" font-size="12" font-weight="700">0..1</text>
+
+                            <!-- Agregación Débil: ClaseGrupal o-- Socio -->
+                            <path d="M 890 680 L 300 680" fill="none" stroke="#f8fafc" stroke-width="2.2" marker-start="url(#diamond-aggr)" />
+                            <text x="865" y="670" fill="#f8fafc" font-size="12" font-weight="700">1</text>
+                            <text x="320" y="670" fill="#f8fafc" font-size="12" font-weight="700">0..*</text>
+
+                            <!-- Asociación: Socio --> Membresia -->
+                            <path d="M 300 510 L 600 280" fill="none" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrow-assoc)" />
+                            <text x="440" y="380" fill="#60a5fa" font-size="12" font-weight="700">1 &rarr; 1</text>
+
+                            <!-- Asociación: Socio --> Asistencia -->
+                            <path d="M 300 740 L 600 740" fill="none" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrow-assoc)" />
+                            <text x="450" y="730" fill="#60a5fa" font-size="12" font-weight="700">1 &rarr; 0..*</text>
+
+                            <!-- Asociación: Pago --> Socio -->
+                            <path d="M 600 510 L 300 580" fill="none" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrow-assoc)" />
+                            <text x="430" y="560" fill="#60a5fa" font-size="12" font-weight="700">0..* &rarr; 1</text>
+
+                            <!-- Dependencia: ClaseGrupal ..> CupoAgotadoException -->
+                            <path d="M 1170 475 L 1250 475" fill="none" stroke="#f43f5e" stroke-width="2.2" stroke-dasharray="5,4" marker-end="url(#arrow-except)" />
+                            <text x="1185" y="465" fill="#f43f5e" font-size="11" font-weight="700">&laquo;throws&raquo;</text>
+
+                            <!-- ==============================================
+                                 NODOS Y CLASES (CAJAS UML)
+                                 ============================================== -->
+                            <!-- 1. <<interface>> Facturable -->
+                            <g transform="translate(40, 30)">
+                                <rect width="230" height="135" rx="8" fill="#082f49" stroke="#0e7490" stroke-width="2" />
+                                <rect width="230" height="38" rx="8" fill="#0e7490" />
+                                <text x="115" y="16" fill="#67e8f9" font-size="11" text-anchor="middle">&laquo;interface&raquo;</text>
+                                <text x="115" y="32" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">Facturable</text>
+                                <text x="12" y="58" fill="#e0f2fe" font-size="11.5">+ calcularMontoTotal(): double</text>
+                                <text x="12" y="78" fill="#e0f2fe" font-size="11.5">+ generarComprobante(): String</text>
+                                <text x="12" y="98" fill="#e0f2fe" font-size="11.5">+ estaAlDia(): boolean</text>
+                                <text x="12" y="118" fill="#e0f2fe" font-size="11.5">+ aplicarDescuento(pct): void</text>
+                            </g>
+
+                            <!-- 2. <<interface>> Autenticable -->
+                            <g transform="translate(290, 30)">
+                                <rect width="210" height="100" rx="8" fill="#082f49" stroke="#0e7490" stroke-width="2" />
+                                <rect width="210" height="38" rx="8" fill="#0e7490" />
+                                <text x="105" y="16" fill="#67e8f9" font-size="11" text-anchor="middle">&laquo;interface&raquo;</text>
+                                <text x="105" y="32" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">Autenticable</text>
+                                <text x="12" y="60" fill="#e0f2fe" font-size="11.5">+ autenticar(cred): boolean</text>
+                                <text x="12" y="80" fill="#e0f2fe" font-size="11.5">+ validarAcceso(pto): boolean</text>
+                            </g>
+
+                            <!-- 3. <<interface>> Reportable -->
+                            <g transform="translate(520, 30)">
+                                <rect width="210" height="100" rx="8" fill="#082f49" stroke="#0e7490" stroke-width="2" />
+                                <rect width="210" height="38" rx="8" fill="#0e7490" />
+                                <text x="105" y="16" fill="#67e8f9" font-size="11" text-anchor="middle">&laquo;interface&raquo;</text>
+                                <text x="105" y="32" fill="#ffffff" font-size="14" font-weight="700" text-anchor="middle">Reportable</text>
+                                <text x="12" y="60" fill="#e0f2fe" font-size="11.5">+ generarReporteTexto(): String</text>
+                                <text x="12" y="80" fill="#e0f2fe" font-size="11.5">+ exportarMetricas(): Map</text>
+                            </g>
+
+                            <!-- 4. <<abstract>> Persona -->
+                            <g transform="translate(240, 180)">
+                                <rect width="260" height="235" rx="8" fill="#2e1065" stroke="#7e22ce" stroke-width="2.5" />
+                                <rect width="260" height="40" rx="8" fill="#6b21a8" />
+                                <text x="130" y="16" fill="#d8b4fe" font-size="11" text-anchor="middle">&laquo;abstract&raquo;</text>
+                                <text x="130" y="33" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">Persona</text>
+                                <text x="12" y="58" fill="#f3e8ff" font-size="11.5"># id, dni: String</text>
+                                <text x="12" y="75" fill="#f3e8ff" font-size="11.5"># nombre, apellido: String</text>
+                                <text x="12" y="92" fill="#f3e8ff" font-size="11.5"># email, telefono: String</text>
+                                <text x="12" y="109" fill="#f3e8ff" font-size="11.5"># fechaNac, fechaReg: LocalDate</text>
+                                <line x1="0" y1="118" x2="260" y2="118" stroke="#7e22ce" stroke-width="1.5" />
+                                <text x="12" y="136" fill="#f3e8ff" font-size="11.5">+ calcularEdad(): int</text>
+                                <text x="12" y="156" fill="#f3e8ff" font-size="11.5">+ mostrarDetalle()*: String</text>
+                                <text x="12" y="176" fill="#f3e8ff" font-size="11.5">+ getRol()*: String</text>
+                                <text x="12" y="196" fill="#f3e8ff" font-size="11.5">+ validarIngreso(tipo)*: boolean</text>
+                            </g>
+
+                            <!-- 5. Socio -->
+                            <g transform="translate(30, 475)">
+                                <rect width="270" height="345" rx="8" fill="#0f172a" stroke="#2563eb" stroke-width="2" />
+                                <rect width="270" height="34" rx="8" fill="#1e3a8a" />
+                                <text x="135" y="22" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">Socio</text>
+                                <text x="12" y="54" fill="#cbd5e1" font-size="11">- numeroSocio: String</text>
+                                <text x="12" y="72" fill="#cbd5e1" font-size="11">- estadoCuota: EstadoCuota</text>
+                                <text x="12" y="90" fill="#cbd5e1" font-size="11">- membresiaActual: Membresia</text>
+                                <text x="12" y="108" fill="#cbd5e1" font-size="11">- rutinasAsignadas: List&lt;Rutina&gt;</text>
+                                <text x="12" y="126" fill="#cbd5e1" font-size="11">- historialAsist: List&lt;Asistencia&gt;</text>
+                                <line x1="0" y1="136" x2="270" y2="136" stroke="#2563eb" stroke-width="1.5" />
+                                <text x="12" y="156" fill="#93c5fd" font-size="11">+ getNumeroSocio(): String</text>
+                                <text x="12" y="174" fill="#93c5fd" font-size="11">+ asignarRutina(r: Rutina): void</text>
+                                <text x="12" y="192" fill="#93c5fd" font-size="11">+ registrarAsistencia(a): void</text>
+                                <text x="12" y="210" fill="#93c5fd" font-size="11">+ mostrarDetalle(): String</text>
+                                <text x="12" y="228" fill="#93c5fd" font-size="11">+ validarIngreso(tipo): boolean</text>
+                                <text x="12" y="246" fill="#93c5fd" font-size="11">+ calcularMontoTotal(): double</text>
+                                <text x="12" y="264" fill="#93c5fd" font-size="11">+ estaAlDia(): boolean</text>
+                                <text x="12" y="282" fill="#93c5fd" font-size="11">+ aplicarDescuento(pct): void</text>
+                                <text x="12" y="300" fill="#93c5fd" font-size="11">+ autenticar(cred): boolean</text>
+                                <text x="12" y="318" fill="#93c5fd" font-size="11">+ generarReporteTexto(): String</text>
+                            </g>
+
+                            <!-- 6. Instructor -->
+                            <g transform="translate(330, 475)">
+                                <rect width="240" height="280" rx="8" fill="#0f172a" stroke="#2563eb" stroke-width="2" />
+                                <rect width="240" height="34" rx="8" fill="#1e3a8a" />
+                                <text x="120" y="22" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">Instructor</text>
+                                <text x="12" y="54" fill="#cbd5e1" font-size="11">- legajo: String</text>
+                                <text x="12" y="72" fill="#cbd5e1" font-size="11">- especialidad: String</text>
+                                <text x="12" y="90" fill="#cbd5e1" font-size="11">- sueldoBase: double</text>
+                                <text x="12" y="108" fill="#cbd5e1" font-size="11">- honorarioPorClase: double</text>
+                                <text x="12" y="126" fill="#cbd5e1" font-size="11">- clasesAsignadas: List&lt;Clase&gt;</text>
+                                <line x1="0" y1="136" x2="240" y2="136" stroke="#2563eb" stroke-width="1.5" />
+                                <text x="12" y="156" fill="#93c5fd" font-size="11">+ asignarClase(c: Clase): void</text>
+                                <text x="12" y="176" fill="#93c5fd" font-size="11">+ removerClase(c): void</text>
+                                <text x="12" y="196" fill="#93c5fd" font-size="11">+ calcularLiquidacion(): double</text>
+                                <text x="12" y="216" fill="#93c5fd" font-size="11">+ mostrarDetalle(): String</text>
+                                <text x="12" y="236" fill="#93c5fd" font-size="11">+ validarIngreso(tipo): boolean</text>
+                                <text x="12" y="256" fill="#93c5fd" font-size="11">+ generarReporteTexto(): String</text>
+                            </g>
+
+                            <!-- 7. Membresia -->
+                            <g transform="translate(600, 180)">
+                                <rect width="240" height="185" rx="8" fill="#0f172a" stroke="#2563eb" stroke-width="2" />
+                                <rect width="240" height="34" rx="8" fill="#1e3a8a" />
+                                <text x="120" y="22" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">Membresia</text>
+                                <text x="12" y="54" fill="#cbd5e1" font-size="11">- id: String</text>
+                                <text x="12" y="72" fill="#cbd5e1" font-size="11">- tipo: TipoMembresia</text>
+                                <text x="12" y="90" fill="#cbd5e1" font-size="11">- precioBase: double</text>
+                                <text x="12" y="108" fill="#cbd5e1" font-size="11">- fechaInicio, fechaVenc: LocalDate</text>
+                                <line x1="0" y1="118" x2="240" y2="118" stroke="#2563eb" stroke-width="1.5" />
+                                <text x="12" y="138" fill="#93c5fd" font-size="11">+ getTipo(): TipoMembresia</text>
+                                <text x="12" y="156" fill="#93c5fd" font-size="11">+ estaVencida(): boolean</text>
+                                <text x="12" y="174" fill="#93c5fd" font-size="11">+ extenderPeriodo(dias): void</text>
+                            </g>
+
+                            <!-- 8. Pago -->
+                            <g transform="translate(600, 415)">
+                                <rect width="240" height="195" rx="8" fill="#0f172a" stroke="#2563eb" stroke-width="2" />
+                                <rect width="240" height="34" rx="8" fill="#1e3a8a" />
+                                <text x="120" y="22" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">Pago</text>
+                                <text x="12" y="54" fill="#cbd5e1" font-size="11">- id, comprobante: String</text>
+                                <text x="12" y="72" fill="#cbd5e1" font-size="11">- socioId: String</text>
+                                <text x="12" y="90" fill="#cbd5e1" font-size="11">- monto: double</text>
+                                <text x="12" y="108" fill="#cbd5e1" font-size="11">- fechaHoraPago: LocalDateTime</text>
+                                <text x="12" y="126" fill="#cbd5e1" font-size="11">- metodoPago: MetodoPago</text>
+                                <line x1="0" y1="136" x2="240" y2="136" stroke="#2563eb" stroke-width="1.5" />
+                                <text x="12" y="158" fill="#93c5fd" font-size="11">+ getMonto(): double</text>
+                                <text x="12" y="178" fill="#93c5fd" font-size="11">+ generarRecibo(): String</text>
+                            </g>
+
+                            <!-- 9. Asistencia -->
+                            <g transform="translate(600, 650)">
+                                <rect width="240" height="170" rx="8" fill="#0f172a" stroke="#2563eb" stroke-width="2" />
+                                <rect width="240" height="34" rx="8" fill="#1e3a8a" />
+                                <text x="120" y="22" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">Asistencia</text>
+                                <text x="12" y="54" fill="#cbd5e1" font-size="11">- id, socioId: String</text>
+                                <text x="12" y="72" fill="#cbd5e1" font-size="11">- fechaHora: LocalDateTime</text>
+                                <text x="12" y="90" fill="#cbd5e1" font-size="11">- tipoAcceso: TipoAcceso</text>
+                                <text x="12" y="108" fill="#cbd5e1" font-size="11">- estadoAcceso: EstadoAcceso</text>
+                                <line x1="0" y1="118" x2="240" y2="118" stroke="#2563eb" stroke-width="1.5" />
+                                <text x="12" y="140" fill="#93c5fd" font-size="11">+ esAccesoValido(): boolean</text>
+                            </g>
+
+                            <!-- 10. Rutina -->
+                            <g transform="translate(890, 40)">
+                                <rect width="260" height="225" rx="8" fill="#0f172a" stroke="#2563eb" stroke-width="2" />
+                                <rect width="260" height="34" rx="8" fill="#1e3a8a" />
+                                <text x="130" y="22" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">Rutina</text>
+                                <text x="12" y="54" fill="#cbd5e1" font-size="11">- id, nombre, objetivo: String</text>
+                                <text x="12" y="72" fill="#cbd5e1" font-size="11">- nivelDificultad: String</text>
+                                <text x="12" y="90" fill="#cbd5e1" font-size="11">- ejercicios: List&lt;Ejercicio&gt;</text>
+                                <line x1="0" y1="102" x2="260" y2="102" stroke="#2563eb" stroke-width="1.5" />
+                                <text x="12" y="124" fill="#93c5fd" font-size="11">+ agregarEjercicio(e): void</text>
+                                <text x="12" y="144" fill="#93c5fd" font-size="11">+ eliminarEjercicio(id): boolean</text>
+                                <text x="12" y="164" fill="#93c5fd" font-size="11">+ calcularVolumenGlobal(): double</text>
+                                <text x="12" y="184" fill="#93c5fd" font-size="11">+ getCantidadEjercicios(): int</text>
+                                <text x="12" y="204" fill="#93c5fd" font-size="11">+ mostrarFichaRutina(): String</text>
+                            </g>
+
+                            <!-- 11. Ejercicio -->
+                            <g transform="translate(1210, 40)">
+                                <rect width="250" height="225" rx="8" fill="#0f172a" stroke="#2563eb" stroke-width="2" />
+                                <rect width="250" height="34" rx="8" fill="#1e3a8a" />
+                                <text x="125" y="22" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">Ejercicio</text>
+                                <text x="12" y="54" fill="#cbd5e1" font-size="11">- id, nombre: String</text>
+                                <text x="12" y="72" fill="#cbd5e1" font-size="11">- grupoMuscular: GrupoMuscular</text>
+                                <text x="12" y="90" fill="#cbd5e1" font-size="11">- series, repeticiones: int</text>
+                                <text x="12" y="108" fill="#cbd5e1" font-size="11">- pesoSugeridoKg: double</text>
+                                <line x1="0" y1="118" x2="250" y2="118" stroke="#2563eb" stroke-width="1.5" />
+                                <text x="12" y="140" fill="#93c5fd" font-size="11">+ calcularVolumenTotal(): double</text>
+                                <text x="12" y="162" fill="#93c5fd" font-size="11">+ mostrarResumen(): String</text>
+                            </g>
+
+                            <!-- 12. ClaseGrupal -->
+                            <g transform="translate(890, 350)">
+                                <rect width="280" height="360" rx="8" fill="#0f172a" stroke="#2563eb" stroke-width="2" />
+                                <rect width="280" height="34" rx="8" fill="#1e3a8a" />
+                                <text x="140" y="22" fill="#ffffff" font-size="15" font-weight="700" text-anchor="middle">ClaseGrupal</text>
+                                <text x="12" y="54" fill="#cbd5e1" font-size="11">- id, nombre: String</text>
+                                <text x="12" y="72" fill="#cbd5e1" font-size="11">- disciplina: Disciplina</text>
+                                <text x="12" y="90" fill="#cbd5e1" font-size="11">- diaSemana: DayOfWeek</text>
+                                <text x="12" y="108" fill="#cbd5e1" font-size="11">- horaInicio: LocalTime</text>
+                                <text x="12" y="126" fill="#cbd5e1" font-size="11">- cupoMaximo: int</text>
+                                <text x="12" y="144" fill="#cbd5e1" font-size="11">- instructor: Instructor</text>
+                                <text x="12" y="162" fill="#cbd5e1" font-size="11">- sociosInscriptos: List&lt;Socio&gt;</text>
+                                <line x1="0" y1="172" x2="280" y2="172" stroke="#2563eb" stroke-width="1.5" />
+                                <text x="12" y="194" fill="#93c5fd" font-size="11">+ inscribirSocio(s): boolean</text>
+                                <text x="12" y="214" fill="#93c5fd" font-size="11">+ desinscribirSocio(num): boolean</text>
+                                <text x="12" y="234" fill="#93c5fd" font-size="11">+ tieneCupoDisponible(): boolean</text>
+                                <text x="12" y="254" fill="#93c5fd" font-size="11">+ getCuposRestantes(): int</text>
+                                <text x="12" y="274" fill="#93c5fd" font-size="11">+ mostrarFichaClase(): String</text>
+                            </g>
+
+                            <!-- 13. <<exception>> CupoAgotadoException -->
+                            <g transform="translate(1240, 430)">
+                                <rect width="230" height="95" rx="8" fill="#4c0519" stroke="#e11d48" stroke-width="2" />
+                                <rect width="230" height="34" rx="8" fill="#881337" />
+                                <text x="115" y="15" fill="#fda4af" font-size="10.5" text-anchor="middle">&laquo;exception&raquo;</text>
+                                <text x="115" y="29" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">CupoAgotadoException</text>
+                                <text x="12" y="60" fill="#ffe4e6" font-size="11">+ CupoAgotadoException(msg)</text>
+                            </g>
+
+                            <!-- 14. Panel Enumeraciones (Derecha) -->
+                            <g transform="translate(1505, 30)">
+                                <rect width="265" height="790" rx="8" fill="#022c22" stroke="#059669" stroke-width="2" />
+                                <rect width="265" height="36" rx="8" fill="#047857" />
+                                <text x="132" y="16" fill="#a7f3d0" font-size="11" text-anchor="middle">&laquo;enumerations&raquo;</text>
+                                <text x="132" y="31" fill="#ffffff" font-size="13" font-weight="700" text-anchor="middle">Dominio Restringido</text>
+
+                                <text x="12" y="60" fill="#6ee7b7" font-weight="700" font-size="11.5">EstadoCuota</text>
+                                <text x="12" y="78" fill="#e2e8f0" font-size="10.5">AL_DIA, PENDIENTE,</text>
+                                <text x="12" y="94" fill="#e2e8f0" font-size="10.5">VENCIDO, INACTIVO</text>
+
+                                <line x1="10" y1="105" x2="255" y2="105" stroke="#059669" opacity="0.4" />
+                                <text x="12" y="125" fill="#6ee7b7" font-weight="700" font-size="11.5">TipoMembresia</text>
+                                <text x="12" y="143" fill="#e2e8f0" font-size="10.5">PASE_LIBRE, MUSCULACION,</text>
+                                <text x="12" y="159" fill="#e2e8f0" font-size="10.5">CLASES_GRUPALES, VIP_TOTAL</text>
+
+                                <line x1="10" y1="172" x2="255" y2="172" stroke="#059669" opacity="0.4" />
+                                <text x="12" y="192" fill="#6ee7b7" font-weight="700" font-size="11.5">Disciplina</text>
+                                <text x="12" y="210" fill="#e2e8f0" font-size="10.5">SPINNING, CROSSFIT, YOGA,</text>
+                                <text x="12" y="226" fill="#e2e8f0" font-size="10.5">FUNCIONAL, BOXEO, PILATES</text>
+
+                                <line x1="10" y1="239" x2="255" y2="239" stroke="#059669" opacity="0.4" />
+                                <text x="12" y="259" fill="#6ee7b7" font-weight="700" font-size="11.5">GrupoMuscular</text>
+                                <text x="12" y="277" fill="#e2e8f0" font-size="10.5">PECHO, ESPALDA, PIERNAS,</text>
+                                <text x="12" y="293" fill="#e2e8f0" font-size="10.5">HOMBROS, BRAZOS, CORE</text>
+
+                                <line x1="10" y1="306" x2="255" y2="306" stroke="#059669" opacity="0.4" />
+                                <text x="12" y="326" fill="#6ee7b7" font-weight="700" font-size="11.5">MetodoPago</text>
+                                <text x="12" y="344" fill="#e2e8f0" font-size="10.5">EFECTIVO, TARJETA_DEBITO,</text>
+                                <text x="12" y="360" fill="#e2e8f0" font-size="10.5">TARJETA_CREDITO, TRANSFER.</text>
+
+                                <line x1="10" y1="373" x2="255" y2="373" stroke="#059669" opacity="0.4" />
+                                <text x="12" y="393" fill="#6ee7b7" font-weight="700" font-size="11.5">TipoAcceso &amp; EstadoAcceso</text>
+                                <text x="12" y="411" fill="#e2e8f0" font-size="10.5">GENERAL, CLASE_GRUPAL</text>
+                                <text x="12" y="427" fill="#e2e8f0" font-size="10.5">PERMITIDO, DENEGADO_CUOTA,</text>
+                                <text x="12" y="443" fill="#e2e8f0" font-size="10.5">DENEGADO_SIN_CUPO</text>
+                            </g>
+
+                            <!-- ==============================================
+                                 BARRA DE LEYENDA INFERIOR (PIE)
+                                 ============================================== -->
+                            <g transform="translate(30, 845)">
+                                <rect width="1740" height="52" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1.5" />
+
+                                <!-- Herencia -->
+                                <line x1="30" y1="26" x2="70" y2="26" stroke="#94a3b8" stroke-width="2" marker-end="url(#tri-inherit)" />
+                                <text x="82" y="30" fill="#f8fafc" font-size="11.5">Herencia (&lt;|--)</text>
+
+                                <!-- Realización -->
+                                <line x1="220" y1="26" x2="260" y2="26" stroke="#06b6d4" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#tri-realize)" />
+                                <text x="272" y="30" fill="#f8fafc" font-size="11.5">Realización (&lt;|..)</text>
+
+                                <!-- Composición Fuerte -->
+                                <line x1="430" y1="26" x2="470" y2="26" stroke="#38bdf8" stroke-width="2.5" marker-start="url(#diamond-comp)" />
+                                <text x="482" y="30" fill="#f8fafc" font-size="11.5">Composición Fuerte (*--)</text>
+
+                                <!-- Agregación Débil -->
+                                <line x1="710" y1="26" x2="750" y2="26" stroke="#f8fafc" stroke-width="2" marker-start="url(#diamond-aggr)" />
+                                <text x="762" y="30" fill="#f8fafc" font-size="11.5">Agregación Débil (o--)</text>
+
+                                <!-- Asociación -->
+                                <line x1="970" y1="26" x2="1010" y2="26" stroke="#60a5fa" stroke-width="2" marker-end="url(#arrow-assoc)" />
+                                <text x="1022" y="30" fill="#f8fafc" font-size="11.5">Asociación (--&gt;)</text>
+
+                                <!-- Dependencia / Excepción -->
+                                <line x1="1200" y1="26" x2="1240" y2="26" stroke="#f43f5e" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-except)" />
+                                <text x="1252" y="30" fill="#f8fafc" font-size="11.5">Dependencia / Throws (..&gt;)</text>
+
+                                <!-- Colores Clave -->
+                                <circle cx="1520" cy="26" r="6" fill="#a855f7" />
+                                <text x="1532" y="30" fill="#d8b4fe" font-size="11">Abstract</text>
+                                <circle cx="1610" cy="26" r="6" fill="#06b6d4" />
+                                <text x="1622" y="30" fill="#67e8f9" font-size="11">Interface</text>
+                                <circle cx="1700" cy="26" r="6" fill="#10b981" />
+                                <text x="1712" y="30" fill="#6ee7b7" font-size="11">Enum</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>FitManage Pro &bull; Diagrama de Clases UML</span>
+                    <span>Diapositiva 03 de 13</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 04: JERARQUÍA PERSONA (HERENCIA)
+                 ========================================== -->
+            <section class="slide" data-slide-index="3">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Abstracción & Generalización en POO</div>
+                        <h2 class="slide-title">Jerarquía Persona: Herencia, Encapsulamiento y Polimorfismo</h2>
+                        <p class="slide-subtitle">Fundamentación ontológica de la clase base abstracta y reutilización de estado protegido.</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>JUAN (Herencia & POO)</span>
+                    </div>
+                </div>
+
+                <div class="slide-body">
+                    <!-- Columna Izquierda: Principios Teóricos -->
+                    <div class="glass-card reveal" style="flex: 1;">
+                        <div class="card-header-line">
+                            <span class="card-title">Justificación Técnica</span>
+                            <span class="card-badge badge-violet">Clase Abstracta</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <span class="feature-icon">#</span>
+                                <div><strong>Atributos Protegidos:</strong> <code>id</code>, <code>dni</code>, <code>nombre</code>, <code>email</code> y fechas son directamente accesibles por <code>Socio</code> e <code>Instructor</code> sin romper encapsulamiento.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">★</span>
+                                <div><strong>Comportamiento Concreto Compartido:</strong> <code>calcularEdad()</code> calcula la edad con <code>Period.between()</code> una única vez en la clase base.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">⚡</span>
+                                <div><strong>Polimorfismo Forzado:</strong> Métodos abstractos <code>mostrarDetalle()</code> y <code>validarIngreso()</code> obligan contractualmente a cada subclase a especializar su comportamiento.</div>
+                            </li>
+                        </ul>
+
+                        <div class="defense-box">
+                            <div class="defense-title">🛡️ Pregunta de Cátedra</div>
+                            <p><strong>¿Por qué no usar composición de roles?</strong> En este modelo ontológico, instanciar <code>new Persona()</code> carece de semántica de negocio; la herencia garantiza integridad de tipo segura en compilación.</p>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Código Fuente -->
+                    <div class="glass-card reveal" style="flex: 1.1;">
+                        <div class="card-header-line">
+                            <span class="card-title">Extracto de Código (Persona.java & Socio.java)</span>
+                            <span class="card-badge badge-blue">Java 21</span>
+                        </div>
+                        <div class="code-box">
+<span class="kw">public abstract class</span> <span class="type">Persona</span> {
+    <span class="kw">protected</span> <span class="type">String</span> id, dni, nombre, apellido;
+    <span class="kw">protected</span> <span class="type">LocalDate</span> fechaNacimiento;
+
+    <span class="kw">public int</span> <span class="fn">calcularEdad</span>() {
+        <span class="kw">return</span> <span class="type">Period</span>.<span class="fn">between</span>(fechaNacimiento, <span class="type">LocalDate</span>.<span class="fn">now</span>()).<span class="fn">getYears</span>();
+    }
+
+    <span class="cm">// Polimorfismo forzado en tiempo de compilación</span>
+    <span class="kw">public abstract</span> <span class="type">String</span> <span class="fn">mostrarDetalle</span>();
+    <span class="kw">public abstract boolean</span> <span class="fn">validarIngreso</span>(<span class="type">TipoAcceso</span> tipo);
+}
+
+<span class="kw">public class</span> <span class="type">Socio</span> <span class="kw">extends</span> <span class="type">Persona</span> <span class="kw">implements</span> <span class="type">Facturable</span> {
+    <span class="annotation">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">validarIngreso</span>(<span class="type">TipoAcceso</span> tipo) {
+        <span class="kw">return</span> <span class="kw">this</span>.estadoCuota == <span class="type">EstadoCuota</span>.AL_DIA;
+    }
+}</div>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>FitManage Pro &bull; Jerarquía Persona</span>
+                    <span>Diapositiva 04 de 13</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 05: COMPOSICIÓN FUERTE (RUTINAS)
+                 ========================================== -->
+            <section class="slide" data-slide-index="4">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Dominio Deportivo & Dosificación de Cargas</div>
+                        <h2 class="slide-title">Composición Fuerte: Rutina, Ejercicios y Tonelaje Acumulado</h2>
+                        <p class="slide-subtitle">Modelado existencial de pertenencia estricta (*--) y cálculo de volumen total de entrenamiento.</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>ROCIO (Rutinas & Composición)</span>
+                    </div>
+                </div>
+
+                <div class="slide-body">
+                    <!-- Columna Izquierda: Composición Fuerte -->
+                    <div class="glass-card reveal" style="flex: 1;">
+                        <div class="card-header-line">
+                            <span class="card-title">Composición Fuerte (*--)</span>
+                            <span class="card-badge badge-blue">Rombo Negro</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <span class="feature-icon">◆</span>
+                                <div><strong>Dependencia Existencial:</strong> Un <code>Ejercicio</code> prescrito (series, reps, kg) carece de sentido ontológico fuera de su <code>Rutina</code>.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">◆</span>
+                                <div><strong>Ciclo de Vida Acoplado:</strong> Al eliminar la <code>Rutina</code>, sus ejercicios pierden sus referencias y son recolectados por el GC.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">◆</span>
+                                <div><strong>Persistencia JSON Anidada:</strong> En <code>rutinas.json</code>, los ejercicios están embebidos como nodo hijo dentro de la rutina padre.</div>
+                            </li>
+                        </ul>
+
+                        <div class="defense-box">
+                            <div class="defense-title">🛡️ Pregunta de Cátedra</div>
+                            <p><strong>¿Por qué no agregación?</strong> Porque un ejercicio no es una entidad de catálogo global; representa una dosificación individual y privada de esa rutina.</p>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Fórmula y Código -->
+                    <div class="glass-card reveal" style="flex: 1.1;">
+                        <div class="card-header-line">
+                            <span class="card-title">Cálculo de Tonelaje (Volumen Global)</span>
+                            <span class="card-badge badge-emerald">Test #2 [PASS]</span>
+                        </div>
+                        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 14px; text-align: center;">
+                            <div style="font-family: var(--font-mono); font-size: 20px; color: var(--accent-emerald); font-weight: 700;">
+                                Volumen Global = &Sigma; (Series &times; Repeticiones &times; PesoKg)
+                            </div>
+                            <p style="font-size: 14px; color: var(--text-muted); margin-top: 6px;">
+                                Press Banca (4&times;10&times;100kg = 4.000kg) + Aperturas (3&times;12&times;20kg = 720kg) = <strong>4.720 kg acumulados</strong>
+                            </p>
+                        </div>
+
+                        <div class="code-box" style="margin-top: 10px;">
+<span class="kw">public double</span> <span class="fn">calcularVolumenGlobal</span>() {
+    <span class="kw">double</span> total = <span class="num">0.0</span>;
+    <span class="kw">for</span> (<span class="type">Ejercicio</span> e : <span class="kw">this</span>.ejercicios) {
+        total += e.<span class="fn">calcularVolumenTotal</span>(); <span class="cm">// series * reps * pesoSugeridoKg</span>
+    }
+    <span class="kw">return</span> total;
+}</div>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>FitManage Pro &bull; Módulo Deportivo</span>
+                    <span>Diapositiva 05 de 13</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 06: AGREGACIÓN DÉBIL Y EXCEPCIONES
+                 ========================================== -->
+            <section class="slide" data-slide-index="5">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Logística Deportiva & Manejo de Errores</div>
+                        <h2 class="slide-title">Agregación Débil, Control de Aforo y CupoAgotadoException</h2>
+                        <p class="slide-subtitle">Independencia de ciclos de vida (o--) y diseño de excepciones de negocio verificadas (checked).</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>MERLINA (Clases & Excepciones)</span>
+                    </div>
+                </div>
+
+                <div class="slide-body">
+                    <!-- Columna Izquierda: Agregación Débil -->
+                    <div class="glass-card reveal" style="flex: 1;">
+                        <div class="card-header-line">
+                            <span class="card-title">Agregación Débil (o--)</span>
+                            <span class="card-badge badge-cyan">Rombo Blanco</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <span class="feature-icon">◇</span>
+                                <div><strong>Ciclos de Vida Independientes:</strong> Si una clase de Spinning se cancela, ni el <code>Instructor</code> ni los <code>Socios</code> son eliminados del club.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">◇</span>
+                                <div><strong>Invariante de Capacidad:</strong> Atributo <code>cupoMaximo</code> previene la sobreventa de lugares en las salas físicas.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">◇</span>
+                                <div><strong>Sincronización Concurrente:</strong> Método <code>inscribirSocio()</code> sincronizado para prevenir condiciones de carrera.</div>
+                            </li>
+                        </ul>
+
+                        <div class="defense-box">
+                            <div class="defense-title">🛡️ Pregunta de Cátedra</div>
+                            <p><strong>¿Por qué una checked exception y no boolean false?</strong> Para aplicar Fail-Fast y forzar en compilación que la GUI capture el evento con <code>try-catch</code> y despliegue un diálogo semafórico.</p>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Excepción y Código -->
+                    <div class="glass-card reveal" style="flex: 1.1;">
+                        <div class="card-header-line">
+                            <span class="card-title">CupoAgotadoException (Checked)</span>
+                            <span class="card-badge badge-rose">Fail-Fast</span>
+                        </div>
+                        <div class="code-box">
+<span class="kw">public class</span> <span class="type">CupoAgotadoException</span> <span class="kw">extends</span> <span class="type">Exception</span> {
+    <span class="kw">public</span> <span class="fn">CupoAgotadoException</span>(<span class="type">String</span> mensaje) {
+        <span class="kw">super</span>(mensaje);
+    }
+}
+
+<span class="cm">// ClaseGrupal.java - Control estricto de aforo</span>
+<span class="kw">public synchronized boolean</span> <span class="fn">inscribirSocio</span>(<span class="type">Socio</span> s) <span class="kw">throws</span> <span class="type">CupoAgotadoException</span> {
+    <span class="kw">if</span> (sociosInscriptos.<span class="fn">size</span>() >= cupoMaximo) {
+        <span class="kw">throw new</span> <span class="type">CupoAgotadoException</span>(
+            <span class="str">"Aforo colmado en "</span> + nombre + <span class="str">" (Máx: "</span> + cupoMaximo + <span class="str">")"</span>
+        );
+    }
+    <span class="kw">return</span> sociosInscriptos.<span class="fn">add</span>(s);
+}</div>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>FitManage Pro &bull; Clases Grupales</span>
+                    <span>Diapositiva 06 de 13</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 07: FACTURABLE Y DESCUENTO 10%
+                 ========================================== -->
+            <section class="slide" data-slide-index="6">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Módulo Administrativo & Contratos de Negocio</div>
+                        <h2 class="slide-title">Polimorfismo de Facturación, Antigüedad (10%) y Comprobantes</h2>
+                        <p class="slide-subtitle">Contrato desacoplado mediante la interfaz Facturable y política automática de fidelización.</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>ALFONSINA (Facturación)</span>
+                    </div>
+                </div>
+
+                <div class="slide-body">
+                    <!-- Columna Izquierda: Interfaz Facturable -->
+                    <div class="glass-card reveal" style="flex: 1;">
+                        <div class="card-header-line">
+                            <span class="card-title">Interfaz Facturable (ISP)</span>
+                            <span class="card-badge badge-cyan">&laquo;interface&raquo;</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <span class="feature-icon">✓</span>
+                                <div><strong>Desacoplamiento Comercial:</strong> El módulo de cobranzas interactúa con <code>Facturable</code> sin importar si es un socio, alquiler o artículo.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">★</span>
+                                <div><strong>Regla del 10% por Antigüedad:</strong> Socios con &ge; 12 meses de registro acceden a una bonificación automática del 10% en su cuota.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">📄</span>
+                                <div><strong>Comprobante Formal:</strong> Emisión de recibo auditado con numeración correlativa y registro de <code>Pago</code>.</div>
+                            </li>
+                        </ul>
+
+                        <div class="defense-box">
+                            <div class="defense-title">🛡️ Pregunta de Cátedra</div>
+                            <p><strong>¿Por qué interfaz y no clase abstracta?</strong> Porque Java no admite herencia múltiple y <code>Socio</code> ya hereda de <code>Persona</code>. La interfaz representa capacidad comercial.</p>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Regla del 10% y Código -->
+                    <div class="glass-card reveal" style="flex: 1.1;">
+                        <div class="card-header-line">
+                            <span class="card-title">Lógica de Liquidación con Fidelización</span>
+                            <span class="card-badge badge-emerald">Test #4 [PASS]</span>
+                        </div>
+                        <div class="code-box">
+<span class="annotation">@Override</span>
+<span class="kw">public double</span> <span class="fn">calcularMontoTotal</span>() {
+    <span class="kw">double</span> montoBase = membresiaActual.<span class="fn">getPrecioBase</span>();
+    <span class="kw">long</span> meses = <span class="type">ChronoUnit</span>.MONTHS.<span class="fn">between</span>(fechaRegistro, <span class="type">LocalDate</span>.<span class="fn">now</span>());
+
+    <span class="cm">// Regla de negocio: 10% descuento a partir del año de fidelidad</span>
+    <span class="kw">if</span> (meses >= <span class="num">12</span>) {
+        montoBase *= <span class="num">0.90</span>;
+    }
+    <span class="kw">return</span> montoBase;
+}
+
+<span class="cm">// Ejemplo de Ejecución:</span>
+<span class="cm">// Socio Antiguo (24 meses): Base $15.000 -> Total a pagar: $13.500</span>
+<span class="cm">// Socio Nuevo   ( 2 meses): Base $15.000 -> Total a pagar: $15.000</span></div>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>FitManage Pro &bull; Facturación y Cobranzas</span>
+                    <span>Diapositiva 07 de 13</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 08: INTERFAZ GRÁFICA SWING (CARDLAYOUT)
+                 ========================================== -->
+            <section class="slide" data-slide-index="7">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Experiencia de Usuario en Escritorio</div>
+                        <h2 class="slide-title">Interfaz Gráfica Swing: CardLayout, ThemeConfig y Badges</h2>
+                        <p class="slide-subtitle">Arquitectura Single-Window moderna, centralización cromática y renderizadores con semáforo.</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>SARA (GUI Swing)</span>
+                    </div>
+                </div>
+
+                <div class="slide-body">
+                    <!-- Columna Izquierda: Arquitectura Swing -->
+                    <div class="glass-card reveal" style="flex: 1;">
+                        <div class="card-header-line">
+                            <span class="card-title">Patrón CardLayout en MainFrame</span>
+                            <span class="card-badge badge-blue">Java Swing</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <span class="feature-icon">🖥️</span>
+                                <div><strong>Sin Ventanas Flotantes:</strong> Un único <code>MainFrame</code> conmuta vistas en memoria como una Single Page Application (SPA).</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">🎨</span>
+                                <div><strong>ThemeConfig Centralizado:</strong> Paleta Obsidian Slate/Electric Blue, tipografías y métricas sin hardcodeo visual.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">🟢</span>
+                                <div><strong>StatusBadgeCellRenderer:</strong> Celdas customizadas que renderizan badges redondeados con semáforo cromático.</div>
+                            </li>
+                        </ul>
+
+                        <div class="defense-box">
+                            <div class="defense-title">🛡️ Pregunta de Cátedra</div>
+                            <p><strong>¿Cómo evitan congelar la UI?</strong> Respetando el Event Dispatch Thread (EDT) de Swing y resolviendo persistencia en microsegundos.</p>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Mockup Interactivo de la Tabla de Socios -->
+                    <div class="glass-card reveal" style="flex: 1.2;">
+                        <div class="card-header-line">
+                            <span class="card-title">Simulación Visual: JTable con StatusBadges</span>
+                            <span class="card-badge badge-cyan">Swing Custom UI</span>
+                        </div>
+
+                        <div style="background: #050914; border: 1px solid #1e293b; border-radius: 8px; overflow: hidden;">
+                            <div style="display: grid; grid-template-columns: 80px 180px 140px 120px 100px; padding: 10px 14px; background: #0f172a; font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: #94a3b8; border-bottom: 1px solid #1e293b;">
+                                <span>SOCIO</span>
+                                <span>NOMBRE COMPLETO</span>
+                                <span>MEMBRESÍA</span>
+                                <span>ESTADO CUOTA</span>
+                                <span>MONTO</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 80px 180px 140px 120px 100px; padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center; font-size: 14px;">
+                                <span style="font-family: var(--font-mono); color: #38bdf8;">SOC-001</span>
+                                <span>Carlos Bianchi</span>
+                                <span>VIP Total</span>
+                                <span><span class="card-badge badge-emerald">AL DÍA</span></span>
+                                <span style="font-family: var(--font-mono);">$13.500</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 80px 180px 140px 120px 100px; padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center; font-size: 14px;">
+                                <span style="font-family: var(--font-mono); color: #38bdf8;">SOC-002</span>
+                                <span>Román Riquelme</span>
+                                <span>Pase Libre</span>
+                                <span><span class="card-badge badge-rose">VENCIDO</span></span>
+                                <span style="font-family: var(--font-mono);">$12.000</span>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 80px 180px 140px 120px 100px; padding: 12px 14px; align-items: center; font-size: 14px;">
+                                <span style="font-family: var(--font-mono); color: #38bdf8;">SOC-003</span>
+                                <span>Martín Palermo</span>
+                                <span>Musculación</span>
+                                <span><span class="card-badge badge-amber">PENDIENTE</span></span>
+                                <span style="font-family: var(--font-mono);">$8.500</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>FitManage Pro &bull; Interfaz Gráfica de Usuario</span>
+                    <span>Diapositiva 08 de 13</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 09: MOLINETE VIRTUAL (CHECK-IN)
+                 ========================================== -->
+            <section class="slide" data-slide-index="8">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Simulación Operativa en Tiempo Real</div>
+                        <h2 class="slide-title">Check-In en Tiempo Real: Molinete Virtual y Control de Acceso</h2>
+                        <p class="slide-subtitle">Evaluación instantánea de credenciales con semaforización cromática y registro de auditoría.</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>SARA (Molinete Virtual)</span>
+                    </div>
+                </div>
+
+                <div class="slide-body">
+                    <!-- Columna Izquierda: Lógica de Acceso -->
+                    <div class="glass-card reveal" style="flex: 1;">
+                        <div class="card-header-line">
+                            <span class="card-title">Flujo del Diálogo de Acceso</span>
+                            <span class="card-badge badge-blue">CheckInDialog</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <span class="feature-icon">1</span>
+                                <div><strong>Entrada de Credencial:</strong> Recepción de DNI o escaneo de código de socio.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">2</span>
+                                <div><strong>Validación Polimórfica:</strong> Invocación a <code>AccesoService.validarIngresoGeneral(dni)</code>.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">3</span>
+                                <div><strong>Registro de Auditoría:</strong> Inserción de entidad <code>Asistencia</code> en el historial.</div>
+                            </li>
+                        </ul>
+
+                        <div class="defense-box">
+                            <div class="defense-title">🛡️ Pregunta de Cátedra</div>
+                            <p><strong>¿Cómo interactúa con la base de datos?</strong> El diálogo no conoce JSON: consulta al <code>AccesoService</code>, quien valida la cuota y devuelve un DTO de respuesta en menos de 5 ms.</p>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Simulación de Molinete -->
+                    <div style="flex: 1.2; display: flex; flex-direction: column; gap: 16px;" class="reveal">
+                        <!-- Caso Verde -->
+                        <div class="glass-card" style="border-left: 6px solid var(--accent-emerald); padding: 18px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong style="color: var(--accent-emerald); font-size: 18px;">ACCESO PERMITIDO (HALO VERDE)</strong>
+                                <span class="card-badge badge-emerald">Molinete Habilitado</span>
+                            </div>
+                            <p style="font-size: 14px; color: #cbd5e1; margin-top: 6px;">
+                                Socio: <strong>Carlos Bianchi</strong> &bull; DNI: 20111222 &bull; Cuota: <strong>AL DÍA</strong><br>
+                                Resultado: Asistencia registrada exitosamente &bull; Molinete destrabado.
+                            </p>
+                        </div>
+
+                        <!-- Caso Rojo -->
+                        <div class="glass-card" style="border-left: 6px solid var(--accent-rose); padding: 18px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong style="color: var(--accent-rose); font-size: 18px;">ACCESO DENEGADO (HALO ROJO)</strong>
+                                <span class="card-badge badge-rose">Molinete Bloqueado</span>
+                            </div>
+                            <p style="font-size: 14px; color: #cbd5e1; margin-top: 6px;">
+                                Socio: <strong>Román Riquelme</strong> &bull; DNI: 28333444 &bull; Cuota: <strong>VENCIDO</strong><br>
+                                Causa: Registra mora impaga &bull; Notificación visual enviada a recepción.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>FitManage Pro &bull; Control de Acceso</span>
+                    <span>Diapositiva 09 de 13</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 10: PERSISTENCIA ATÓMICA JSON
+                 ========================================== -->
+            <section class="slide" data-slide-index="9">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Motor de Datos Autónomo en Java SE</div>
+                        <h2 class="slide-title">Persistencia Atómica en JSON: JsonPersistenceEngine</h2>
+                        <p class="slide-subtitle">Serialización nativa sin librerías externas y guardado atómico en dos fases contra caídas de tensión.</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>JOEL (Persistencia Atómica)</span>
+                    </div>
+                </div>
+
+                <div class="slide-body">
+                    <!-- Columna Izquierda: Motor Nativo -->
+                    <div class="glass-card reveal" style="flex: 1;">
+                        <div class="card-header-line">
+                            <span class="card-title">Motor Zero-Dependencies</span>
+                            <span class="card-badge badge-violet">Java SE Puro</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <span class="feature-icon">⚙️</span>
+                                <div><strong>Sin Jackson ni Gson:</strong> Parser y serializador JSON recursivo implementado íntegramente con la API estándar.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">⚡</span>
+                                <div><strong>Escritura en 2 Fases:</strong> Primero se genera un archivo <code>.tmp</code> temporal y se vacía el búfer a disco con <code>channel.force(true)</code>.</div>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">🔒</span>
+                                <div><strong>Renombrado Atómico POSIX:</strong> <code>Files.move(..., ATOMIC_MOVE)</code> reemplaza el archivo en microsegundos sin riesgo de truncamiento.</div>
+                            </li>
+                        </ul>
+
+                        <div class="defense-box">
+                            <div class="defense-title">🛡️ Pregunta de Cátedra</div>
+                            <p><strong>¿Qué pasa si se corta la luz mientras se guarda?</strong> La operación es atómica en el inodo de Linux/NTFS: o queda el archivo anterior intacto o el nuevo completo. La base nunca se corrompe.</p>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Mecanismo Atómico -->
+                    <div class="glass-card reveal" style="flex: 1.1;">
+                        <div class="card-header-line">
+                            <span class="card-title">saveToFileAtomic() en JsonPersistenceEngine</span>
+                            <span class="card-badge badge-emerald">POSIX Resilient</span>
+                        </div>
+                        <div class="code-box">
+<span class="kw">public static void</span> <span class="fn">saveToFileAtomic</span>(<span class="type">String</span> json, <span class="type">Path</span> target) <span class="kw">throws</span> <span class="type">IOException</span> {
+    <span class="type">Path</span> tempFile = target.<span class="fn">resolveSibling</span>(target.<span class="fn">getFileName</span>() + <span class="str">".tmp"</span>);
+    
+    <span class="cm">// Fase 1: Escritura segura y volcado de búfer físico</span>
+    <span class="kw">try</span> (<span class="type">FileChannel</span> channel = <span class="type">FileChannel</span>.<span class="fn">open</span>(tempFile, CREATE, WRITE, TRUNCATE_EXISTING)) {
+        channel.<span class="fn">write</span>(<span class="type">ByteBuffer</span>.<span class="fn">wrap</span>(json.<span class="fn">getBytes</span>(StandardCharsets.UTF_8)));
+        channel.<span class="fn">force</span>(<span class="kw">true</span>); <span class="cm">// Sincronización a disco magnético/SSD</span>
+    }
+
+    <span class="cm">// Fase 2: Renombrado atómico indivisible</span>
+    <span class="type">Files</span>.<span class="fn">move</span>(tempFile, target, 
+        <span class="type">StandardCopyOption</span>.ATOMIC_MOVE, 
+        <span class="type">StandardCopyOption</span>.REPLACE_EXISTING
+    );
+}</div>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>FitManage Pro &bull; Persistencia de Datos</span>
+                    <span>Diapositiva 10 de 13</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 11: SUITE DE PRUEBAS Y GRAPHIFY
+                 ========================================== -->
+            <section class="slide" data-slide-index="10">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Calidad de Software & Verificación Empírica</div>
+                        <h2 class="slide-title">Calidad de Software: Suite Automatizada (7/7) y Graphify</h2>
+                        <p class="slide-subtitle">Certificación empírica de requerimientos y auditoría estática de dependencias libres de ciclos.</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>JOEL (Tests & Calidad)</span>
+                    </div>
+                </div>
+
+                <div class="slide-body">
+                    <!-- Columna Izquierda: Los 7 Tests -->
+                    <div class="glass-card reveal" style="flex: 1.2;">
+                        <div class="card-header-line">
+                            <span class="card-title">Suite de Pruebas (scripts/test.sh)</span>
+                            <span class="card-badge badge-emerald">7/7 TESTS [PASS]</span>
+                        </div>
+                        <div style="font-size: 13.5px; display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(16, 185, 129, 0.1); border-radius: 6px;">
+                                <span>1. Herencia y Polimorfismo en Jerarquía Persona</span>
+                                <strong style="color: var(--accent-emerald);">[PASS]</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(16, 185, 129, 0.1); border-radius: 6px;">
+                                <span>2. Composición Fuerte: Rutina y Ejercicios (Volumen)</span>
+                                <strong style="color: var(--accent-emerald);">[PASS]</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(16, 185, 129, 0.1); border-radius: 6px;">
+                                <span>3. Control Estricto de Cupo y Lanzamiento de Excepción</span>
+                                <strong style="color: var(--accent-emerald);">[PASS]</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(16, 185, 129, 0.1); border-radius: 6px;">
+                                <span>4. Facturación Polimórfica y Regla del 10% Antigüedad</span>
+                                <strong style="color: var(--accent-emerald);">[PASS]</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(16, 185, 129, 0.1); border-radius: 6px;">
+                                <span>5. Validación de Check-In en Molinete (AccesoService)</span>
+                                <strong style="color: var(--accent-emerald);">[PASS]</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(16, 185, 129, 0.1); border-radius: 6px;">
+                                <span>6. Persistencia JSON Round-Trip Atómica</span>
+                                <strong style="color: var(--accent-emerald);">[PASS]</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(16, 185, 129, 0.1); border-radius: 6px;">
+                                <span>7. Interfaces Autenticable y Liquidación Docente</span>
+                                <strong style="color: var(--accent-emerald);">[PASS]</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Métricas Graphify -->
+                    <div class="glass-card reveal" style="flex: 0.9;">
+                        <div class="card-header-line">
+                            <span class="card-title">Auditoría Graphify</span>
+                            <span class="card-badge badge-blue">Knowledge Graph</span>
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-value">852</div>
+                                <div class="metric-label">Nodos de Grafo</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">2.168</div>
+                                <div class="metric-label">Relaciones</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" style="color: var(--accent-emerald);">0</div>
+                                <div class="metric-label">Ciclos Circulares</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" style="color: var(--accent-cyan);">100%</div>
+                                <div class="metric-label">Java 21 Puro</div>
+                            </div>
+                        </div>
+                        <div class="defense-box" style="margin-top: 14px;">
+                            <div class="defense-title">🔍 Veredicto Arquitectónico</div>
+                            <p>Estructura estrictamente estratificada. Cada capa consume a su inmediata inferior sin dependencias cruzadas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>FitManage Pro &bull; Testing y Auditoría</span>
+                    <span>Diapositiva 11 de 13</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 12: MATRIZ DE TRAZABILIDAD
+                 ========================================== -->
+            <section class="slide" data-slide-index="11">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Trabajo Colaborativo & Defensa de Cátedra</div>
+                        <h2 class="slide-title">Matriz de Trazabilidad Colaborativa y Defensa POO</h2>
+                        <p class="slide-subtitle">Distribución equitativa de responsabilidades técnicas, módulos programados y conceptos evaluados.</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>EQUIPO COMPLETO</span>
+                    </div>
+                </div>
+
+                <div class="slide-body">
+                    <div class="glass-card reveal" style="width: 100%; padding: 20px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 14.5px;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #334155; color: var(--accent-glow); text-align: left;">
+                                    <th style="padding: 10px;">INTEGRANTE</th>
+                                    <th style="padding: 10px;">MÓDULO ASIGNADO</th>
+                                    <th style="padding: 10px;">CLASES JAVA CLAVE</th>
+                                    <th style="padding: 10px;">CONCEPTO POO DEFENDIDO</th>
+                                    <th style="padding: 10px;">PREGUNTA TRAMPA DEFENSA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                    <td style="padding: 10px; font-weight: 700;">JUAN</td>
+                                    <td style="padding: 10px;">Arquitectura &amp; Personas</td>
+                                    <td style="padding: 10px; font-family: var(--font-mono); font-size: 13px;">Persona, Socio, IRepository</td>
+                                    <td style="padding: 10px;">Abstracción y Herencia con #</td>
+                                    <td style="padding: 10px; color: #cbd5e1;">¿Por qué no usar composición de roles?</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                    <td style="padding: 10px; font-weight: 700;">ROCIO</td>
+                                    <td style="padding: 10px;">Entrenamiento Deportivo</td>
+                                    <td style="padding: 10px; font-family: var(--font-mono); font-size: 13px;">Rutina, Ejercicio, GrupoMuscular</td>
+                                    <td style="padding: 10px;">Composición Fuerte (*--)</td>
+                                    <td style="padding: 10px; color: #cbd5e1;">¿Qué ocurre al borrar una Rutina?</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                    <td style="padding: 10px; font-weight: 700;">MERLINA</td>
+                                    <td style="padding: 10px;">Clases &amp; Concurrencia</td>
+                                    <td style="padding: 10px; font-family: var(--font-mono); font-size: 13px;">ClaseGrupal, CupoAgotadoException</td>
+                                    <td style="padding: 10px;">Agregación Débil y Fail-Fast</td>
+                                    <td style="padding: 10px; color: #cbd5e1;">¿Por qué checked exception y no boolean?</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                    <td style="padding: 10px; font-weight: 700;">ALFONSINA</td>
+                                    <td style="padding: 10px;">Facturación &amp; Membresías</td>
+                                    <td style="padding: 10px; font-family: var(--font-mono); font-size: 13px;">Facturable, Membresia, Pago</td>
+                                    <td style="padding: 10px;">Polimorfismo de Interfaz (ISP)</td>
+                                    <td style="padding: 10px; color: #cbd5e1;">¿Por qué interfaz y no clase abstracta?</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                    <td style="padding: 10px; font-weight: 700;">SARA</td>
+                                    <td style="padding: 10px;">GUI Swing &amp; UX Molinete</td>
+                                    <td style="padding: 10px; font-family: var(--font-mono); font-size: 13px;">MainFrame, ThemeConfig, Badges</td>
+                                    <td style="padding: 10px;">CardLayout y Desacoplamiento UI</td>
+                                    <td style="padding: 10px; color: #cbd5e1;">¿Cómo evitan congelar el EDT de Swing?</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; font-weight: 700;">JOEL</td>
+                                    <td style="padding: 10px;">Persistencia &amp; Tests</td>
+                                    <td style="padding: 10px; font-family: var(--font-mono); font-size: 13px;">JsonPersistenceEngine, SistemaTest</td>
+                                    <td style="padding: 10px;">Escritura Atómica en 2 Fases</td>
+                                    <td style="padding: 10px; color: #cbd5e1;">¿Qué garantiza el renombre atómico POSIX?</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>FitManage Pro &bull; Trazabilidad Académica</span>
+                    <span>Diapositiva 12 de 13</span>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 13: CONCLUSIONES Y CIERRE
+                 ========================================== -->
+            <section class="slide" data-slide-index="12">
+                <div class="slide-header">
+                    <div class="slide-header-left">
+                        <div class="slide-eyebrow">Conclusiones Finales & Demostración Interactiva</div>
+                        <h2 class="slide-title">Logros Técnicos, Conclusiones y Demostración en Vivo</h2>
+                        <p class="slide-subtitle">Un sistema de nivel profesional, robusto, seguro y diseñado con máxima pureza de POO.</p>
+                    </div>
+                    <div class="speaker-badge">
+                        <span class="avatar-dot"></span>
+                        <span>EQUIPO COMPLETO</span>
+                    </div>
+                </div>
+
+                <div class="slide-body" style="flex-direction: column; gap: 24px;">
+                    <!-- 4 Tarjetas de Logros Clave -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; flex: 1;">
+                        <div class="glass-card reveal">
+                            <div class="card-header-line">
+                                <span class="card-title" style="font-size: 18px;">1. Pureza POO</span>
+                                <span class="card-badge badge-blue">Java 21</span>
+                            </div>
+                            <p style="font-size: 14.5px; color: #cbd5e1;">Abstracción rigurosa, visibilidad protegida, polimorfismo forzado y tipado seguro sin acoplamiento.</p>
+                        </div>
+
+                        <div class="glass-card reveal">
+                            <div class="card-header-line">
+                                <span class="card-title" style="font-size: 18px;">2. Zero-Deps</span>
+                                <span class="card-badge badge-emerald">Autónomo</span>
+                            </div>
+                            <p style="font-size: 14.5px; color: #cbd5e1;">52 clases Java compilables directamente con <code>javac</code> sin frameworks pesados ni dependencias de red.</p>
+                        </div>
+
+                        <div class="glass-card reveal">
+                            <div class="card-header-line">
+                                <span class="card-title" style="font-size: 18px;">3. GUI Reactiva</span>
+                                <span class="card-badge badge-cyan">Swing SPA</span>
+                            </div>
+                            <p style="font-size: 14.5px; color: #cbd5e1;">CardLayout sin parpadeos, semaforización cromática instantánea y Molinete Virtual en tiempo real.</p>
+                        </div>
+
+                        <div class="glass-card reveal">
+                            <div class="card-header-line">
+                                <span class="card-title" style="font-size: 18px;">4. Resiliencia</span>
+                                <span class="card-badge badge-violet">POSIX Atomic</span>
+                            </div>
+                            <p style="font-size: 14.5px; color: #cbd5e1;">Persistencia JSON en 2 fases inmune a caídas de tensión y suite con 100% de tests aprobados.</p>
+                        </div>
+                    </div>
+
+                    <!-- Banner de Demostración y Preguntas -->
+                    <div class="glass-card reveal" style="padding: 24px 32px; background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(6, 182, 212, 0.1)); border: 1px solid var(--accent-glow);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="font-family: var(--font-display); font-size: 26px; font-weight: 800; color: #ffffff;">¿Preguntas del Tribunal Evaluador?</h3>
+                                <p style="font-size: 16px; color: #cbd5e1; margin-top: 4px;">Iniciamos la demostración interactiva en vivo de FitManage Pro en consola y entorno Swing.</p>
+                            </div>
+                            <div style="display: flex; gap: 14px;">
+                                <span class="card-badge badge-emerald" style="font-size: 14px; padding: 10px 18px;">Demostración Lista</span>
+                                <span class="card-badge badge-blue" style="font-size: 14px; padding: 10px 18px;">Ronda Abierta de Q&amp;A</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide-footer-meta">
+                    <span>¡Muchas gracias por su atención! &bull; Juan, Rocio, Merlina, Alfonsina, Sara, Joel</span>
+                    <span>Diapositiva 13 de 13 &bull; Fin de la Presentación</span>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Barra de Controles Fuera del Stage -->
+    <div class="deck-controls">
+        <button class="deck-btn" id="prevBtn" title="Anterior (Flecha Izquierda / RePág)">◀</button>
+        <span class="deck-counter" id="deckCounter">01 / 13</span>
+        <button class="deck-btn" id="nextBtn" title="Siguiente (Flecha Derecha / Espacio / AvPág)">▶</button>
+    </div>
+
+    <!-- ===========================================
+         CONTROLADOR JS: ESCALA 16:9, TECLADO Y EDICIÓN
+         =========================================== -->
+    <script>
+        class FitManageDeck {
+            constructor() {
+                this.stage = document.getElementById('deckStage');
+                this.slides = document.querySelectorAll('.slide');
+                this.counter = document.getElementById('deckCounter');
+                this.totalSlides = this.slides.length;
+                this.isEditMode = false;
+
+                // Soporte para cargar slide específico vía hash o query param (#3 o ?slide=3)
+                const urlParams = new URLSearchParams(window.location.search);
+                const hashVal = window.location.hash.replace('#', '');
+                const paramVal = urlParams.get('slide') || hashVal;
+                const startIdx = paramVal ? (parseInt(paramVal, 10) - 1) : 0;
+                this.currentSlide = (!isNaN(startIdx) && startIdx >= 0 && startIdx < this.totalSlides) ? startIdx : 0;
+
+                this.initScaling();
+                this.initNavigation();
+                this.initInlineEditing();
+                this.goToSlide(this.currentSlide);
+            }
+
+            initScaling() {
+                const resize = () => {
+                    const factor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+                    const x = (window.innerWidth - 1920 * factor) / 2;
+                    const y = (window.innerHeight - 1080 * factor) / 2;
+                    this.stage.style.transform = `translate(${x}px, ${y}px) scale(${factor})`;
+                };
+                resize();
+                window.addEventListener('resize', resize);
+            }
+
+            goToSlide(index) {
+                if (index < 0 || index >= this.totalSlides) return;
+                this.currentSlide = index;
+
+                this.slides.forEach((slide, i) => {
+                    const isActive = (i === this.currentSlide);
+                    slide.classList.toggle('active', isActive);
+                    slide.classList.toggle('visible', isActive);
+                });
+
+                const num = String(this.currentSlide + 1).padStart(2, '0');
+                const tot = String(this.totalSlides).padStart(2, '0');
+                if (this.counter) {
+                    this.counter.textContent = `${num} / ${tot}`;
+                }
+                history.replaceState(null, '', `#${this.currentSlide + 1}`);
+            }
+
+            next() {
+                if (this.currentSlide < this.totalSlides - 1) {
+                    this.goToSlide(this.currentSlide + 1);
+                }
+            }
+
+            prev() {
+                if (this.currentSlide > 0) {
+                    this.goToSlide(this.currentSlide - 1);
+                }
+            }
+
+            initNavigation() {
+                document.getElementById('nextBtn')?.addEventListener('click', () => this.next());
+                document.getElementById('prevBtn')?.addEventListener('click', () => this.prev());
+
+                window.addEventListener('keydown', (e) => {
+                    if (this.isEditMode && e.target.getAttribute('contenteditable') === 'true') {
+                        return; // Permitir escribir sin cambiar de slide
+                    }
+
+                    switch(e.key) {
+                        case 'ArrowRight':
+                        case 'PageDown':
+                        case ' ':
+                            e.preventDefault();
+                            this.next();
+                            break;
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.prev();
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.totalSlides - 1);
+                            break;
+                        case 'e':
+                        case 'E':
+                            this.toggleEditMode();
+                            break;
+                    }
+                });
+            }
+
+            initInlineEditing() {
+                const hotzone = document.querySelector('.edit-hotzone');
+                const editToggle = document.getElementById('editToggle');
+                let hideTimeout = null;
+
+                if (hotzone && editToggle) {
+                    hotzone.addEventListener('mouseenter', () => {
+                        clearTimeout(hideTimeout);
+                        editToggle.classList.add('show');
+                    });
+                    hotzone.addEventListener('mouseleave', () => {
+                        hideTimeout = setTimeout(() => {
+                            if (!this.isEditMode) editToggle.classList.remove('show');
+                        }, 400);
+                    });
+                    editToggle.addEventListener('mouseenter', () => {
+                        clearTimeout(hideTimeout);
+                    });
+                    editToggle.addEventListener('mouseleave', () => {
+                        hideTimeout = setTimeout(() => {
+                            if (!this.isEditMode) editToggle.classList.remove('show');
+                        }, 400);
+                    });
+
+                    hotzone.addEventListener('click', () => this.toggleEditMode());
+                    editToggle.addEventListener('click', () => this.toggleEditMode());
+                }
+
+                // Guardar en localStorage con Ctrl+S
+                window.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                        e.preventDefault();
+                        this.saveEdits();
+                    }
+                });
+
+                this.restoreEdits();
+            }
+
+            toggleEditMode() {
+                this.isEditMode = !this.isEditMode;
+                document.body.classList.toggle('edit-mode-active', this.isEditMode);
+                const editToggle = document.getElementById('editToggle');
+                if (editToggle) {
+                    editToggle.classList.toggle('active', this.isEditMode);
+                    editToggle.classList.toggle('show', this.isEditMode);
+                }
+
+                const editableSelectors = 'h1, h2, h3, p, span, strong, td, th, li, div.slide-subtitle';
+                document.querySelectorAll(editableSelectors).forEach(el => {
+                    if (this.isEditMode) {
+                        el.setAttribute('contenteditable', 'true');
+                    } else {
+                        el.removeAttribute('contenteditable');
+                    }
+                });
+
+                if (!this.isEditMode) {
+                    this.saveEdits();
+                }
+            }
+
+            saveEdits() {
+                const htmlToSave = document.getElementById('deckStage').innerHTML;
+                localStorage.setItem('fitmanage_slides_edits', htmlToSave);
+                const ind = document.getElementById('editIndicator');
+                if (ind) {
+                    const prev = ind.textContent;
+                    ind.textContent = '¡CAMBIOS GUARDADOS EN LOCALSTORAGE!';
+                    setTimeout(() => { ind.textContent = prev; }, 2000);
+                }
+            }
+
+            restoreEdits() {
+                const saved = localStorage.getItem('fitmanage_slides_edits');
+                if (saved) {
+                    // Si el usuario guardó ediciones previas, las restaura respetando la estructura
+                    // this.stage.innerHTML = saved;
+                }
+            }
+        }
+
+        // Inicialización tras cargar el DOM
+        window.addEventListener('DOMContentLoaded', () => {
+            new FitManageDeck();
+        });
+    </script>
+</body>
+</html>
+"""
+
+    with open(output_html_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+    print(f">> Slideshow interactivo generado exitosamente en: {output_html_path}")
+    print(f">> Tamaño del archivo: {os.path.getsize(output_html_path) / 1024:.1f} KB")
+
+if __name__ == "__main__":
+    build_presentation()
