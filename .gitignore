@@ -18,3 +18,8 @@ Thumbs.db
 
 # Cache de herramientas de análisis y AST
 graphify-out/cache/
+
+# Material de uso local para el orador (excluido de GitHub)
+guion_presentacion.*
+scripts/generate_speech_pdf.py
+
