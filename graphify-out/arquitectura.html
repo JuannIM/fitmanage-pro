@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>java — Complete Call Flow &amp; Architecture Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8;
+  --warn: #fbbf24; --err: #f87171; --ok: #34d399;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 2.4rem; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: 1.7rem; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+h3 { font-size: 1.25rem; margin: 32px 0 12px; color: var(--accent); }
+h4 { font-size: 1.05rem; margin: 20px 0 8px; color: var(--warn); }
+p { margin: 8px 0; color: var(--muted); }
+.subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 32px; }
+.mermaid { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; position: relative; }
+.mermaid.is-enhanced { padding: 0; overflow: hidden; min-height: 260px; }
+.mermaid-viewport { padding: 54px 24px 24px; overflow: hidden; cursor: grab; touch-action: none; min-height: 260px; }
+.mermaid-viewport.is-dragging { cursor: grabbing; }
+.mermaid-viewport svg { max-width: none !important; height: auto; transform-origin: 0 0; transition: transform 120ms ease; }
+.mermaid-toolbar { position: absolute; top: 10px; right: 10px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(15,23,42,0.92); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+.mermaid-toolbar button, .mermaid-toolbar .zoom-level { height: 28px; min-width: 32px; border: 1px solid var(--border); border-radius: 6px; background: #1e293b; color: var(--text); font: 600 0.78rem system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; }
+.mermaid-toolbar button { cursor: pointer; }
+.mermaid-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+.mermaid-toolbar .zoom-level { min-width: 52px; color: var(--muted); background: transparent; }
+.call-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+.call-table th { background: #1a2744; color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+.call-table td { padding: 8px 14px; border: 1px solid var(--border); vertical-align: top; }
+.call-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+.tag-async { background: #7c3aed33; color: #a78bfa; }
+.tag-class { background: #05966933; color: var(--ok); }
+.tag-func { background: #2563eb33; color: var(--accent); }
+.tag-cmd { background: #d9770633; color: var(--warn); }
+.tag-endpoint { background: #dc262633; color: var(--err); }
+.tag-hook { background: #db277733; color: #f472b6; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+.arrow-chain { font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent); padding: 10px; background: rgba(56,189,248,0.06); border-radius: 6px; }
+code { font-family: 'Fira Code', 'Cascadia Code', monospace; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; font-size: 0.88em; }
+ul, ol { margin: 8px 0 8px 24px; color: var(--muted); }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.nav { position: sticky; top: 0; background: var(--bg); z-index: 10; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.9rem; }
+.nav a { text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+@media (max-width: 768px) { .container { padding: 16px; } h1 { font-size: 1.8rem; } }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>java — Complete Call Flow &amp; Architecture Documentation</h1>
+<p class="subtitle">Generated from graphify knowledge graph: 852 nodes, 2168 edges, 40 communities. Commit: 42fdf06</p>
+
+<div class="nav">
+    <a href="#overview">Architecture Overview</a>
+    <a href="#extract-pipeline">Extraction Pipeline</a>
+    <a href="#tests-fixtures">Tests &amp; Fixtures</a>
+    <a href="#planmd-del-resumen">Planmd Del Resumen</a>
+    <a href="#planmd-scripts-auditor-a">Planmd Scripts Auditoría</a>
+    <a href="#planmd-m-dulo-socios">Planmd Módulo Socios</a>
+    <a href="#planmd-fase-fases">Planmd Fase Fases</a>
+    <a href="#planmd-jerarqu-a-herencia">Planmd Jerarquía Herencia</a>
+    <a href="#readmemd-ejecuci-n-compilaci-n">Readmemd Ejecución Compilación</a>
+    <a href="#compilesh-scripts-script">Compilesh Scripts Script</a>
+    <a href="#runsh-scripts-script">Runsh Scripts Script</a>
+</div>
+
+<!-- ====== Architecture Overview ====== -->
+<h2 id="overview">1. Architecture Overview</h2>
+
+<div class="mermaid">
+
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>802 nodes</small>")
+    class EXTRACT_PIPELINE_5F350230 module;
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>2 nodes</small>")
+    class TESTS_FIXTURES_B84B1DCC module;
+    PLANMD_DEL_RESUMEN_BC799800("Planmd Del Resumen<br/><small>15 nodes</small>")
+    class PLANMD_DEL_RESUMEN_BC799800 module;
+    PLANMD_SCRIPTS_AUDITOR_A_ACABA218("Planmd Scripts Auditoría<br/><small>7 nodes</small>")
+    class PLANMD_SCRIPTS_AUDITOR_A_ACABA218 module;
+    PLANMD_M_DULO_SOCIOS_AE52A546("Planmd Módulo Socios<br/><small>7 nodes</small>")
+    class PLANMD_M_DULO_SOCIOS_AE52A546 module;
+    PLANMD_FASE_FASES_895B55BF("Planmd Fase Fases<br/><small>7 nodes</small>")
+    class PLANMD_FASE_FASES_895B55BF module;
+    PLANMD_JERARQU_A_HERENCIA_D9E63E23("Planmd Jerarquía Herencia<br/><small>4 nodes</small>")
+    class PLANMD_JERARQU_A_HERENCIA_D9E63E23 module;
+    READMEMD_EJECUCI_N_COMPILACI_N_ECDBFDC3("Readmemd Ejecución Compilación<br/><small>4 nodes</small>")
+    class READMEMD_EJECUCI_N_COMPILACI_N_ECDBFDC3 module;
+    COMPILESH_SCRIPTS_SCRIPT_3A438321("Compilesh Scripts Script<br/><small>2 nodes</small>")
+    class COMPILESH_SCRIPTS_SCRIPT_3A438321 module;
+    RUNSH_SCRIPTS_SCRIPT_1FB76C44("Runsh Scripts Script<br/><small>2 nodes</small>")
+    class RUNSH_SCRIPTS_SCRIPT_1FB76C44 module;
+    PLANMD_SCRIPTS_AUDITOR_A_ACABA218 -->|references x4| EXTRACT_PIPELINE_5F350230
+    PLANMD_JERARQU_A_HERENCIA_D9E63E23 -->|references x4| EXTRACT_PIPELINE_5F350230
+    PLANMD_DEL_RESUMEN_BC799800 -->|contains| PLANMD_M_DULO_SOCIOS_AE52A546
+    PLANMD_DEL_RESUMEN_BC799800 -->|contains| EXTRACT_PIPELINE_5F350230
+    PLANMD_DEL_RESUMEN_BC799800 -->|contains| PLANMD_FASE_FASES_895B55BF
+    PLANMD_DEL_RESUMEN_BC799800 -->|contains| PLANMD_SCRIPTS_AUDITOR_A_ACABA218
+    PLANMD_DEL_RESUMEN_BC799800 -->|contains| PLANMD_JERARQU_A_HERENCIA_D9E63E23
+    EXTRACT_PIPELINE_5F350230 -->|contains| READMEMD_EJECUCI_N_COMPILACI_N_ECDBFDC3
+    PLANMD_FASE_FASES_895B55BF -->|contains| EXTRACT_PIPELINE_5F350230
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Architecture Layers</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
+      <tr><td>Extraction Pipeline</td><td>802</td><td><code>0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 31, 32, 33, 34</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>2</td><td><code>39</code></td></tr><tr><td>Planmd Del Resumen</td><td>15</td><td><code>14</code></td></tr><tr><td>Planmd Scripts Auditoría</td><td>7</td><td><code>28</code></td></tr><tr><td>Planmd Módulo Socios</td><td>7</td><td><code>29</code></td></tr><tr><td>Planmd Fase Fases</td><td>7</td><td><code>30</code></td></tr><tr><td>Planmd Jerarquía Herencia</td><td>4</td><td><code>35</code></td></tr><tr><td>Readmemd Ejecución Compilación</td><td>4</td><td><code>36</code></td></tr><tr><td>Compilesh Scripts Script</td><td>2</td><td><code>37</code></td></tr><tr><td>Runsh Scripts Script</td><td>2</td><td><code>38</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Core Flow</h4>
+    <div class="arrow-chain">Tests &amp; Fixtures -&gt; Extraction Pipeline -&gt; Readmemd Ejecución Compilación -&gt; Planmd Del Resumen -&gt; Planmd Scripts Auditoría -&gt; Planmd Módulo Socios -&gt; Planmd Fase Fases</div>
+  </div>
+</div>
+<div class="grid">
+  <div class="card">
+    <h4>Graph Report Highlights</h4>
+    <ul>
+      <li>852 nodes · 2168 edges · 40 communities (23 shown, 17 thin omitted)</li>
+      <li>Extraction: 81% EXTRACTED · 19% INFERRED · 0% AMBIGUOUS · INFERRED: 409 edges (avg confidence: 0.86)</li>
+      <li>Token cost: 0 input · 0 output</li>
+      <li>1. `Socio` - 64 edges</li>
+      <li>2. `ClaseGrupal` - 50 edges</li>
+      <li>3. `Instructor` - 47 edges</li>
+    </ul>
+  </div>
+</div>
+<hr>
+<!-- ====== 2. Extraction Pipeline ====== -->
+<h2 id="extract-pipeline">2. Extraction Pipeline</h2>
+<p>Extraction Pipeline groups implementation around com, clubdeportivo, model, gui, mostly in clubdeportivo/model/Socio.java, clubdeportivo/model/ClaseGrupal.java, clubdeportivo/model/Rutina.java. This section covers 802 nodes and 2112 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Extraction Pipeline (802 nodes, 2112 edges)
+    subgraph extract_pipeline_clubdeportivo_gui_RutinasPanel_fb051163["clubdeportivo/gui/RutinasPanel.java"]
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e("RutinasPanel<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_0d096238("cargarRutinas()<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_125de156("getRutinaSeleccionada()<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_e48b7442("actualizarEjerciciosDeRutina()<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_152e1087("mostrarDialogoNuevaRutina()<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_50af3719("mostrarDialogoAgregarEjercicio()<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_cc551c36("eliminarEjercicioSeleccionado()<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c676fa5c("asignarRutinaASocio()<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_47bbf47f("verFichaRutina()<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f7c91643("eliminarRutinaSeleccionada()<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_44ac4507("RutinasPanel()<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+        src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c9805bd3("initUI()<br/><small>clubdeportivo/gui/RutinasPanel.java</small>")
+    end
+    src_com_clubdeportivo_gui_clasespanel_7c0a478e("ClasesPanel.java")
+    src_com_clubdeportivo_gui_dashboardpanel_ec388531("DashboardPanel.java")
+    src_com_clubdeportivo_gui_pagospanel_f903400e("PagosPanel.java")
+    src_com_clubdeportivo_model_clasegrupal_clasegru_2b7967d6("ClaseGrupal<br/><small>clubdeportivo/model/ClaseGrupal.java</small>")
+    src_com_clubdeportivo_model_persona_persona_aa43601e("Persona<br/><small>clubdeportivo/model/Persona.java</small>")
+    src_com_clubdeportivo_model_socio_socio_14fddb88("Socio<br/><small>clubdeportivo/model/Socio.java</small>")
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e -->|method| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_0d096238
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e -->|method| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_125de156
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e -->|method| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_e48b7442
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e -->|method| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_152e1087
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e -->|method| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_50af3719
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e -->|method| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_cc551c36
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e -->|method| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c676fa5c
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e -->|method| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_47bbf47f
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e -->|method| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f7c91643
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e -->|method| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_44ac4507
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e -->|method| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c9805bd3
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_e48b7442 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_125de156
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c676fa5c -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_125de156
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_0d096238 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_e48b7442
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_cc551c36 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_125de156
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_cc551c36 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_0d096238
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f7c91643 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_125de156
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f7c91643 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_0d096238
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c9805bd3 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c676fa5c
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c9805bd3 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_47bbf47f
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c9805bd3 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f7c91643
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c9805bd3 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_e48b7442
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c9805bd3 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_50af3719
+    src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c9805bd3 -->|calls| src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_cc551c36
+    %% Omitted for readability: 784 nodes, 9 edges
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f993cd5e klass;
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_0d096238 function;
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_125de156 function;
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_e48b7442 function;
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_152e1087 function;
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_50af3719 function;
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_cc551c36 function;
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c676fa5c function;
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_47bbf47f function;
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_f7c91643 function;
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_44ac4507 function;
+    class src_com_clubdeportivo_gui_rutinaspanel_rutinaspa_c9805bd3 function;
+    class src_com_clubdeportivo_gui_clasespanel_7c0a478e klass;
+    class src_com_clubdeportivo_gui_dashboardpanel_ec388531 klass;
+    class src_com_clubdeportivo_gui_pagospanel_f903400e klass;
+    class src_com_clubdeportivo_model_clasegrupal_clasegru_2b7967d6 klass;
+    class src_com_clubdeportivo_model_persona_persona_aa43601e klass;
+    class src_com_clubdeportivo_model_socio_socio_14fddb88 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>RutinasPanel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>actualizarEjerciciosDeRutina()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>asignarRutinaASocio()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>cargarRutinas()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br>+8 more</td>
+  <td>RutinasPanel node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>DefaultTableModel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>isCellEditable()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td>DefaultTableModel node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>DefaultTableModel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>isCellEditable()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td>DefaultTableModel node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>SocioItem</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>SocioItem()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>toString()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td>SocioItem node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Rutina</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>RutinaRepository.java</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small><br><code>RutinaService.java</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br><code>RutinasPanel.java</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>agregarEjercicio()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>calcularVolumenGlobal()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>eliminarEjercicio()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br>+20 more</td>
+  <td>Rutina node in clubdeportivo/model/Rutina.java.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>RutinaRepository</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>main()</code><br><small style="color:var(--muted)">clubdeportivo/gui/MainFrame.java</small><br><code>RutinaService.java</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small></td>
+  <td><code>buscarPorId()</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small><br><code>cargarDesdeDisco()</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small><br><code>contar()</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small><br>+7 more</td>
+  <td>RutinaRepository node in clubdeportivo/repository/RutinaRepository.java.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>RutinaService</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>RutinasPanel.java</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>agregarEjercicioARutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br><code>asignarRutinaASocio()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br><code>buscarPorId()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br>+6 more</td>
+  <td>RutinaService node in clubdeportivo/service/RutinaService.java.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>.agregarEjercicioARutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>mostrarDialogoAgregarEjercicio()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>RutinaService</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small></td>
+  <td><code>agregarEjercicio()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>buscarPorId()</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small><br><code>generarIdEjercicio()</code><br><small style="color:var(--muted)">clubdeportivo/util/IdGenerator.java</small><br>+1 more</td>
+  <td>.agregarEjercicioARutina() node in clubdeportivo/service/RutinaService.java.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>.getRutinaSeleccionada()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>actualizarEjerciciosDeRutina()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>asignarRutinaASocio()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>eliminarEjercicioSeleccionado()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br>+4 more</td>
+  <td><code>buscarPorId()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small></td>
+  <td>.getRutinaSeleccionada() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>.deserializarRutina()</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>cargarDesdeDisco()</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small><br><code>RutinaRepository</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small></td>
+  <td><code>agregarEjercicio()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>Ejercicio</code><br><small style="color:var(--muted)">clubdeportivo/model/Ejercicio.java</small></td>
+  <td>.deserializarRutina() node in clubdeportivo/repository/RutinaRepository.java.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>.guardar()</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>agregarEjercicioARutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br><code>crearRutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br><code>eliminarEjercicioDeRutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br>+3 more</td>
+  <td><code>getId()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>guardarEnDisco()</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small></td>
+  <td>.guardar() node in clubdeportivo/repository/RutinaRepository.java.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>.crearRutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>mostrarDialogoNuevaRutina()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>RutinaService</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small></td>
+  <td><code>generarIdRutina()</code><br><small style="color:var(--muted)">clubdeportivo/util/IdGenerator.java</small><br><code>guardar()</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small></td>
+  <td>.crearRutina() node in clubdeportivo/service/RutinaService.java.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>.actualizarEjerciciosDeRutina()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>cargarRutinas()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>initUI()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>RutinasPanel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>calcularVolumenGlobal()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>getCantidadEjercicios()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>getEjercicios()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br>+2 more</td>
+  <td>.actualizarEjerciciosDeRutina() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>.asignarRutinaASocio()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>initUI()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>RutinasPanel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>asignarRutinaASocio()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br><code>getId()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>getNombre()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br>+3 more</td>
+  <td>.asignarRutinaASocio() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>.cargarRutinas()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>cambiarTarjeta()</code><br><small style="color:var(--muted)">clubdeportivo/gui/MainFrame.java</small><br><code>eliminarEjercicioSeleccionado()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>eliminarRutinaSeleccionada()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br>+4 more</td>
+  <td><code>actualizarEjerciciosDeRutina()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>listarTodas()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small></td>
+  <td>.cargarRutinas() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>.eliminarEjercicioSeleccionado()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>initUI()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>RutinasPanel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>cargarRutinas()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>eliminarEjercicioDeRutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br><code>getId()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br>+1 more</td>
+  <td>.eliminarEjercicioSeleccionado() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>.eliminarRutinaSeleccionada()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>initUI()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>RutinasPanel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>cargarRutinas()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>eliminarRutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br><code>getId()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br>+2 more</td>
+  <td>.eliminarRutinaSeleccionada() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>.initUI()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RutinasPanel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>RutinasPanel()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>actualizarEjerciciosDeRutina()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>asignarRutinaASocio()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>createDanger()</code><br><small style="color:var(--muted)">gui/components/ModernButton.java</small><br>+8 more</td>
+  <td>.initUI() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>.isCellEditable()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DefaultTableModel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.isCellEditable() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>.isCellEditable()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>DefaultTableModel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.isCellEditable() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>.mostrarDialogoAgregarEjercicio()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>initUI()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>RutinasPanel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>agregarEjercicioARutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br><code>cargarRutinas()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>getId()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br>+2 more</td>
+  <td>.mostrarDialogoAgregarEjercicio() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>.mostrarDialogoNuevaRutina()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>initUI()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>RutinasPanel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>cargarRutinas()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>crearRutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small></td>
+  <td>.mostrarDialogoNuevaRutina() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>.RutinasPanel()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>RutinasPanel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>cargarRutinas()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>initUI()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td>.RutinasPanel() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>.verFichaRutina()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>initUI()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>RutinasPanel</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>getNombre()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>getRutinaSeleccionada()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>mostrarFichaRutina()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small></td>
+  <td>.verFichaRutina() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>.SocioItem()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>asignarRutinaASocio()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>SocioItem</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.SocioItem() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>.toString()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SocioItem</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small></td>
+  <td><code>getNombreCompleto()</code><br><small style="color:var(--muted)">clubdeportivo/model/Persona.java</small><br><code>getNumeroSocio()</code><br><small style="color:var(--muted)">clubdeportivo/model/Socio.java</small></td>
+  <td>.toString() node in clubdeportivo/gui/RutinasPanel.java.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>.agregarEjercicio()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>agregarEjercicioARutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br><code>deserializarRutina()</code><br><small style="color:var(--muted)">clubdeportivo/repository/RutinaRepository.java</small><br><code>Rutina</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>.agregarEjercicio() node in clubdeportivo/model/Rutina.java.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>.calcularVolumenGlobal()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>actualizarEjerciciosDeRutina()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>mostrarFichaRutina()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>Rutina</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>.calcularVolumenGlobal() node in clubdeportivo/model/Rutina.java.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>.eliminarEjercicio()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>eliminarEjercicioDeRutina()</code><br><small style="color:var(--muted)">clubdeportivo/service/RutinaService.java</small><br><code>Rutina</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>testComposicionRutinaEjercicio()</code><br><small style="color:var(--muted)">clubdeportivo/test/SistemaTest.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.eliminarEjercicio() node in clubdeportivo/model/Rutina.java.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>.getCantidadEjercicios()</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>actualizarEjerciciosDeRutina()</code><br><small style="color:var(--muted)">clubdeportivo/gui/RutinasPanel.java</small><br><code>Rutina</code><br><small style="color:var(--muted)">clubdeportivo/model/Rutina.java</small><br><code>testComposicionRutinaEjercicio()</code><br><small style="color:var(--muted)">clubdeportivo/test/SistemaTest.java</small></td>
+  <td>No direct outbound edge</td>
+  <td>.getCantidadEjercicios() node in clubdeportivo/model/Rutina.java.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>clubdeportivo/model/ClaseGrupal.java</code></td><td>28 nodes</td></tr>
+<tr><td><code>clubdeportivo/model/Socio.java</code></td><td>28 nodes</td></tr>
+<tr><td><code>clubdeportivo/model/Persona.java</code></td><td>25 nodes</td></tr>
+<tr><td><code>clubdeportivo/model/Rutina.java</code></td><td>25 nodes</td></tr>
+<tr><td><code>clubdeportivo/gui/ClasesPanel.java</code></td><td>23 nodes</td></tr>
+<tr><td><code>clubdeportivo/model/Ejercicio.java</code></td><td>22 nodes</td></tr>
+<tr><td><code>clubdeportivo/model/Instructor.java</code></td><td>22 nodes</td></tr>
+<tr><td><code>clubdeportivo/util/JsonPersistenceEngine.java</code></td><td>22 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x636, method x514, references x455, imports x369. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 3. Tests & Fixtures ====== -->
+<h2 id="tests-fixtures">3. Tests &amp; Fixtures</h2>
+<p>Tests &amp; Fixtures groups implementation around testsh, scripts, script, mostly in scripts/test.sh. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Tests &amp; Fixtures (2 nodes, 1 edges)
+    scripts_test_ba25bbcc("test.sh")
+    scripts_test_sh_entry_ce35db85("test.sh script<br/><small>scripts/test.sh</small>")
+    scripts_test_ba25bbcc -->|contains| scripts_test_sh_entry_ce35db85
+    class scripts_test_ba25bbcc test;
+    class scripts_test_sh_entry_ce35db85 test;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>test.sh</code><br><small style="color:var(--muted)">scripts/test.sh</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>test.sh script</code><br><small style="color:var(--muted)">scripts/test.sh</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>scripts/test.sh</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 4. Planmd Del Resumen ====== -->
+<h2 id="planmd-del-resumen">4. Planmd Del Resumen</h2>
+<p>Planmd Del Resumen groups implementation around planmd, del, resumen, ejecutivo, mostly in PLAN.md. This section covers 15 nodes and 14 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Planmd Del Resumen (15 nodes, 14 edges)
+    plan_plan_de_ejecuci_n_sistema_integral_de_gesti_7ae4b5a2("PLAN DE EJECUCIÓN: SISTEMA INTEGRAL DE...<br/><small>PLAN.md</small>")
+    plan_1_resumen_ejecutivo_y_ficha_t_cnica_del_pro_e65d447b("1. RESUMEN EJECUTIVO Y FICHA TÉCNICA DE...<br/><small>PLAN.md</small>")
+    plan_5_arquitectura_del_software_y_estructura_de_077a513c("5. ARQUITECTURA DEL SOFTWARE Y ESTRUCTU...<br/><small>PLAN.md</small>")
+    plan_7_motor_de_persistencia_local_aut_nomo_8d00a07f("7. MOTOR DE PERSISTENCIA LOCAL AUTÓNOMO<br/><small>PLAN.md</small>")
+    plan_8_dise_o_de_la_interfaz_gr_fica_java_swing_57fb16bc("8. DISEÑO DE LA INTERFAZ GRÁFICA (JAVA...<br/><small>PLAN.md</small>")
+    plan_bed97175("PLAN.md")
+    plan_1_1_resumen_ejecutivo_11af52b4("1.1 Resumen Ejecutivo<br/><small>PLAN.md</small>")
+    plan_1_2_ficha_t_cnica_c311ffc9("1.2 Ficha Técnica<br/><small>PLAN.md</small>")
+    plan_4_diagrama_de_clases_uml_completo_formato_m_b213efb8("4. DIAGRAMA DE CLASES UML COMPLETO (FOR...<br/><small>PLAN.md</small>")
+    plan_5_1_diagrama_de_capas_03798f9e("5.1 Diagrama de Capas<br/><small>PLAN.md</small>")
+    plan_5_2_estructura_f_sica_del_proyecto_en_el_rb_b6c1094d("5.2 Estructura Física del Proyecto en e...<br/><small>PLAN.md</small>")
+    plan_7_1_filosof_a_de_cero_dependencias_externas_5694755f("7.1 Filosofía de Cero Dependencias Exte...<br/><small>PLAN.md</small>")
+    plan_7_2_caracter_sticas_t_cnicas_del_motor_74df9a81("7.2 Características Técnicas del Motor<br/><small>PLAN.md</small>")
+    plan_8_1_sistema_de_dise_o_y_paleta_visual_theme_5e38ab9b("8.1 Sistema de Diseño y Paleta Visual (...<br/><small>PLAN.md</small>")
+    plan_8_2_componentes_gr_ficos_clave_d70429e4("8.2 Componentes Gráficos Clave<br/><small>PLAN.md</small>")
+    plan_bed97175 -->|contains| plan_plan_de_ejecuci_n_sistema_integral_de_gesti_7ae4b5a2
+    plan_1_resumen_ejecutivo_y_ficha_t_cnica_del_pro_e65d447b -->|contains| plan_1_1_resumen_ejecutivo_11af52b4
+    plan_1_resumen_ejecutivo_y_ficha_t_cnica_del_pro_e65d447b -->|contains| plan_1_2_ficha_t_cnica_c311ffc9
+    plan_5_arquitectura_del_software_y_estructura_de_077a513c -->|contains| plan_5_1_diagrama_de_capas_03798f9e
+    plan_5_arquitectura_del_software_y_estructura_de_077a513c -->|contains| plan_5_2_estructura_f_sica_del_proyecto_en_el_rb_b6c1094d
+    plan_7_motor_de_persistencia_local_aut_nomo_8d00a07f -->|contains| plan_7_1_filosof_a_de_cero_dependencias_externas_5694755f
+    plan_7_motor_de_persistencia_local_aut_nomo_8d00a07f -->|contains| plan_7_2_caracter_sticas_t_cnicas_del_motor_74df9a81
+    plan_8_dise_o_de_la_interfaz_gr_fica_java_swing_57fb16bc -->|contains| plan_8_1_sistema_de_dise_o_y_paleta_visual_theme_5e38ab9b
+    plan_8_dise_o_de_la_interfaz_gr_fica_java_swing_57fb16bc -->|contains| plan_8_2_componentes_gr_ficos_clave_d70429e4
+    plan_plan_de_ejecuci_n_sistema_integral_de_gesti_7ae4b5a2 -->|contains| plan_1_resumen_ejecutivo_y_ficha_t_cnica_del_pro_e65d447b
+    plan_plan_de_ejecuci_n_sistema_integral_de_gesti_7ae4b5a2 -->|contains| plan_4_diagrama_de_clases_uml_completo_formato_m_b213efb8
+    plan_plan_de_ejecuci_n_sistema_integral_de_gesti_7ae4b5a2 -->|contains| plan_5_arquitectura_del_software_y_estructura_de_077a513c
+    plan_plan_de_ejecuci_n_sistema_integral_de_gesti_7ae4b5a2 -->|contains| plan_7_motor_de_persistencia_local_aut_nomo_8d00a07f
+    plan_plan_de_ejecuci_n_sistema_integral_de_gesti_7ae4b5a2 -->|contains| plan_8_dise_o_de_la_interfaz_gr_fica_java_swing_57fb16bc
+    class plan_plan_de_ejecuci_n_sistema_integral_de_gesti_7ae4b5a2 concept;
+    class plan_1_resumen_ejecutivo_y_ficha_t_cnica_del_pro_e65d447b concept;
+    class plan_5_arquitectura_del_software_y_estructura_de_077a513c concept;
+    class plan_7_motor_de_persistencia_local_aut_nomo_8d00a07f concept;
+    class plan_8_dise_o_de_la_interfaz_gr_fica_java_swing_57fb16bc concept;
+    class plan_bed97175 concept;
+    class plan_1_1_resumen_ejecutivo_11af52b4 concept;
+    class plan_1_2_ficha_t_cnica_c311ffc9 concept;
+    class plan_4_diagrama_de_clases_uml_completo_formato_m_b213efb8 concept;
+    class plan_5_1_diagrama_de_capas_03798f9e concept;
+    class plan_5_2_estructura_f_sica_del_proyecto_en_el_rb_b6c1094d concept;
+    class plan_7_1_filosof_a_de_cero_dependencias_externas_5694755f concept;
+    class plan_7_2_caracter_sticas_t_cnicas_del_motor_74df9a81 concept;
+    class plan_8_1_sistema_de_dise_o_y_paleta_visual_theme_5e38ab9b concept;
+    class plan_8_2_componentes_gr_ficos_clave_d70429e4 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>PLAN.md</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing PLAN.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>1.1 Resumen Ejecutivo</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1.1 Resumen Ejecutivo.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>1.2 Ficha Técnica</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1.2 Ficha Técnica.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>1. RESUMEN EJECUTIVO Y FICHA TÉCNICA DEL PROYECTO</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. RESUMEN EJECUTIVO Y FICHA TÉCNICA DEL PROYECTO.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>4. DIAGRAMA DE CLASES UML COMPLETO (FORMATO MERMAID)</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4. DIAGRAMA DE CLASES UML COMPLETO (FORMATO MERMAID).</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>5.1 Diagrama de Capas</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5.1 Diagrama de Capas.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>5.2 Estructura Física del Proyecto en el Árbol de Directorios</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5.2 Estructura Física del Proyecto en el Árbol de Directorios.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>5. ARQUITECTURA DEL SOFTWARE Y ESTRUCTURA DE PAQUETES</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5. ARQUITECTURA DEL SOFTWARE Y ESTRUCTURA DE PAQUETES.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>7.1 Filosofía de Cero Dependencias Externas</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 7.1 Filosofía de Cero Dependencias Externas.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>7.2 Características Técnicas del Motor</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 7.2 Características Técnicas del Motor.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>7. MOTOR DE PERSISTENCIA LOCAL AUTÓNOMO</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 7. MOTOR DE PERSISTENCIA LOCAL AUTÓNOMO.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>8.1 Sistema de Diseño y Paleta Visual (`ThemeConfig`)</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 8.1 Sistema de Diseño y Paleta Visual (`ThemeConfig`).</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>8.2 Componentes Gráficos Clave</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 8.2 Componentes Gráficos Clave.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>8. DISEÑO DE LA INTERFAZ GRÁFICA (JAVA SWING)</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 8. DISEÑO DE LA INTERFAZ GRÁFICA (JAVA SWING).</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>PLAN DE EJECUCIÓN: SISTEMA INTEGRAL DE GESTIÓN PARA CLUB DEPORTIVO / GIMNASIO (FITMANAGE PRO)</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing PLAN DE EJECUCIÓN: SISTEMA INTEGRAL DE GESTIÓN PARA CLUB DEPORTIVO / GIMNASIO (FITMANAGE PRO).</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>PLAN.md</code></td><td>15 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x14. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 5. Planmd Scripts Auditoría ====== -->
+<h2 id="planmd-scripts-auditor-a">5. Planmd Scripts Auditoría</h2>
+<p>Planmd Scripts Auditoría groups implementation around planmd, scripts, auditoría, 101, mostly in PLAN.md. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Planmd Scripts Auditoría (7 nodes, 6 edges)
+    plan_10_protocolo_de_auto_auditor_a_y_pruebas_f0e19b3d("10. PROTOCOLO DE AUTO-AUDITORÍA Y PRUEBAS<br/><small>PLAN.md</small>")
+    plan_10_1_scripts_de_automatizaci_n_72ebc2f2("10.1 Scripts de Automatización<br/><small>PLAN.md</small>")
+    plan_scripts_compile_sh_a2d02735("scripts/compile.sh<br/><small>PLAN.md</small>")
+    plan_scripts_run_sh_04109dd1("scripts/run.sh<br/><small>PLAN.md</small>")
+    plan_scripts_test_sh_718e2083("scripts/test.sh<br/><small>PLAN.md</small>")
+    plan_10_3_estrategia_de_auditor_a_arquitect_nica_d68cc11b("10.3 Estrategia de Auditoría Arquitectó...<br/><small>PLAN.md</small>")
+    plan_10_4_checklist_de_cumplimiento_de_requisito_a74ddcbd("10.4 Checklist de Cumplimiento de Requi...<br/><small>PLAN.md</small>")
+    plan_10_1_scripts_de_automatizaci_n_72ebc2f2 -->|contains| plan_scripts_compile_sh_a2d02735
+    plan_10_1_scripts_de_automatizaci_n_72ebc2f2 -->|contains| plan_scripts_run_sh_04109dd1
+    plan_10_1_scripts_de_automatizaci_n_72ebc2f2 -->|contains| plan_scripts_test_sh_718e2083
+    plan_10_protocolo_de_auto_auditor_a_y_pruebas_f0e19b3d -->|contains| plan_10_1_scripts_de_automatizaci_n_72ebc2f2
+    plan_10_protocolo_de_auto_auditor_a_y_pruebas_f0e19b3d -->|contains| plan_10_3_estrategia_de_auditor_a_arquitect_nica_d68cc11b
+    plan_10_protocolo_de_auto_auditor_a_y_pruebas_f0e19b3d -->|contains| plan_10_4_checklist_de_cumplimiento_de_requisito_a74ddcbd
+    class plan_10_protocolo_de_auto_auditor_a_y_pruebas_f0e19b3d concept;
+    class plan_10_1_scripts_de_automatizaci_n_72ebc2f2 concept;
+    class plan_scripts_compile_sh_a2d02735 concept;
+    class plan_scripts_run_sh_04109dd1 concept;
+    class plan_scripts_test_sh_718e2083 concept;
+    class plan_10_3_estrategia_de_auditor_a_arquitect_nica_d68cc11b concept;
+    class plan_10_4_checklist_de_cumplimiento_de_requisito_a74ddcbd concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>10.1 Scripts de Automatización</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 10.1 Scripts de Automatización.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>10.3 Estrategia de Auditoría Arquitectónica con Graphify</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 10.3 Estrategia de Auditoría Arquitectónica con Graphify.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>10.4 Checklist de Cumplimiento de Requisitos de la Cátedra</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 10.4 Checklist de Cumplimiento de Requisitos de la Cátedra.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>10. PROTOCOLO DE AUTO-AUDITORÍA Y PRUEBAS</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 10. PROTOCOLO DE AUTO-AUDITORÍA Y PRUEBAS.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>`scripts/compile.sh`</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `scripts/compile.sh`.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>`scripts/run.sh`</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `scripts/run.sh`.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>`scripts/test.sh`</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing `scripts/test.sh`.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>PLAN.md</code></td><td>7 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 6. Planmd Módulo Socios ====== -->
+<h2 id="planmd-m-dulo-socios">6. Planmd Módulo Socios</h2>
+<p>Planmd Módulo Socios groups implementation around planmd, módulo, socios, estado, mostly in PLAN.md. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Planmd Módulo Socios (7 nodes, 6 edges)
+    plan_2_descripci_n_detallada_del_dominio_y_regla_dfc3d706("2. DESCRIPCIÓN DETALLADA DEL DOMINIO Y...<br/><small>PLAN.md</small>")
+    plan_2_1_m_dulo_de_socios_y_estado_de_cuenta_9686b720("2.1 Módulo de Socios y Estado de Cuenta<br/><small>PLAN.md</small>")
+    plan_2_2_m_dulo_de_instructores_y_liquidaci_n_89e79a51("2.2 Módulo de Instructores y Liquidación<br/><small>PLAN.md</small>")
+    plan_2_3_m_dulo_de_clases_grupales_y_gesti_n_de_a2ef349d("2.3 Módulo de Clases Grupales y Gestión...<br/><small>PLAN.md</small>")
+    plan_2_4_m_dulo_de_rutinas_y_ejercicios_composic_50048159("2.4 Módulo de Rutinas y Ejercicios (Com...<br/><small>PLAN.md</small>")
+    plan_2_5_m_dulo_de_membres_as_facturaci_n_y_pago_c12b0aec("2.5 Módulo de Membresías, Facturación y...<br/><small>PLAN.md</small>")
+    plan_2_6_m_dulo_de_asistencias_y_control_de_chec_4891ac90("2.6 Módulo de Asistencias y Control de...<br/><small>PLAN.md</small>")
+    plan_2_descripci_n_detallada_del_dominio_y_regla_dfc3d706 -->|contains| plan_2_1_m_dulo_de_socios_y_estado_de_cuenta_9686b720
+    plan_2_descripci_n_detallada_del_dominio_y_regla_dfc3d706 -->|contains| plan_2_2_m_dulo_de_instructores_y_liquidaci_n_89e79a51
+    plan_2_descripci_n_detallada_del_dominio_y_regla_dfc3d706 -->|contains| plan_2_3_m_dulo_de_clases_grupales_y_gesti_n_de_a2ef349d
+    plan_2_descripci_n_detallada_del_dominio_y_regla_dfc3d706 -->|contains| plan_2_4_m_dulo_de_rutinas_y_ejercicios_composic_50048159
+    plan_2_descripci_n_detallada_del_dominio_y_regla_dfc3d706 -->|contains| plan_2_5_m_dulo_de_membres_as_facturaci_n_y_pago_c12b0aec
+    plan_2_descripci_n_detallada_del_dominio_y_regla_dfc3d706 -->|contains| plan_2_6_m_dulo_de_asistencias_y_control_de_chec_4891ac90
+    class plan_2_descripci_n_detallada_del_dominio_y_regla_dfc3d706 concept;
+    class plan_2_1_m_dulo_de_socios_y_estado_de_cuenta_9686b720 concept;
+    class plan_2_2_m_dulo_de_instructores_y_liquidaci_n_89e79a51 concept;
+    class plan_2_3_m_dulo_de_clases_grupales_y_gesti_n_de_a2ef349d concept;
+    class plan_2_4_m_dulo_de_rutinas_y_ejercicios_composic_50048159 concept;
+    class plan_2_5_m_dulo_de_membres_as_facturaci_n_y_pago_c12b0aec concept;
+    class plan_2_6_m_dulo_de_asistencias_y_control_de_chec_4891ac90 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>2.1 Módulo de Socios y Estado de Cuenta</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.1 Módulo de Socios y Estado de Cuenta.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>2.2 Módulo de Instructores y Liquidación</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.2 Módulo de Instructores y Liquidación.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>2.3 Módulo de Clases Grupales y Gestión de Cupos</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.3 Módulo de Clases Grupales y Gestión de Cupos.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>2.4 Módulo de Rutinas y Ejercicios (Composición Fuerte)</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.4 Módulo de Rutinas y Ejercicios (Composición Fuerte).</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>2.5 Módulo de Membresías, Facturación y Pagos</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.5 Módulo de Membresías, Facturación y Pagos.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>2.6 Módulo de Asistencias y Control de Check-in</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2.6 Módulo de Asistencias y Control de Check-in.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>2. DESCRIPCIÓN DETALLADA DEL DOMINIO Y REGLAS DE NEGOCIO</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. DESCRIPCIÓN DETALLADA DEL DOMINIO Y REGLAS DE NEGOCIO.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>PLAN.md</code></td><td>7 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 7. Planmd Fase Fases ====== -->
+<h2 id="planmd-fase-fases">7. Planmd Fase Fases</h2>
+<p>Planmd Fase Fases groups implementation around planmd, fase, fases, paso, mostly in PLAN.md. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Planmd Fase Fases (7 nodes, 6 edges)
+    plan_detalle_de_fases_y_criterios_de_aceptaci_n_79b9b46e("Detalle de Fases y Criterios de Aceptación<br/><small>PLAN.md</small>")
+    plan_9_plan_de_fases_de_implementaci_n_paso_a_pa_6ea5cb49("9. PLAN DE FASES DE IMPLEMENTACIÓN PASO...<br/><small>PLAN.md</small>")
+    plan_fase_1_infraestructura_scripts_y_utilidades_8012c005("Fase 1: Infraestructura, Scripts y Util...<br/><small>PLAN.md</small>")
+    plan_fase_3_motor_de_persistencia_y_capa_de_repo_a57d0244("Fase 3: Motor de Persistencia y Capa de...<br/><small>PLAN.md</small>")
+    plan_fase_4_l_gica_de_servicios_y_carga_de_datos_304fdd42("Fase 4: Lógica de Servicios y Carga de...<br/><small>PLAN.md</small>")
+    plan_fase_5_construcci_n_de_la_interfaz_gr_fica_9748eaa8("Fase 5: Construcción de la Interfaz Grá...<br/><small>PLAN.md</small>")
+    plan_fase_6_testing_automatizado_auditor_a_graph_b1d3217c("Fase 6: Testing Automatizado, Auditoría...<br/><small>PLAN.md</small>")
+    plan_9_plan_de_fases_de_implementaci_n_paso_a_pa_6ea5cb49 -->|contains| plan_detalle_de_fases_y_criterios_de_aceptaci_n_79b9b46e
+    plan_detalle_de_fases_y_criterios_de_aceptaci_n_79b9b46e -->|contains| plan_fase_1_infraestructura_scripts_y_utilidades_8012c005
+    plan_detalle_de_fases_y_criterios_de_aceptaci_n_79b9b46e -->|contains| plan_fase_3_motor_de_persistencia_y_capa_de_repo_a57d0244
+    plan_detalle_de_fases_y_criterios_de_aceptaci_n_79b9b46e -->|contains| plan_fase_4_l_gica_de_servicios_y_carga_de_datos_304fdd42
+    plan_detalle_de_fases_y_criterios_de_aceptaci_n_79b9b46e -->|contains| plan_fase_5_construcci_n_de_la_interfaz_gr_fica_9748eaa8
+    plan_detalle_de_fases_y_criterios_de_aceptaci_n_79b9b46e -->|contains| plan_fase_6_testing_automatizado_auditor_a_graph_b1d3217c
+    class plan_detalle_de_fases_y_criterios_de_aceptaci_n_79b9b46e concept;
+    class plan_9_plan_de_fases_de_implementaci_n_paso_a_pa_6ea5cb49 concept;
+    class plan_fase_1_infraestructura_scripts_y_utilidades_8012c005 concept;
+    class plan_fase_3_motor_de_persistencia_y_capa_de_repo_a57d0244 concept;
+    class plan_fase_4_l_gica_de_servicios_y_carga_de_datos_304fdd42 concept;
+    class plan_fase_5_construcci_n_de_la_interfaz_gr_fica_9748eaa8 concept;
+    class plan_fase_6_testing_automatizado_auditor_a_graph_b1d3217c concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>9. PLAN DE FASES DE IMPLEMENTACIÓN PASO A PASO</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 9. PLAN DE FASES DE IMPLEMENTACIÓN PASO A PASO.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Detalle de Fases y Criterios de Aceptación</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Detalle de Fases y Criterios de Aceptación.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Fase 1: Infraestructura, Scripts y Utilidades Base</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Fase 1: Infraestructura, Scripts y Utilidades Base.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Fase 3: Motor de Persistencia y Capa de Repositorios (Integrante 6)</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Fase 3: Motor de Persistencia y Capa de Repositorios (Integrante 6).</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Fase 4: Lógica de Servicios y Carga de Datos Semilla (Integrantes 3, 4, 6)</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Fase 4: Lógica de Servicios y Carga de Datos Semilla (Integrantes 3, 4, 6).</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Fase 5: Construcción de la Interfaz Gráfica Swing (Integrantes 5 y 3)</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Fase 5: Construcción de la Interfaz Gráfica Swing (Integrantes 5 y 3).</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Fase 6: Testing Automatizado, Auditoría Graphify y Cierre (Todos)</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Fase 6: Testing Automatizado, Auditoría Graphify y Cierre (Todos).</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>PLAN.md</code></td><td>7 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 8. Planmd Jerarquía Herencia ====== -->
+<h2 id="planmd-jerarqu-a-herencia">8. Planmd Jerarquía Herencia</h2>
+<p>Planmd Jerarquía Herencia groups implementation around planmd, jerarquía, herencia, interfaces, mostly in PLAN.md. This section covers 4 nodes and 3 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Planmd Jerarquía Herencia (4 nodes, 3 edges)
+    plan_3_modelo_de_programaci_n_orientada_a_objeto_8cd8bf37("3. MODELO DE PROGRAMACIÓN ORIENTADA A O...<br/><small>PLAN.md</small>")
+    plan_3_1_jerarqu_a_de_herencia_524de7ee("3.1 Jerarquía de Herencia<br/><small>PLAN.md</small>")
+    plan_3_2_interfaces_y_contratos_de_negocio_01bd3d24("3.2 Interfaces y Contratos de Negocio<br/><small>PLAN.md</small>")
+    plan_3_3_relaciones_de_agregaci_n_composici_n_y_ab8b08d6("3.3 Relaciones de Agregación, Composici...<br/><small>PLAN.md</small>")
+    plan_3_modelo_de_programaci_n_orientada_a_objeto_8cd8bf37 -->|contains| plan_3_1_jerarqu_a_de_herencia_524de7ee
+    plan_3_modelo_de_programaci_n_orientada_a_objeto_8cd8bf37 -->|contains| plan_3_2_interfaces_y_contratos_de_negocio_01bd3d24
+    plan_3_modelo_de_programaci_n_orientada_a_objeto_8cd8bf37 -->|contains| plan_3_3_relaciones_de_agregaci_n_composici_n_y_ab8b08d6
+    class plan_3_modelo_de_programaci_n_orientada_a_objeto_8cd8bf37 concept;
+    class plan_3_1_jerarqu_a_de_herencia_524de7ee concept;
+    class plan_3_2_interfaces_y_contratos_de_negocio_01bd3d24 concept;
+    class plan_3_3_relaciones_de_agregaci_n_composici_n_y_ab8b08d6 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>3.1 Jerarquía de Herencia</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.1 Jerarquía de Herencia.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>3.2 Interfaces y Contratos de Negocio</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.2 Interfaces y Contratos de Negocio.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>3.3 Relaciones de Agregación, Composición y Asociación Justificadas</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3.3 Relaciones de Agregación, Composición y Asociación Justificadas.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>3. MODELO DE PROGRAMACIÓN ORIENTADA A OBJETOS (POO)</code><br><small style="color:var(--muted)">PLAN.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. MODELO DE PROGRAMACIÓN ORIENTADA A OBJETOS (POO).</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>PLAN.md</code></td><td>4 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 9. Readmemd Ejecución Compilación ====== -->
+<h2 id="readmemd-ejecuci-n-compilaci-n">9. Readmemd Ejecución Compilación</h2>
+<p>Readmemd Ejecución Compilación groups implementation around readmemd, ejecución, compilación, suite, mostly in README.md. This section covers 4 nodes and 3 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Readmemd Ejecución Compilación (4 nodes, 3 edges)
+    readme_4_instrucciones_de_compilaci_n_y_ejecuci_42fdda3f("4. INSTRUCCIONES DE COMPILACIÓN Y EJECU...<br/><small>README.md</small>")
+    readme_4_1_compilaci_n_45d411f3("4.1 Compilación<br/><small>README.md</small>")
+    readme_4_2_ejecuci_n_de_la_suite_de_pruebas_7_te_432071ab("4.2 Ejecución de la Suite de Pruebas (7...<br/><small>README.md</small>")
+    readme_4_3_ejecuci_n_de_la_interfaz_gr_fica_swin_c00e48b8("4.3 Ejecución de la Interfaz Gráfica (S...<br/><small>README.md</small>")
+    readme_4_instrucciones_de_compilaci_n_y_ejecuci_42fdda3f -->|contains| readme_4_1_compilaci_n_45d411f3
+    readme_4_instrucciones_de_compilaci_n_y_ejecuci_42fdda3f -->|contains| readme_4_2_ejecuci_n_de_la_suite_de_pruebas_7_te_432071ab
+    readme_4_instrucciones_de_compilaci_n_y_ejecuci_42fdda3f -->|contains| readme_4_3_ejecuci_n_de_la_interfaz_gr_fica_swin_c00e48b8
+    class readme_4_instrucciones_de_compilaci_n_y_ejecuci_42fdda3f concept;
+    class readme_4_1_compilaci_n_45d411f3 concept;
+    class readme_4_2_ejecuci_n_de_la_suite_de_pruebas_7_te_432071ab concept;
+    class readme_4_3_ejecuci_n_de_la_interfaz_gr_fica_swin_c00e48b8 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>4.1 Compilación</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4.1 Compilación.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>4.2 Ejecución de la Suite de Pruebas (7 Tests Automatizados)</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4.2 Ejecución de la Suite de Pruebas (7 Tests Automatizados).</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>4.3 Ejecución de la Interfaz Gráfica (Swing)</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4.3 Ejecución de la Interfaz Gráfica (Swing).</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>4. INSTRUCCIONES DE COMPILACIÓN Y EJECUCIÓN</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4. INSTRUCCIONES DE COMPILACIÓN Y EJECUCIÓN.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>README.md</code></td><td>4 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 10. Compilesh Scripts Script ====== -->
+<h2 id="compilesh-scripts-script">10. Compilesh Scripts Script</h2>
+<p>Compilesh Scripts Script groups implementation around compilesh, scripts, script, mostly in scripts/compile.sh. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Compilesh Scripts Script (2 nodes, 1 edges)
+    scripts_compile_afdd5b75("compile.sh")
+    scripts_compile_sh_entry_cc4bdf7a("compile.sh script<br/><small>scripts/compile.sh</small>")
+    scripts_compile_afdd5b75 -->|contains| scripts_compile_sh_entry_cc4bdf7a
+    class scripts_compile_afdd5b75 function;
+    class scripts_compile_sh_entry_cc4bdf7a function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>compile.sh</code><br><small style="color:var(--muted)">scripts/compile.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>compile.sh node in scripts/compile.sh.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>compile.sh script</code><br><small style="color:var(--muted)">scripts/compile.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>compile.sh script node in scripts/compile.sh.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>scripts/compile.sh</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 11. Runsh Scripts Script ====== -->
+<h2 id="runsh-scripts-script">11. Runsh Scripts Script</h2>
+<p>Runsh Scripts Script groups implementation around runsh, scripts, script, mostly in scripts/run.sh. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Runsh Scripts Script (2 nodes, 1 edges)
+    scripts_run_e20d5d02("run.sh")
+    scripts_run_sh_entry_c7033d3a("run.sh script<br/><small>scripts/run.sh</small>")
+    scripts_run_e20d5d02 -->|contains| scripts_run_sh_entry_c7033d3a
+    class scripts_run_e20d5d02 function;
+    class scripts_run_sh_entry_c7033d3a function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>run.sh</code><br><small style="color:var(--muted)">scripts/run.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>run.sh node in scripts/run.sh.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>run.sh script</code><br><small style="color:var(--muted)">scripts/run.sh</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>run.sh script node in scripts/run.sh.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>scripts/run.sh</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<h2 id="stats">Project Statistics</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4>Graph</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>Nodes</td><td>852</td></tr>
+      <tr><td>Edges</td><td>2168</td></tr>
+      <tr><td>Hyperedges</td><td>0</td></tr>
+      <tr><td>Communities</td><td>40</td></tr>
+      <tr><td>Documented Sections</td><td>10</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Edge Confidence</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>EXTRACTED</td><td>1759</td></tr>
+      <tr><td>INFERRED</td><td>409</td></tr>
+      <tr><td>AMBIGUOUS</td><td>0</td></tr>
+    </table>
+  </div>
+</div>
+
+<div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
+  <p>java — Architecture Documentation</p>
+  <p>Generated: 2026-11-12 01:51 UTC · graphify callflow-html</p>
+</div>
+
+</div><!-- .container -->
+
+<script>
+(function () {
+  const mermaidConfig = {
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: true },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#38bdf8',
+      secondaryColor: '#0f172a',
+      tertiaryColor: '#334155',
+      lineColor: '#64748b',
+      textColor: '#e2e8f0',
+    }
+  };
+
+  mermaid.initialize(mermaidConfig);
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function enhanceMermaidDiagrams() {
+    document.querySelectorAll('.mermaid').forEach((container) => {
+      if (container.dataset.zoomReady === 'true') return;
+      const svg = container.querySelector('svg');
+      if (!svg) return;
+
+      container.dataset.zoomReady = 'true';
+      container.classList.add('is-enhanced');
+
+      const viewport = document.createElement('div');
+      viewport.className = 'mermaid-viewport';
+      svg.parentNode.insertBefore(viewport, svg);
+      viewport.appendChild(svg);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      toolbar.innerHTML = [
+        '<button type="button" data-action="zoom-out" title="Zoom out">-</button>',
+        '<span class="zoom-level" data-role="level">100%</span>',
+        '<button type="button" data-action="zoom-in" title="Zoom in">+</button>',
+        '<button type="button" data-action="fit" title="Fit width">Fit</button>',
+        '<button type="button" data-action="reset" title="Reset view">Reset</button>'
+      ].join('');
+      container.insertBefore(toolbar, viewport);
+
+      const state = { scale: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, originX: 0, originY: 0 };
+      const level = toolbar.querySelector('[data-role="level"]');
+
+      function applyTransform() {
+        svg.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+        level.textContent = `${Math.round(state.scale * 100)}%`;
+      }
+
+      function zoomBy(delta) {
+        state.scale = clamp(state.scale + delta, 0.25, 3);
+        applyTransform();
+      }
+
+      function reset() {
+        state.scale = 1;
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      function fitWidth() {
+        const rawWidth = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width
+          ? svg.viewBox.baseVal.width
+          : svg.getBoundingClientRect().width / state.scale;
+        if (!rawWidth) {
+          reset();
+          return;
+        }
+        state.scale = clamp((viewport.clientWidth - 48) / rawWidth, 0.25, 1.4);
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      toolbar.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const action = button.dataset.action;
+        if (action === 'zoom-in') zoomBy(0.15);
+        if (action === 'zoom-out') zoomBy(-0.15);
+        if (action === 'fit') fitWidth();
+        if (action === 'reset') reset();
+      });
+
+      viewport.addEventListener('wheel', (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        event.preventDefault();
+        zoomBy(event.deltaY < 0 ? 0.1 : -0.1);
+      }, { passive: false });
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        state.dragging = true;
+        state.startX = event.clientX;
+        state.startY = event.clientY;
+        state.originX = state.x;
+        state.originY = state.y;
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (event) => {
+        if (!state.dragging) return;
+        state.x = state.originX + event.clientX - state.startX;
+        state.y = state.originY + event.clientY - state.startY;
+        applyTransform();
+      });
+
+      function endDrag(event) {
+        if (!state.dragging) return;
+        state.dragging = false;
+        viewport.classList.remove('is-dragging');
+        if (viewport.hasPointerCapture(event.pointerId)) {
+          viewport.releasePointerCapture(event.pointerId);
+        }
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      applyTransform();
+    });
+  }
+
+  function renderMermaid() {
+    const result = mermaid.run
+      ? mermaid.run({ querySelector: '.mermaid' })
+      : Promise.resolve();
+    Promise.resolve(result)
+      .then(enhanceMermaidDiagrams)
+      .catch((error) => {
+        console.error('Mermaid render failed:', error);
+        enhanceMermaidDiagrams();
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderMermaid);
+  } else {
+    renderMermaid();
+  }
+})();
+</script>
+
+</body>
+</html>

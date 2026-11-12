@@ -1,0 +1,212 @@
+[
+  {
+    "id": "SOC-110",
+    "dni": "36777888",
+    "nombre": "Valentina",
+    "apellido": "Herrera",
+    "email": "valentina.h@email.com",
+    "telefono": "11-5555-0000",
+    "fechaNacimiento": "1992-03-03",
+    "fechaRegistro": "2025-11-11",
+    "numeroSocio": "SOC-110",
+    "estadoCuota": "INACTIVO",
+    "porcentajeDescuentoManual": 0.0,
+    "membresia": {
+      "id": "MEM-110",
+      "tipo": "MUSCULACION",
+      "precioBase": 12000.0,
+      "fechaInicio": "2026-05-11",
+      "fechaVencimiento": "2026-06-11",
+      "renovacionAutomatica": false
+    }
+  },
+  {
+    "id": "SOC-102",
+    "dni": "38555444",
+    "nombre": "Sofía Belén",
+    "apellido": "Romero",
+    "email": "sofia.romero@email.com",
+    "telefono": "11-5555-2222",
+    "fechaNacimiento": "1995-08-22",
+    "fechaRegistro": "2026-05-11",
+    "numeroSocio": "SOC-102",
+    "estadoCuota": "AL_DIA",
+    "porcentajeDescuentoManual": 0.0,
+    "membresia": {
+      "id": "MEM-102",
+      "tipo": "VIP_TOTAL",
+      "precioBase": 25000.0,
+      "fechaInicio": "2026-11-06",
+      "fechaVencimiento": "2026-12-06",
+      "renovacionAutomatica": true
+    }
+  },
+  {
+    "id": "SOC-101",
+    "dni": "32111222",
+    "nombre": "Juan Carlos",
+    "apellido": "Rossi",
+    "email": "jc.rossi@email.com",
+    "telefono": "11-5555-1111",
+    "fechaNacimiento": "1986-04-15",
+    "fechaRegistro": "2025-08-11",
+    "numeroSocio": "SOC-101",
+    "estadoCuota": "AL_DIA",
+    "porcentajeDescuentoManual": 0.0,
+    "membresia": {
+      "id": "MEM-101",
+      "tipo": "PASE_LIBRE",
+      "precioBase": 18500.0,
+      "fechaInicio": "2026-11-01",
+      "fechaVencimiento": "2026-12-01",
+      "renovacionAutomatica": true
+    }
+  },
+  {
+    "id": "SOC-104",
+    "dni": "35987654",
+    "nombre": "Luciana",
+    "apellido": "Morales",
+    "email": "luciana.m@email.com",
+    "telefono": "11-5555-4444",
+    "fechaNacimiento": "1991-10-05",
+    "fechaRegistro": "2025-05-11",
+    "numeroSocio": "SOC-104",
+    "estadoCuota": "AL_DIA",
+    "porcentajeDescuentoManual": 0.0,
+    "membresia": {
+      "id": "MEM-104",
+      "tipo": "CLASES_GRUPALES",
+      "precioBase": 14500.0,
+      "fechaInicio": "2026-10-27",
+      "fechaVencimiento": "2026-11-26",
+      "renovacionAutomatica": true
+    }
+  },
+  {
+    "id": "SOC-103",
+    "dni": "40123987",
+    "nombre": "Martín Alejandro",
+    "apellido": "Díaz",
+    "email": "martin.diaz@email.com",
+    "telefono": "11-5555-3333",
+    "fechaNacimiento": "1997-01-10",
+    "fechaRegistro": "2026-05-11",
+    "numeroSocio": "SOC-103",
+    "estadoCuota": "VENCIDO",
+    "porcentajeDescuentoManual": 0.0,
+    "membresia": {
+      "id": "MEM-103",
+      "tipo": "MUSCULACION",
+      "precioBase": 12000.0,
+      "fechaInicio": "2026-09-11",
+      "fechaVencimiento": "2026-11-06",
+      "renovacionAutomatica": false
+    }
+  },
+  {
+    "id": "SOC-106",
+    "dni": "42333444",
+    "nombre": "Florencia",
+    "apellido": "Gómez",
+    "email": "flor.gomez@email.com",
+    "telefono": "11-5555-6666",
+    "fechaNacimiento": "1999-06-18",
+    "fechaRegistro": "2026-09-11",
+    "numeroSocio": "SOC-106",
+    "estadoCuota": "AL_DIA",
+    "porcentajeDescuentoManual": 0.0,
+    "membresia": {
+      "id": "MEM-106",
+      "tipo": "MUSCULACION",
+      "precioBase": 12000.0,
+      "fechaInicio": "2026-11-09",
+      "fechaVencimiento": "2026-12-09",
+      "renovacionAutomatica": true
+    }
+  },
+  {
+    "id": "SOC-105",
+    "dni": "28456123",
+    "nombre": "Gonzalo",
+    "apellido": "Fernández",
+    "email": "gonzalo.f@email.com",
+    "telefono": "11-5555-5555",
+    "fechaNacimiento": "1981-12-14",
+    "fechaRegistro": "2026-09-11",
+    "numeroSocio": "SOC-105",
+    "estadoCuota": "PENDIENTE",
+    "porcentajeDescuentoManual": 0.0,
+    "membresia": {
+      "id": "MEM-105",
+      "tipo": "PASE_LIBRE",
+      "precioBase": 18500.0,
+      "fechaInicio": "2026-10-11",
+      "fechaVencimiento": "2026-11-09",
+      "renovacionAutomatica": true
+    }
+  },
+  {
+    "id": "SOC-108",
+    "dni": "39444111",
+    "nombre": "Camila Andrea",
+    "apellido": "Navarro",
+    "email": "camila.n@email.com",
+    "telefono": "11-5555-8888",
+    "fechaNacimiento": "1996-07-07",
+    "fechaRegistro": "2026-05-11",
+    "numeroSocio": "SOC-108",
+    "estadoCuota": "AL_DIA",
+    "porcentajeDescuentoManual": 0.0,
+    "membresia": {
+      "id": "MEM-108",
+      "tipo": "PASE_LIBRE",
+      "precioBase": 18500.0,
+      "fechaInicio": "2026-11-10",
+      "fechaVencimiento": "2026-12-10",
+      "renovacionAutomatica": true
+    }
+  },
+  {
+    "id": "SOC-107",
+    "dni": "33888777",
+    "nombre": "Diego Armando",
+    "apellido": "Paredes",
+    "email": "diego.paredes@email.com",
+    "telefono": "11-5555-7777",
+    "fechaNacimiento": "1989-02-28",
+    "fechaRegistro": "2026-05-11",
+    "numeroSocio": "SOC-107",
+    "estadoCuota": "AL_DIA",
+    "porcentajeDescuentoManual": 0.0,
+    "membresia": {
+      "id": "MEM-107",
+      "tipo": "VIP_TOTAL",
+      "precioBase": 25000.0,
+      "fechaInicio": "2026-11-03",
+      "fechaVencimiento": "2026-12-03",
+      "renovacionAutomatica": true
+    }
+  },
+  {
+    "id": "SOC-109",
+    "dni": "41555666",
+    "nombre": "Mateo",
+    "apellido": "Ruiz",
+    "email": "mateo.ruiz@email.com",
+    "telefono": "11-5555-9999",
+    "fechaNacimiento": "1998-09-12",
+    "fechaRegistro": "2026-09-11",
+    "numeroSocio": "SOC-109",
+    "estadoCuota": "AL_DIA",
+    "porcentajeDescuentoManual": 0.0,
+    "membresia": {
+      "id": "MEM-109",
+      "tipo": "PASE_LIBRE",
+      "precioBase": 18500.0,
+      "fechaInicio": "2026-11-08",
+      "fechaVencimiento": "2026-12-08",
+      "renovacionAutomatica": true
+    }
+  }
+]

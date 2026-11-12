@@ -1,0 +1,79 @@
+[
+  {
+    "id": "CLS-101",
+    "nombre": "Spinning Pro Interval",
+    "disciplina": "SPINNING",
+    "diaSemana": "MONDAY",
+    "horaInicio": "08:00",
+    "duracionMinutos": 50,
+    "sala": "Sala Cardio 1",
+    "cupoMaximo": 20,
+    "instructorId": "INS-101",
+    "sociosInscriptosIds": [
+      "SOC-101",
+      "SOC-104",
+      "SOC-108"
+    ]
+  },
+  {
+    "id": "CLS-102",
+    "nombre": "CrossFit WOD Elite",
+    "disciplina": "CROSSFIT",
+    "diaSemana": "TUESDAY",
+    "horaInicio": "19:00",
+    "duracionMinutos": 60,
+    "sala": "Box CrossFit",
+    "cupoMaximo": 15,
+    "instructorId": "INS-102",
+    "sociosInscriptosIds": [
+      "SOC-101",
+      "SOC-102",
+      "SOC-107"
+    ]
+  },
+  {
+    "id": "CLS-103",
+    "nombre": "Yoga Vinyasa Relax",
+    "disciplina": "YOGA",
+    "diaSemana": "WEDNESDAY",
+    "horaInicio": "09:30",
+    "duracionMinutos": 60,
+    "sala": "Sala Zen",
+    "cupoMaximo": 12,
+    "instructorId": "INS-103",
+    "sociosInscriptosIds": [
+      "SOC-104",
+      "SOC-108"
+    ]
+  },
+  {
+    "id": "CLS-104",
+    "nombre": "Funcional HIIT Power",
+    "disciplina": "FUNCIONAL",
+    "diaSemana": "THURSDAY",
+    "horaInicio": "18:30",
+    "duracionMinutos": 45,
+    "sala": "Sala Funcional",
+    "cupoMaximo": 2,
+    "instructorId": "INS-104",
+    "sociosInscriptosIds": [
+      "SOC-108",
+      "SOC-109"
+    ]
+  },
+  {
+    "id": "CLS-105",
+    "nombre": "Power Boxeo & Técnica",
+    "disciplina": "BOXEO",
+    "diaSemana": "FRIDAY",
+    "horaInicio": "20:00",
+    "duracionMinutos": 60,
+    "sala": "Sala Ring",
+    "cupoMaximo": 10,
+    "instructorId": "INS-105",
+    "sociosInscriptosIds": [
+      "SOC-102",
+      "SOC-107"
+    ]
+  }
+]

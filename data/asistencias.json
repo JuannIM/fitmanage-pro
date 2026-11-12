@@ -1,0 +1,38 @@
+[
+  {
+    "id": "ASI-10004",
+    "socioId": "SOC-108",
+    "fechaHora": "2026-11-11T22:35:02.434641372",
+    "tipoAcceso": "CLASE_GRUPAL",
+    "claseId": "CLS-104",
+    "estadoAcceso": "PERMITIDO",
+    "observacion": "Ingreso a clase Funcional HIIT."
+  },
+  {
+    "id": "ASI-10003",
+    "socioId": "SOC-103",
+    "fechaHora": "2026-11-11T22:20:02.434641372",
+    "tipoAcceso": "GENERAL",
+    "claseId": null,
+    "estadoAcceso": "DENEGADO_CUOTA_VENCIDA",
+    "observacion": "Cuota social vencida. Regularizar en caja."
+  },
+  {
+    "id": "ASI-10002",
+    "socioId": "SOC-102",
+    "fechaHora": "2026-11-11T21:50:02.434641372",
+    "tipoAcceso": "GENERAL",
+    "claseId": null,
+    "estadoAcceso": "PERMITIDO",
+    "observacion": "Ingreso general autorizado. Bienvenido/a!"
+  },
+  {
+    "id": "ASI-10001",
+    "socioId": "SOC-101",
+    "fechaHora": "2026-11-11T20:50:02.434641372",
+    "tipoAcceso": "GENERAL",
+    "claseId": null,
+    "estadoAcceso": "PERMITIDO",
+    "observacion": "Ingreso general autorizado. Bienvenido/a!"
+  }
+]

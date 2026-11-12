@@ -1,0 +1,125 @@
+[
+  {
+    "id": "RUT-103",
+    "nombre": "Acondicionamiento Metabólico y Quema Grasa",
+    "objetivo": "Descenso de Peso",
+    "nivelDificultad": "Principiante",
+    "fechaCreacion": "2026-10-21",
+    "fechaRevision": "2026-12-11",
+    "instructorCreadorId": "INS-104",
+    "ejercicios": [
+      {
+        "id": "EJE-107",
+        "nombre": "Fondos en Paralelas Asistidos",
+        "grupoMuscular": "BRAZOS",
+        "series": 3,
+        "repeticiones": 12,
+        "pesoSugeridoKg": 0.0,
+        "descansoSegundos": 60,
+        "notasTecnicas": "Flexión de codos a 90 grados"
+      },
+      {
+        "id": "EJE-108",
+        "nombre": "Curl de Bíceps con Barra Z",
+        "grupoMuscular": "BRAZOS",
+        "series": 3,
+        "repeticiones": 12,
+        "pesoSugeridoKg": 25.0,
+        "descansoSegundos": 45,
+        "notasTecnicas": "Sin balanceo de torso"
+      },
+      {
+        "id": "EJE-109",
+        "nombre": "Crunch en Polea Alta",
+        "grupoMuscular": "CORE",
+        "series": 3,
+        "repeticiones": 15,
+        "pesoSugeridoKg": 30.0,
+        "descansoSegundos": 45,
+        "notasTecnicas": "Contracción sostenida de 1 segundo"
+      }
+    ]
+  },
+  {
+    "id": "RUT-102",
+    "nombre": "Fuerza Máxima de Miembros Inferiores",
+    "objetivo": "Fuerza Máxima",
+    "nivelDificultad": "Intermedio",
+    "fechaCreacion": "2026-10-11",
+    "fechaRevision": "2027-01-11",
+    "instructorCreadorId": "INS-102",
+    "ejercicios": [
+      {
+        "id": "EJE-104",
+        "nombre": "Sentadilla Trasera Profunda",
+        "grupoMuscular": "PIERNAS",
+        "series": 4,
+        "repeticiones": 6,
+        "pesoSugeridoKg": 100.0,
+        "descansoSegundos": 120,
+        "notasTecnicas": "Descenso controlado a 90 grados"
+      },
+      {
+        "id": "EJE-105",
+        "nombre": "Peso Muerto Rumano con Mancuernas",
+        "grupoMuscular": "PIERNAS",
+        "series": 3,
+        "repeticiones": 10,
+        "pesoSugeridoKg": 85.0,
+        "descansoSegundos": 90,
+        "notasTecnicas": "Foco en isquiosurales"
+      },
+      {
+        "id": "EJE-106",
+        "nombre": "Plancha Isométrica con Disco",
+        "grupoMuscular": "CORE",
+        "series": 4,
+        "repeticiones": 45,
+        "pesoSugeridoKg": 15.0,
+        "descansoSegundos": 45,
+        "notasTecnicas": "Alineación neutra lumbar"
+      }
+    ]
+  },
+  {
+    "id": "RUT-101",
+    "nombre": "Hipertrofia Torso & Carga Progresiva",
+    "objetivo": "Hipertrofia Muscular",
+    "nivelDificultad": "Avanzado",
+    "fechaCreacion": "2026-09-11",
+    "fechaRevision": "2026-12-11",
+    "instructorCreadorId": "INS-101",
+    "ejercicios": [
+      {
+        "id": "EJE-101",
+        "nombre": "Press de Banca Plano con Barra",
+        "grupoMuscular": "PECHO",
+        "series": 4,
+        "repeticiones": 10,
+        "pesoSugeridoKg": 80.0,
+        "descansoSegundos": 90,
+        "notasTecnicas": "Retracción escapular estricta"
+      },
+      {
+        "id": "EJE-102",
+        "nombre": "Dominadas Pronadas Lastradas",
+        "grupoMuscular": "ESPALDA",
+        "series": 4,
+        "repeticiones": 8,
+        "pesoSugeridoKg": 10.0,
+        "descansoSegundos": 90,
+        "notasTecnicas": "Rango de recorrido completo"
+      },
+      {
+        "id": "EJE-103",
+        "nombre": "Press Militar con Barra de Pie",
+        "grupoMuscular": "HOMBROS",
+        "series": 3,
+        "repeticiones": 12,
+        "pesoSugeridoKg": 50.0,
+        "descansoSegundos": 60,
+        "notasTecnicas": "Glúteos y core contraídos"
+      }
+    ]
+  }
+]

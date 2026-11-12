@@ -1,0 +1,47 @@
+[
+  {
+    "id": "PAG-1002",
+    "numeroComprobante": "REC-2026-1002",
+    "socioId": "SOC-102",
+    "monto": 25000.0,
+    "fechaHoraPago": "2026-11-06T22:50:02.432550596",
+    "metodoPago": "TARJETA_CREDITO",
+    "concepto": "Cuota Mensual VIP Total + Locker"
+  },
+  {
+    "id": "PAG-1003",
+    "numeroComprobante": "REC-2026-1003",
+    "socioId": "SOC-104",
+    "monto": 13050.0,
+    "fechaHoraPago": "2026-10-27T22:50:02.432579096",
+    "metodoPago": "EFECTIVO",
+    "concepto": "Cuota Mensual Clases Grupales (Desc. 10% Antigüedad)"
+  },
+  {
+    "id": "PAG-1004",
+    "numeroComprobante": "REC-2026-1004",
+    "socioId": "SOC-107",
+    "monto": 25000.0,
+    "fechaHoraPago": "2026-11-03T22:50:02.432607018",
+    "metodoPago": "TARJETA_DEBITO",
+    "concepto": "Cuota Mensual VIP Total"
+  },
+  {
+    "id": "PAG-1005",
+    "numeroComprobante": "REC-2026-1005",
+    "socioId": "SOC-108",
+    "monto": 18500.0,
+    "fechaHoraPago": "2026-11-10T22:50:02.432627662",
+    "metodoPago": "TRANSFERENCIA",
+    "concepto": "Cuota Mensual Pase Libre"
+  },
+  {
+    "id": "PAG-1001",
+    "numeroComprobante": "REC-2026-1001",
+    "socioId": "SOC-101",
+    "monto": 16650.0,
+    "fechaHoraPago": "2026-11-01T22:50:02.432150766",
+    "metodoPago": "TRANSFERENCIA",
+    "concepto": "Cuota Mensual Pase Libre (Desc. 10% Antigüedad)"
+  }
+]
