@@ -7,7 +7,7 @@ import java.awt.Font;
  * Paleta de colores, tipografías y métricas visuales del sistema FitManage Pro.
  * Diseñado con una estética limpia, corporativa y moderna para Java Swing.
  *
- * @author Nicolás Martínez (Integrante 5 - UI/UX & Especialista Swing)
+ * @author Sara
  * @version 1.0.0
  */
 public final class ThemeConfig {

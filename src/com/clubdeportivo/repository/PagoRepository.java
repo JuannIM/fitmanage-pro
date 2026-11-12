@@ -14,8 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Repositorio de Pagos y comprobantes de facturación con persistencia en data/pagos.json.
  *
- * @author Camila Díaz (Integrante 6 - Persistencia, QA & Auditoría)
- * @author Sofia Fernández (Integrante 4 - Finanzas & Facturación)
+ * @author Joel
+ * @author Alfonsina
  * @version 1.0.0
  */
 public class PagoRepository implements IRepository<Pago, String> {

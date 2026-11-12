@@ -24,14 +24,14 @@ El sistema cuenta con:
 
 ## 2. SIMULACIÓN DE EQUIPO COLABORATIVO (6 INTEGRANTES)
 
-| Integrante | Rol en el Proyecto | Responsabilidad Principal |
-| :--- | :--- | :--- |
-| **1. Juan Pérez** | *Líder Técnico & Arquitecto Core POO* | Jerarquía de herencia `Persona`, `Socio`, interfaces `Autenticable` y `Reportable`. |
-| **2. María Gomez** | *Especialista en Entrenamiento Deportivo* | Composición `Rutina *-- Ejercicio`, dosificación de cargas y volumen global. |
-| **3. Lucas Rodríguez** | *Gestor de Logística, Clases & Horarios* | `ClaseGrupal`, cronograma, cupos máximos y excepción `CupoAgotadoException`. |
-| **4. Sofia Fernández** | *Ingeniera de Finanzas & Facturación* | `Membresia`, `Pago`, interface `Facturable`, 10% descuento por antigüedad y recibos. |
-| **5. Nicolás Martínez** | *Diseñador UI/UX & Especialista Swing* | `MainFrame`, `DashboardPanel`, CardLayout, Badges de estado y Check-In Dialog. |
-| **6. Camila Díaz** | *Ingeniera de Persistencia, QA & Auditoría* | Motor `JsonPersistenceEngine`, repositorios, suite de tests y scripts de compilación. |
+| Integrante | Módulos y Responsabilidad en el Proyecto |
+| :--- | :--- |
+| **Juan** | Jerarquía de herencia `Persona`, `Socio`, interfaces `Autenticable` y `Reportable`. |
+| **Rocio** | Composición `Rutina *-- Ejercicio`, dosificación de cargas y volumen global. |
+| **Merlina** | `ClaseGrupal`, cronograma, cupos máximos y excepción `CupoAgotadoException`. |
+| **Alfonsina** | `Membresia`, `Pago`, interface `Facturable`, 10% descuento por antigüedad y recibos. |
+| **Sara** | `MainFrame`, `DashboardPanel`, CardLayout, Badges de estado y Check-In Dialog. |
+| **Joel** | Motor `JsonPersistenceEngine`, repositorios, suite de tests y scripts de compilación. |
 
 ---
 

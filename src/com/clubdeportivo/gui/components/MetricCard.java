@@ -9,7 +9,7 @@ import java.awt.*;
 /**
  * Tarjeta visual para métricas clave (KPI) del Dashboard con diseño minimalista.
  *
- * @author Nicolás Martínez (Integrante 5 - UI/UX & Especialista Swing)
+ * @author Sara
  * @version 1.0.0
  */
 public class MetricCard extends JPanel {

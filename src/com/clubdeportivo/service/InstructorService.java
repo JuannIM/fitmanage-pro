@@ -13,8 +13,8 @@ import java.util.Optional;
 /**
  * Servicio de administración del cuerpo técnico y liquidación salarial docente.
  *
- * @author Lucas Rodríguez (Integrante 3 - Logística & Clases)
- * @author Juan Pérez (Integrante 1 - Arquitectura Core)
+ * @author Merlina
+ * @author Juan
  * @version 1.0.0
  */
 public class InstructorService {

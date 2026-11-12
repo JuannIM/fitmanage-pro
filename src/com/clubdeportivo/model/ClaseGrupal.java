@@ -11,8 +11,8 @@ import java.util.*;
  * Implementa una relación de AGREGACIÓN con Instructor y Socio:
  * Si la clase se cancela o elimina, ni los socios ni el profesor desaparecen del club.
  *
- * @author Lucas Rodríguez (Integrante 3 - Gestor de Logística, Clases & Horarios)
- * @author María Gomez (Integrante 2 - Entrenamiento & Dominio Deportivo)
+ * @author Merlina
+ * @author Rocio
  * @version 1.0.0
  */
 public class ClaseGrupal {
@@ -51,7 +51,7 @@ public class ClaseGrupal {
     }
 
     // =========================================================================
-    // CONTROL ESTRICTO DE CUPOS E INSCRIPCIÓN (Lucas Rodríguez)
+    // CONTROL ESTRICTO DE CUPOS E INSCRIPCIÓN (Merlina)
     // =========================================================================
 
     public boolean tieneCupoDisponible() {

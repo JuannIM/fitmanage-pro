@@ -20,8 +20,8 @@ import java.util.List;
  * Panel principal de control (Dashboard Ejecutivo).
  * Presenta indicadores KPI en tiempo real y el monitor en vivo del molinete de acceso.
  *
- * @author Nicolás Martínez (Integrante 5 - Diseñador UI/UX & Especialista Swing)
- * @author Juan Pérez (Integrante 1 - Arquitectura Core)
+ * @author Sara
+ * @author Juan
  * @version 1.0.0
  */
 public class DashboardPanel extends JPanel {

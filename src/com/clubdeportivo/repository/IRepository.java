@@ -8,7 +8,7 @@ import java.util.Optional;
  *
  * @param <T>  Tipo de la entidad de dominio
  * @param <ID> Tipo del identificador unívoco
- * @author Camila Díaz (Integrante 6 - Persistencia, QA & Auditoría)
+ * @author Joel
  * @version 1.0.0
  */
 public interface IRepository<T, ID> {

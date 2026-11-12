@@ -8,8 +8,8 @@ import java.util.*;
  * Representa al personal técnico y docente a cargo del dictado de clases y prescripción de rutinas.
  * Implementa Reportable y demuestra polimorfismo sobre Persona.
  *
- * @author Juan Pérez (Integrante 1 - Líder Técnico & Arquitecto Core POO)
- * @author Lucas Rodríguez (Integrante 3 - Logística & Clases)
+ * @author Juan
+ * @author Merlina
  * @version 1.0.0
  */
 public class Instructor extends Persona implements Reportable {
@@ -57,7 +57,7 @@ public class Instructor extends Persona implements Reportable {
     }
 
     // =========================================================================
-    // LÓGICA DE NEGOCIO Y LIQUIDACIÓN (Sofía Fernández & Lucas Rodríguez)
+    // LÓGICA DE NEGOCIO Y LIQUIDACIÓN (Alfonsina & Merlina)
     // =========================================================================
 
     /**

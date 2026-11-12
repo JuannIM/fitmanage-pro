@@ -3,8 +3,8 @@ package com.clubdeportivo.model;
 /**
  * Dictamen emitido por el sistema de molinete / recepción tras validar las credenciales.
  *
- * @author Camila Díaz (Integrante 6 - Persistencia & QA)
- * @author Juan Pérez (Integrante 1 - Arquitectura Core)
+ * @author Joel
+ * @author Juan
  * @version 1.0.0
  */
 public enum EstadoAcceso {

@@ -15,8 +15,8 @@ import java.util.Optional;
  * Servicio de control de acceso en molinete y recepción en tiempo real.
  * Realiza la validación cruzada entre estado de cuotas, cupos y membresías.
  *
- * @author Camila Díaz (Integrante 6 - Persistencia, QA & Auditoría)
- * @author Lucas Rodríguez (Integrante 3 - Logística & Clases)
+ * @author Joel
+ * @author Merlina
  * @version 1.0.0
  */
 public class AccesoService {

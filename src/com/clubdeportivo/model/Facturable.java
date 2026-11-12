@@ -4,8 +4,8 @@ package com.clubdeportivo.model;
  * Contrato de negocio para entidades sujetas a liquidación contable,
  * cálculo de aranceles y emisión de comprobantes fiscales.
  *
- * @author Sofia Fernández (Integrante 4 - Finanzas & Facturación)
- * @author Juan Pérez (Integrante 1 - Arquitectura Core)
+ * @author Alfonsina
+ * @author Juan
  * @version 1.0.0
  */
 public interface Facturable {

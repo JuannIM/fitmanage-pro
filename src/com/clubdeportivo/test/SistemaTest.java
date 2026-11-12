@@ -19,8 +19,8 @@ import java.util.List;
  * Suite integral de verificación de lógica de negocio y arquitectura POO para FitManage Pro.
  * Diseñada para ejecutarse de manera autónoma con 'bash scripts/test.sh'.
  *
- * @author Camila Díaz (Integrante 6 - Persistencia, QA & Auditoría)
- * @author Juan Pérez (Integrante 1 - Líder Técnico & Arquitecto Core POO)
+ * @author Joel
+ * @author Juan
  * @version 1.0.0
  */
 public class SistemaTest {

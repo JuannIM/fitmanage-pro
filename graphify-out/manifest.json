@@ -54,327 +54,333 @@
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/CheckInDialog.java": {
-    "mtime": 1794447906.9722831,
-    "seen": 1794448245.7386606,
-    "ast_hash": "fef9c962fe2ef2666df8d7d5d5a39db7",
+    "mtime": 1794449121.3217394,
+    "seen": 1794449248.371779,
+    "ast_hash": "e859cc9950b93362b814b39aeb5f1eca",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/ClasesPanel.java": {
-    "mtime": 1794447995.4748228,
-    "seen": 1794448245.7386649,
-    "ast_hash": "7a8528ea949b37c050db607426c96ab6",
+    "mtime": 1794449121.3187227,
+    "seen": 1794449248.3717823,
+    "ast_hash": "bc077863ec2ab096a1d19579872d02be",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/DashboardPanel.java": {
-    "mtime": 1794447925.0237892,
-    "seen": 1794448245.7386696,
-    "ast_hash": "35b8ecc5bdf7fad6bfc63bf782bd22eb",
+    "mtime": 1794449121.3206592,
+    "seen": 1794449248.3717859,
+    "ast_hash": "46e86a8de4968c217da7c7eb32873770",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/InstructoresPanel.java": {
-    "mtime": 1794447966.892987,
-    "seen": 1794448245.7386734,
-    "ast_hash": "7b57aae1909de66f55b313333932c1fc",
+    "mtime": 1794449121.3221989,
+    "seen": 1794449248.371791,
+    "ast_hash": "4b6db3ac47fcfe77b4d20a8fcc1d8463",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/MainFrame.java": {
-    "mtime": 1794448192.6079266,
-    "seen": 1794448245.7386773,
-    "ast_hash": "5acf85df9ccc8ca06cbaaa89e107e349",
+    "mtime": 1794449121.319375,
+    "seen": 1794449248.3717942,
+    "ast_hash": "1b3275877d182049eab460e9888e8997",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/PagosPanel.java": {
-    "mtime": 1794448058.9957287,
-    "seen": 1794448245.7386806,
-    "ast_hash": "7cfb50015413a48728b0ef68b8b63680",
+    "mtime": 1794449121.3198018,
+    "seen": 1794449248.3717976,
+    "ast_hash": "31a51521be0f90ebdbefb028df4b2d36",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/RutinasPanel.java": {
-    "mtime": 1794448036.9850612,
-    "seen": 1794448245.7386835,
-    "ast_hash": "16936ea14ca3d2f68d2306dc2db5348c",
+    "mtime": 1794449121.3212113,
+    "seen": 1794449248.3717997,
+    "ast_hash": "f94b718d5585bfc32170944ccf9e8473",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/SociosPanel.java": {
-    "mtime": 1794447947.8644385,
-    "seen": 1794448245.7386863,
-    "ast_hash": "9f89791dc2fc84dd8794cf22b608d4c6",
+    "mtime": 1794449121.3202941,
+    "seen": 1794449248.3718023,
+    "ast_hash": "8dffd78dd5e39e49596a7e37419c7b7a",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/components/MetricCard.java": {
-    "mtime": 1794447872.237328,
-    "seen": 1794448245.7386894,
-    "ast_hash": "d576e76fcaebd9bf04cc8129999bb151",
+    "mtime": 1794449121.3230684,
+    "seen": 1794449248.3718057,
+    "ast_hash": "46819492cc01ea4e269d337af013baa2",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/components/ModernButton.java": {
-    "mtime": 1794447852.0877857,
-    "seen": 1794448245.738692,
-    "ast_hash": "257946111697b523edd6d91858aab864",
+    "mtime": 1794449121.3224976,
+    "seen": 1794449248.371809,
+    "ast_hash": "d6b39f547685948e748041d4b76446fb",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/components/SearchTextField.java": {
-    "mtime": 1794447880.75756,
-    "seen": 1794448245.738695,
-    "ast_hash": "e6ba178307d49bccd1a436cbe57ae48a",
+    "mtime": 1794449121.322708,
+    "seen": 1794449248.3718116,
+    "ast_hash": "ae407d8cc797df683323a4e5f2babcc6",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/components/StatusBadgeCellRenderer.java": {
-    "mtime": 1794447861.0980272,
-    "seen": 1794448245.7386978,
-    "ast_hash": "20b2860ed0fcea06d83caf69b2cfdd31",
+    "mtime": 1794449121.322885,
+    "seen": 1794449248.3718145,
+    "ast_hash": "23fdbd74cec7beb8e7b932e79db89e72",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/gui/theme/ThemeConfig.java": {
-    "mtime": 1794447375.6736286,
-    "seen": 1794448245.7387006,
-    "ast_hash": "4b5cf0533d9c52b426503172b14b558d",
+    "mtime": 1794449121.323297,
+    "seen": 1794449248.371817,
+    "ast_hash": "3ca11e405fe860900a475fc300c3ec23",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Asistencia.java": {
-    "mtime": 1794447519.7414718,
-    "seen": 1794448245.738705,
-    "ast_hash": "ad28b750273f32451caa0093c16f4dbb",
+    "mtime": 1794449121.324708,
+    "seen": 1794449248.3718197,
+    "ast_hash": "649927246a869df4d1f9c2a594ddb632",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Autenticable.java": {
-    "mtime": 1794447456.2465336,
-    "seen": 1794448245.738708,
-    "ast_hash": "0fe0684f73cf077221b78b83630df456",
+    "mtime": 1794449121.3249447,
+    "seen": 1794449248.371822,
+    "ast_hash": "9faa129221ceeb4e80c5a47334054893",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/ClaseGrupal.java": {
-    "mtime": 1794447584.0448937,
-    "seen": 1794448245.7387109,
-    "ast_hash": "24bc261ebebbdbef0ff96d5238862f99",
+    "mtime": 1794449121.324527,
+    "seen": 1794449248.371825,
+    "ast_hash": "b1f1b5b823aec1d065f1105809926e1f",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/CupoAgotadoException.java": {
-    "mtime": 1794447443.269365,
-    "seen": 1794448245.7387133,
-    "ast_hash": "2ca83e78a059467b5fc0c2f6e44da416",
+    "mtime": 1794449121.3253195,
+    "seen": 1794449248.3718271,
+    "ast_hash": "3715ccaba960efcde45ea8e75352cc8a",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Disciplina.java": {
-    "mtime": 1794447405.7139258,
-    "seen": 1794448245.7387161,
-    "ast_hash": "513abf9012b77e599552d89bbbd93259",
+    "mtime": 1794449121.3251898,
+    "seen": 1794449248.3718297,
+    "ast_hash": "e71caaec02b2a319109c41b90048ff28",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Ejercicio.java": {
-    "mtime": 1794447486.519958,
-    "seen": 1794448245.738719,
-    "ast_hash": "ed1b03bceaa65209f2a37df2f42acf4f",
+    "mtime": 1794449121.3240912,
+    "seen": 1794449248.3718326,
+    "ast_hash": "3204a8bd753c2b47628d3cbbfdddc2f1",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/EstadoAcceso.java": {
-    "mtime": 1794447437.6032941,
-    "seen": 1794448245.7387216,
-    "ast_hash": "0ce512544025f8ed2666bc2dfbd0cba5",
+    "mtime": 1794449121.3250723,
+    "seen": 1794449248.371835,
+    "ast_hash": "d83cde3ef261a04d47b350abc1a8c1dd",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/EstadoCuota.java": {
-    "mtime": 1794447394.022804,
-    "seen": 1794448245.738724,
-    "ast_hash": "291c0365cd4bbafd1b08a41e7782451a",
+    "mtime": 1794449121.3248265,
+    "seen": 1794449248.3718374,
+    "ast_hash": "5516c4fdfc30c1c01f020be54bb69f48",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Facturable.java": {
-    "mtime": 1794447450.2824552,
-    "seen": 1794448245.738727,
-    "ast_hash": "f68dffcee09986e4fd8240d3123efdf7",
+    "mtime": 1794449121.3262546,
+    "seen": 1794449248.3718402,
+    "ast_hash": "3b36807d1b040609ae43a5e7a27c02b4",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/GrupoMuscular.java": {
-    "mtime": 1794447410.9569826,
-    "seen": 1794448245.73873,
-    "ast_hash": "1eeb4a2d024bf91070fab53d9cf7c129",
+    "mtime": 1794449121.3235323,
+    "seen": 1794449248.3718429,
+    "ast_hash": "3cbaa44ddfb15447a45ded4f20744ccc",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Instructor.java": {
-    "mtime": 1794447566.2862709,
-    "seen": 1794448245.7387445,
-    "ast_hash": "15fd38cc9d5ae510609d87ab581a97f4",
+    "mtime": 1794449121.3266518,
+    "seen": 1794449248.3718455,
+    "ast_hash": "4745171276fcae9023ffc04b0c783bbb",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Membresia.java": {
-    "mtime": 1794447508.8722982,
-    "seen": 1794448245.7387476,
-    "ast_hash": "9b74a743499e34d2e315f1480c8e5c5e",
+    "mtime": 1794449121.3270254,
+    "seen": 1794449248.3718476,
+    "ast_hash": "3f5e23b78c46edaad5ec9aee652561ef",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/MetodoPago.java": {
-    "mtime": 1794447415.8270369,
-    "seen": 1794448245.73875,
-    "ast_hash": "6de0e2b59acb9f93f7e657aee2fe2b73",
+    "mtime": 1794449121.3263745,
+    "seen": 1794449248.37185,
+    "ast_hash": "7a9f5a46b3e6224f27b0037eeafd8da3",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Pago.java": {
-    "mtime": 1794447530.2336442,
-    "seen": 1794448245.7387526,
-    "ast_hash": "f6729e70fec912fdba63c1d5a53ce4d7",
+    "mtime": 1794449121.3238933,
+    "seen": 1794449248.3718524,
+    "ast_hash": "a1f4df63b57ee23f866b4fcbbbde3832",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Persona.java": {
-    "mtime": 1794447473.6607723,
-    "seen": 1794448245.7387557,
-    "ast_hash": "640bab416c7ff8f47421ca61b71e5f7a",
+    "mtime": 1794449121.326858,
+    "seen": 1794449248.371855,
+    "ast_hash": "185abd97e88509fe72dadc3488670d4f",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Reportable.java": {
-    "mtime": 1794447462.3406155,
-    "seen": 1794448245.7387578,
-    "ast_hash": "a521d0b79f1542b09754d5a438d01aea",
+    "mtime": 1794449121.326124,
+    "seen": 1794449248.3718576,
+    "ast_hash": "3eca9fd7abc1bd1cd3be569a524195a4",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Rutina.java": {
-    "mtime": 1794447498.6721401,
-    "seen": 1794448245.7387605,
-    "ast_hash": "71501f5ca7a3458c145a7ed499d95642",
+    "mtime": 1794449121.3260002,
+    "seen": 1794449248.3718603,
+    "ast_hash": "441fcf485764ebe221049a30188fc317",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/Socio.java": {
-    "mtime": 1794447550.843996,
-    "seen": 1794448245.738763,
-    "ast_hash": "e373e7fcd01d1a7247e6ea280cf34f47",
+    "mtime": 1794449121.32577,
+    "seen": 1794449248.371863,
+    "ast_hash": "bdba49df0b3a679570864022a6dd48bb",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/TipoAcceso.java": {
-    "mtime": 1794447420.7380927,
-    "seen": 1794448245.7387652,
-    "ast_hash": "494d9528c8c403ffa79b41e9b8bfd3a1",
+    "mtime": 1794449121.324221,
+    "seen": 1794449248.3718655,
+    "ast_hash": "6201d892c7878302b502a309064845e7",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/model/TipoMembresia.java": {
-    "mtime": 1794447400.264868,
-    "seen": 1794448245.7387676,
-    "ast_hash": "39cf401b4656899dc288f6ae39749dbb",
+    "mtime": 1794449121.3236988,
+    "seen": 1794449248.3718684,
+    "ast_hash": "cc592baf7f7e98bc903db097862c1120",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/repository/AsistenciaRepository.java": {
-    "mtime": 1794447698.587982,
-    "seen": 1794448245.7387702,
-    "ast_hash": "4243a65ef62c2387c204ca2a1510a012",
+    "mtime": 1794449121.3161266,
+    "seen": 1794449248.3718708,
+    "ast_hash": "a96452597dce162bbf4e3dca48b56917",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/repository/ClaseRepository.java": {
-    "mtime": 1794447671.4793785,
-    "seen": 1794448245.7387784,
-    "ast_hash": "41cf02102b3fe8897f82f385b24954c1",
+    "mtime": 1794449121.3166814,
+    "seen": 1794449248.3718734,
+    "ast_hash": "7d35c2ef876b99dc6fa42e918ce580e0",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/repository/IRepository.java": {
-    "mtime": 1794447599.4458926,
-    "seen": 1794448245.7387817,
-    "ast_hash": "33b7c69e477853510f344d67252712c9",
+    "mtime": 1794449121.3180904,
+    "seen": 1794449248.3718758,
+    "ast_hash": "4019eb84c0cef141a7f49a0d8656e8d8",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/repository/InstructorRepository.java": {
-    "mtime": 1794447635.6956182,
-    "seen": 1794448245.7387846,
-    "ast_hash": "c8b94aca455a4796af1b23ef400d184e",
+    "mtime": 1794449121.317704,
+    "seen": 1794449248.3718781,
+    "ast_hash": "7945d11a81ede4a55dc8d3bb3764790f",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/repository/PagoRepository.java": {
-    "mtime": 1794447683.3256392,
-    "seen": 1794448245.7387874,
-    "ast_hash": "c12ed8ba60f61196f356e8d0b69ffc06",
+    "mtime": 1794449121.3179567,
+    "seen": 1794449248.3718808,
+    "ast_hash": "c355685c7711a18d2fb80935718a022b",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/repository/RutinaRepository.java": {
-    "mtime": 1794447655.8560412,
-    "seen": 1794448245.7387905,
-    "ast_hash": "7affe6a8c04c289e0da2b7caf443f487",
+    "mtime": 1794449121.317417,
+    "seen": 1794449248.371884,
+    "ast_hash": "fd42da52eea2e41610bcb8f45da534fb",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/repository/SocioRepository.java": {
-    "mtime": 1794447623.3273652,
-    "seen": 1794448245.738793,
-    "ast_hash": "f84b2e0d1a26a47ce19aed55c95e57a5",
+    "mtime": 1794449121.3170772,
+    "seen": 1794449248.3718867,
+    "ast_hash": "174c59cbe54322b004472dd33022e40b",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/service/AccesoService.java": {
-    "mtime": 1794447788.4341345,
-    "seen": 1794448245.7387955,
-    "ast_hash": "cee62f6573353a8723d7f00aef9ca7a8",
+    "mtime": 1794449121.32994,
+    "seen": 1794449248.3718898,
+    "ast_hash": "b2c8d58ebb07b4f2306b521ae4baabcb",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/service/ClaseService.java": {
-    "mtime": 1794447749.2711687,
-    "seen": 1794448245.7387981,
-    "ast_hash": "41d431aaf21d8e9bcb8a21634b77c31f",
+    "mtime": 1794449121.3286765,
+    "seen": 1794449248.3718927,
+    "ast_hash": "be3c639b4749117927a2b93598255c77",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/service/DataSeedService.java": {
-    "mtime": 1794447828.240156,
-    "seen": 1794448245.7388005,
-    "ast_hash": "8f879507e20582676346b2f6f144438c",
+    "mtime": 1794449121.3296566,
+    "seen": 1794449248.3718956,
+    "ast_hash": "21b095e3e90ecf5c2c31591eadd1a26c",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/service/FacturacionService.java": {
-    "mtime": 1794447774.1557777,
-    "seen": 1794448245.7388031,
-    "ast_hash": "eba813fd49a3bdf731e9f6317fe3fcd4",
+    "mtime": 1794449121.32848,
+    "seen": 1794449248.371899,
+    "ast_hash": "87cc433c5b146f4827b2be50258f4744",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/service/InstructorService.java": {
-    "mtime": 1794447740.2689526,
-    "seen": 1794448245.7388058,
-    "ast_hash": "8f8d6f2f729caa798370a857fa516cfe",
+    "mtime": 1794449121.3290658,
+    "seen": 1794449248.3719018,
+    "ast_hash": "9746323caaa49d8e7bc7f77d55e96d61",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/service/RutinaService.java": {
-    "mtime": 1794447764.197532,
-    "seen": 1794448245.7388084,
-    "ast_hash": "f9e4e5f97fabd5182da039dbe48a1ebf",
+    "mtime": 1794449121.3288753,
+    "seen": 1794449248.3719044,
+    "ast_hash": "94d1d2b594895b64d6525f466ff563b1",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/service/SocioService.java": {
-    "mtime": 1794447726.272621,
-    "seen": 1794448245.7388108,
-    "ast_hash": "2172c8b25df613fd85716410e15d40a9",
+    "mtime": 1794449121.3282793,
+    "seen": 1794449248.371907,
+    "ast_hash": "c3485be8242488f0501af5f729541b9d",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/test/SistemaTest.java": {
-    "mtime": 1794448165.7210636,
-    "seen": 1794448245.7388134,
-    "ast_hash": "7264ea1cddaf10b4495388d2cd832ffc",
+    "mtime": 1794449121.3306127,
+    "seen": 1794449248.3719096,
+    "ast_hash": "e088ac5e3da7aaafe3958ef4a80dd2a2",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/util/Formatters.java": {
-    "mtime": 1794447333.0492957,
-    "seen": 1794448245.738816,
-    "ast_hash": "5d97f31b02359b76041664df3bf1c60c",
+    "mtime": 1794449121.327974,
+    "seen": 1794449248.3719122,
+    "ast_hash": "717bd86e2bb2248e17c7216fa93f9862",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/util/IdGenerator.java": {
-    "mtime": 1794447319.0692103,
-    "seen": 1794448245.7388186,
-    "ast_hash": "b383cc4a4e4adf2f46c83f9bc616db60",
+    "mtime": 1794449121.3272216,
+    "seen": 1794449248.3719149,
+    "ast_hash": "55ebe4184ce88fb1bc43a07cbace8787",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/util/JsonPersistenceEngine.java": {
-    "mtime": 1794447362.8955173,
-    "seen": 1794448245.7388213,
-    "ast_hash": "326223326f4e61c4188ef5160c071a91",
+    "mtime": 1794449121.3276265,
+    "seen": 1794449248.3719175,
+    "ast_hash": "19cf348d735b575e4c5dc8db53a201f2",
     "semantic_hash": ""
   },
   "src/com/clubdeportivo/util/ValidationUtils.java": {
-    "mtime": 1794447339.3803382,
-    "seen": 1794448245.738824,
-    "ast_hash": "72833570170e5a807e738d861b2f59ba",
+    "mtime": 1794449121.327818,
+    "seen": 1794449248.3719206,
+    "ast_hash": "c74436e8c47c098c5dfd8fe0309d1ed4",
     "semantic_hash": ""
   },
   "PLAN.md": {
-    "mtime": 1794447119.0285342,
-    "seen": 1794448245.7388263,
-    "ast_hash": "3f1f4fd6d47fd4d011d0fd7abb3378e3",
+    "mtime": 1794449198.893768,
+    "seen": 1794449248.3719282,
+    "ast_hash": "36e70428f9c4a56d10c54bb01a6947d5",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1794448234.3702836,
-    "seen": 1794448245.738829,
-    "ast_hash": "e5c4b9b4ed8b241387a3b41968a1b18a",
+    "mtime": 1794449161.239391,
+    "seen": 1794449248.371931,
+    "ast_hash": "fc4dbf5b2d72129cbe91885a8de4f63b",
+    "semantic_hash": ""
+  },
+  "AUDIT.md": {
+    "mtime": 1794449180.6904807,
+    "seen": 1794449248.3719246,
+    "ast_hash": "4fb58f03986522ca9ab53d71750508a8",
     "semantic_hash": ""
   }
 }

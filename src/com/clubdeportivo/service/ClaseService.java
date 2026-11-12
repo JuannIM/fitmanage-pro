@@ -13,8 +13,8 @@ import java.util.Optional;
 /**
  * Servicio de coordinación de cronograma de actividades grupales y control de aforo.
  *
- * @author Lucas Rodríguez (Integrante 3 - Gestor de Logística, Clases & Horarios)
- * @author María Gomez (Integrante 2 - Entrenamiento & Dominio Deportivo)
+ * @author Merlina
+ * @author Rocio
  * @version 1.0.0
  */
 public class ClaseService {

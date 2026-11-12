@@ -3,8 +3,8 @@ package com.clubdeportivo.model;
 /**
  * Puntos de control de ingreso al predio deportivo.
  *
- * @author Lucas Rodríguez (Integrante 3 - Logística & Clases)
- * @author Camila Díaz (Integrante 6 - Persistencia & QA)
+ * @author Merlina
+ * @author Joel
  * @version 1.0.0
  */
 public enum TipoAcceso {

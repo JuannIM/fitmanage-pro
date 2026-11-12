@@ -5,7 +5,7 @@ import java.time.LocalDate;
 /**
  * Representa el contrato y plan de afiliación de un socio al club.
  *
- * @author Sofia Fernández (Integrante 4 - Finanzas & Facturación)
+ * @author Alfonsina
  * @version 1.0.0
  */
 public class Membresia {

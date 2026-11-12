@@ -21,8 +21,8 @@ import java.util.List;
  * Demuestra la relación de COMPOSICIÓN FUERTE (Rutina *-- Ejercicio)
  * y el cálculo dinámico del tonelaje global de entrenamiento.
  *
- * @author María Gomez (Integrante 2 - Especialista en Entrenamiento & Dominio Deportivo)
- * @author Nicolás Martínez (Integrante 5 - UI/UX & Especialista Swing)
+ * @author Rocio
+ * @author Sara
  * @version 1.0.0
  */
 public class RutinasPanel extends JPanel {

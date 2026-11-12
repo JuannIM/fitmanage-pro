@@ -16,9 +16,9 @@ import java.util.List;
  * Diseñado con navegación fluida por CardLayout, barra lateral oscura estilo dashboard moderno
  * y coordinación unificada de los servicios de la aplicación.
  *
- * @author Nicolás Martínez (Integrante 5 - Diseñador UI/UX & Especialista Swing)
- * @author Juan Pérez (Integrante 1 - Líder Técnico & Arquitecto Core POO)
- * @author Camila Díaz (Integrante 6 - Persistencia & QA)
+ * @author Sara
+ * @author Juan
+ * @author Joel
  * @version 1.0.0
  */
 public class MainFrame extends JFrame {

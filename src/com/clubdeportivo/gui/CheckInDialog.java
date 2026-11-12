@@ -21,8 +21,8 @@ import java.util.List;
  * Modal interactivo para el control rápido de ingresos en molinete o recepción.
  * Proporciona validación visual instantánea con código de colores según el dictamen.
  *
- * @author Nicolás Martínez (Integrante 5 - UI/UX & Especialista Swing)
- * @author Camila Díaz (Integrante 6 - Persistencia & QA)
+ * @author Sara
+ * @author Joel
  * @version 1.0.0
  */
 public class CheckInDialog extends JDialog {

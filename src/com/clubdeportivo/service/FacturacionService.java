@@ -12,8 +12,8 @@ import java.util.Optional;
 /**
  * Servicio de administración contable, liquidación de cuotas y emisión de recibos.
  *
- * @author Sofia Fernández (Integrante 4 - Ingeniera de Finanzas & Facturación)
- * @author Juan Pérez (Integrante 1 - Arquitectura Core)
+ * @author Alfonsina
+ * @author Juan
  * @version 1.0.0
  */
 public class FacturacionService {

@@ -13,8 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Repositorio de Socios con persistencia local en data/socios.json.
  *
- * @author Camila Díaz (Integrante 6 - Persistencia, QA & Auditoría)
- * @author Juan Pérez (Integrante 1 - Arquitectura Core)
+ * @author Joel
+ * @author Juan
  * @version 1.0.0
  */
 public class SocioRepository implements IRepository<Socio, String> {

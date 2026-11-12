@@ -23,8 +23,8 @@ import java.util.List;
  * Panel de administración de Socios con búsqueda en tiempo real,
  * altas, edición de membresías y liquidación de cuotas.
  *
- * @author Juan Pérez (Integrante 1 - Líder Técnico & Arquitecto Core POO)
- * @author Sofia Fernández (Integrante 4 - Finanzas & Facturación)
+ * @author Juan
+ * @author Alfonsina
  * @version 1.0.0
  */
 public class SociosPanel extends JPanel {

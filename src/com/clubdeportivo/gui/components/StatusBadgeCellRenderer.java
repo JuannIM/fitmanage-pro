@@ -10,7 +10,7 @@ import java.awt.*;
  * Renderer personalizado para celdas de JTable que dibuja etiquetas (badges/pills)
  * con colores semánticos (Verde, Amarillo, Rojo, Gris) según el estado de la fila.
  *
- * @author Nicolás Martínez (Integrante 5 - UI/UX & Especialista Swing)
+ * @author Sara
  * @version 1.0.0
  */
 public class StatusBadgeCellRenderer extends DefaultTableCellRenderer {

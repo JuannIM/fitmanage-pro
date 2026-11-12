@@ -10,7 +10,7 @@ import java.awt.event.MouseEvent;
 /**
  * Botón interactivo moderno con esquinas redondeadas, efectos de hover y soporte de paleta.
  *
- * @author Nicolás Martínez (Integrante 5 - UI/UX & Especialista Swing)
+ * @author Sara
  * @version 1.0.0
  */
 public class ModernButton extends JButton {

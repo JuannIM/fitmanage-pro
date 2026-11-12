@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 /**
  * Transacción económica formal emitida por cobro de membresías o servicios.
  *
- * @author Sofia Fernández (Integrante 4 - Finanzas & Facturación)
+ * @author Alfonsina
  * @version 1.0.0
  */
 public class Pago {

@@ -22,8 +22,8 @@ import java.util.List;
 /**
  * Panel contable para la administración de cobranzas, balance de caja y recibos oficiales.
  *
- * @author Sofia Fernández (Integrante 4 - Ingeniera de Finanzas & Facturación)
- * @author Nicolás Martínez (Integrante 5 - UI/UX & Especialista Swing)
+ * @author Alfonsina
+ * @author Sara
  * @version 1.0.0
  */
 public class PagosPanel extends JPanel {

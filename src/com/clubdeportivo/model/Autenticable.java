@@ -3,8 +3,8 @@ package com.clubdeportivo.model;
 /**
  * Contrato de seguridad y control de acceso físico a las instalaciones del club.
  *
- * @author Juan Pérez (Integrante 1 - Arquitectura Core)
- * @author Camila Díaz (Integrante 6 - Persistencia & QA)
+ * @author Juan
+ * @author Joel
  * @version 1.0.0
  */
 public interface Autenticable {

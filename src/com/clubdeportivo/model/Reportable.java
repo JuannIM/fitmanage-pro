@@ -5,8 +5,8 @@ import java.util.Map;
 /**
  * Contrato de auditoría e inteligencia de negocio para exportación de métricas.
  *
- * @author Juan Pérez (Integrante 1 - Arquitectura Core)
- * @author Nicolás Martínez (Integrante 5 - UI/UX & Presentación)
+ * @author Juan
+ * @author Sara
  * @version 1.0.0
  */
 public interface Reportable {

@@ -15,8 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Repositorio de Rutinas de entrenamiento y sus Ejercicios compuestos en data/rutinas.json.
  *
- * @author Camila Díaz (Integrante 6 - Persistencia, QA & Auditoría)
- * @author María Gomez (Integrante 2 - Entrenamiento & Dominio Deportivo)
+ * @author Joel
+ * @author Rocio
  * @version 1.0.0
  */
 public class RutinaRepository implements IRepository<Rutina, String> {

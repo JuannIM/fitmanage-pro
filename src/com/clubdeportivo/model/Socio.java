@@ -10,8 +10,8 @@ import java.util.*;
  * Implementa múltiples interfaces de negocio: Facturable, Autenticable y Reportable.
  * Demuestra herencia profunda, sobreescritura polimórfica y reglas de descuento.
  *
- * @author Juan Pérez (Integrante 1 - Líder Técnico & Arquitecto Core POO)
- * @author Sofia Fernández (Integrante 4 - Finanzas & Facturación)
+ * @author Juan
+ * @author Alfonsina
  * @version 1.0.0
  */
 public class Socio extends Persona implements Facturable, Autenticable, Reportable {
@@ -54,7 +54,7 @@ public class Socio extends Persona implements Facturable, Autenticable, Reportab
 
     @Override
     public boolean validarIngreso(TipoAcceso tipo) {
-        // [COLABORACIÓN - Juan Pérez & Camila Díaz]:
+        // [COLABORACIÓN - Juan & Joel]:
         // Para ingresar al predio la cuota debe estar AL_DIA o PENDIENTE (período de gracia).
         // Si está VENCIDO o INACTIVO, el molinete deniega el acceso.
         if (estadoCuota == EstadoCuota.VENCIDO || estadoCuota == EstadoCuota.INACTIVO) {
@@ -70,7 +70,7 @@ public class Socio extends Persona implements Facturable, Autenticable, Reportab
     }
 
     // =========================================================================
-    // IMPLEMENTACIÓN DE FACTURABLE (Sofía Fernández)
+    // IMPLEMENTACIÓN DE FACTURABLE (Alfonsina)
     // =========================================================================
 
     public int calcularMesesAntiguedad() {
@@ -89,7 +89,7 @@ public class Socio extends Persona implements Facturable, Autenticable, Reportab
         if (membresiaActual == null) return 0.0;
         double base = membresiaActual.getPrecioBase();
 
-        // [COLABORACIÓN - Sofía Fernández & Juan Pérez]:
+        // [COLABORACIÓN - Alfonsina & Juan]:
         // Se aplica el 10% por antigüedad si supera el año en el club
         if (tieneDescuentoAntiguedad()) {
             base = base * 0.90;
@@ -145,7 +145,7 @@ public class Socio extends Persona implements Facturable, Autenticable, Reportab
     }
 
     // =========================================================================
-    // IMPLEMENTACIÓN DE AUTENTICABLE (Juan Pérez & Camila Díaz)
+    // IMPLEMENTACIÓN DE AUTENTICABLE (Juan & Joel)
     // =========================================================================
 
     @Override
@@ -162,7 +162,7 @@ public class Socio extends Persona implements Facturable, Autenticable, Reportab
     }
 
     // =========================================================================
-    // IMPLEMENTACIÓN DE REPORTABLE (Nicolás Martínez & Juan Pérez)
+    // IMPLEMENTACIÓN DE REPORTABLE (Sara & Juan)
     // =========================================================================
 
     @Override

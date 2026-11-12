@@ -8,7 +8,7 @@ import java.time.Period;
  * Clase base abstracta que encapsula los atributos y comportamientos comunes
  * de cualquier individuo vinculado al club deportivo (Socios, Instructores, Personal).
  *
- * @author Juan Pérez (Integrante 1 - Líder Técnico & Arquitecto Core POO)
+ * @author Juan
  * @version 1.0.0
  */
 public abstract class Persona {

@@ -20,8 +20,8 @@ import java.util.List;
 /**
  * Panel de administración docente y liquidación mensual de instructores.
  *
- * @author Lucas Rodríguez (Integrante 3 - Gestor de Logística, Clases & Horarios)
- * @author Sofia Fernández (Integrante 4 - Finanzas & Facturación)
+ * @author Merlina
+ * @author Alfonsina
  * @version 1.0.0
  */
 public class InstructoresPanel extends JPanel {

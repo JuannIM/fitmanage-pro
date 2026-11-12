@@ -16,8 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Repositorio de Asistencias y registros de molinete con persistencia en data/asistencias.json.
  *
- * @author Camila Díaz (Integrante 6 - Persistencia, QA & Auditoría)
- * @author Lucas Rodríguez (Integrante 3 - Logística & Clases)
+ * @author Joel
+ * @author Merlina
  * @version 1.0.0
  */
 public class AsistenciaRepository implements IRepository<Asistencia, String> {

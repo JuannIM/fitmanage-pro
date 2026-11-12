@@ -3,8 +3,8 @@ package com.clubdeportivo.model;
 /**
  * Disciplinas deportivas y de acondicionamiento físico ofrecidas en el club.
  *
- * @author Lucas Rodríguez (Integrante 3 - Logística & Clases)
- * @author María Gomez (Integrante 2 - Entrenamiento & Dominio Deportivo)
+ * @author Merlina
+ * @author Rocio
  * @version 1.0.0
  */
 public enum Disciplina {

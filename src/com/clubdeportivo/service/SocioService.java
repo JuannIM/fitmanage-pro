@@ -12,8 +12,8 @@ import java.util.Optional;
 /**
  * Servicio de lógica de negocio para administración y auditoría del padrón de socios.
  *
- * @author Juan Pérez (Integrante 1 - Líder Técnico & Arquitecto Core POO)
- * @author Sofia Fernández (Integrante 4 - Finanzas & Facturación)
+ * @author Juan
+ * @author Alfonsina
  * @version 1.0.0
  */
 public class SocioService {

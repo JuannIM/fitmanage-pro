@@ -3,7 +3,7 @@ package com.clubdeportivo.model;
 /**
  * Excepción de regla de negocio lanzada cuando una clase grupal alcanza su capacidad máxima.
  *
- * @author Lucas Rodríguez (Integrante 3 - Logística & Clases)
+ * @author Merlina
  * @version 1.0.0
  */
 public class CupoAgotadoException extends Exception {

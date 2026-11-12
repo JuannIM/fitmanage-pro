@@ -11,7 +11,7 @@ import java.awt.event.FocusEvent;
 /**
  * Campo de texto estilizado con placeholder y bordes curvos para búsquedas en vivo.
  *
- * @author Nicolás Martínez (Integrante 5 - UI/UX & Especialista Swing)
+ * @author Sara
  * @version 1.0.0
  */
 public class SearchTextField extends JTextField {

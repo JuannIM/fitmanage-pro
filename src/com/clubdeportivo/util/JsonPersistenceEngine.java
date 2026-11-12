@@ -10,8 +10,8 @@ import java.util.*;
  * Implementa serialización estructurada con formato legible (pretty-print),
  * parseo recursivo y escritura atómica sobre el sistema de archivos.
  *
- * @author Camila Díaz (Integrante 6 - Persistencia & QA)
- * @author Juan Pérez (Integrante 1 - Arquitectura Core)
+ * @author Joel
+ * @author Juan
  * @version 1.0.0
  */
 public final class JsonPersistenceEngine {

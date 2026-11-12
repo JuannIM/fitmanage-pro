@@ -572,16 +572,16 @@ Se adopta una **Arquitectura en Capas (Layered Architecture)** con separación e
 
 Para reproducir fielmente un entorno colaborativo de ingeniería académica, se define la asignación formal de roles y responsabilidades entre **6 integrantes**. Cada módulo del sistema cuenta con un responsable primario y un revisor secundario, garantizando trazabilidad y validación cruzada.
 
-### 6.1 Cuadro de Roles y Distribución de Responsabilidades
+### 6.1 Distribución de Integrantes y Módulos de Trabajo
 
-| Integrante | Rol en el Proyecto | Paquetes y Clases Asignadas | Responsabilidad Principal |
-| :--- | :--- | :--- | :--- |
-| **1. Juan Pérez** | *Líder Técnico & Arquitecto Core POO* | `model.Persona`, `model.Socio`, `model.Instructor`, `model.Autenticable`, `model.Reportable` | Diseño de la jerarquía de herencia, métodos abstractos polimórficos y contratos de identidad. |
-| **2. María Gomez** | *Especialista en Entrenamiento & Dominio Deportivo* | `model.Rutina`, `model.Ejercicio`, `model.GrupoMuscular`, `service.RutinaService` | Composición fuerte de ejercicios en rutinas, cálculo de volumen de carga y dosificación deportiva. |
-| **3. Lucas Rodríguez** | *Gestor de Logística, Clases & Horarios* | `model.ClaseGrupal`, `model.Disciplina`, `service.ClaseService`, `gui.ClasesPanel` | Lógica de cupos máximos, salas, agregación de socios e instructores, y vista de cronograma. |
-| **4. Sofia Fernández** | *Ingeniera de Finanzas & Facturación* | `model.Membresia`, `model.Pago`, `model.Facturable`, `model.MetodoPago`, `service.FacturacionService`, `gui.PagosPanel` | Modelado de cuotas, descuentos por antigüedad, emisión de comprobantes contables y balance de caja. |
-| **5. Nicolás Martínez** | *Diseñador UI/UX & Especialista Swing* | `gui.MainFrame`, `gui.DashboardPanel`, `gui.components.*`, `gui.theme.*`, `gui.CheckInDialog` | Construcción de la interfaz gráfica, CardLayout, tablas dinámicas, renderers de estado y usabilidad. |
-| **6. Camila Díaz** | *Ingeniera de Persistencia, QA & Auditoría* | `util.JsonPersistenceEngine`, `repository.*`, `service.AccesoService`, `test.SistemaTest`, `scripts/*` | Motor de guardado JSON, control de check-in en molinete, suite de pruebas y scripts de build. |
+| Integrante | Paquetes y Clases Asignadas | Responsabilidad Principal |
+| :--- | :--- | :--- |
+| **Juan** | `model.Persona`, `model.Socio`, `model.Instructor`, `model.Autenticable`, `model.Reportable` | Diseño de la jerarquía de herencia, métodos abstractos polimórficos y contratos de identidad. |
+| **Rocio** | `model.Rutina`, `model.Ejercicio`, `model.GrupoMuscular`, `service.RutinaService` | Composición fuerte de ejercicios en rutinas, cálculo de volumen de carga y dosificación deportiva. |
+| **Merlina** | `model.ClaseGrupal`, `model.Disciplina`, `service.ClaseService`, `gui.ClasesPanel` | Lógica de cupos máximos, salas, agregación de socios e instructores, y vista de cronograma. |
+| **Alfonsina** | `model.Membresia`, `model.Pago`, `model.Facturable`, `model.MetodoPago`, `service.FacturacionService`, `gui.PagosPanel` | Modelado de cuotas, descuentos por antigüedad, emisión de comprobantes contables y balance de caja. |
+| **Sara** | `gui.MainFrame`, `gui.DashboardPanel`, `gui.components.*`, `gui.theme.*`, `gui.CheckInDialog` | Construcción de la interfaz gráfica, CardLayout, tablas dinámicas, renderers de estado y usabilidad. |
+| **Joel** | `util.JsonPersistenceEngine`, `repository.*`, `service.AccesoService`, `test.SistemaTest`, `scripts/*` | Motor de guardado JSON, control de check-in en molinete, suite de pruebas y scripts de build. |
 
 ### 6.2 Convención de Comentarios y Trazabilidad Colaborativa
 Para transparentar la autoría y la coordinación entre integrantes en el código fuente, se establece la siguiente convención obligatoria:
@@ -592,8 +592,8 @@ Para transparentar la autoría y la coordinación entre integrantes en el códig
     * Clase representativa del Socio dentro del sistema del Club.
     * Gestiona la membresía activa, historial de asistencias y cuotas.
     *
-    * @author Juan Pérez (Integrante 1)
-    * @author Sofia Fernández (Integrante 4 - Integración de Facturación)
+    * @author Juan
+    * @author Alfonsina
     * @version 1.0.0
     * @since 2026-11
     */
@@ -602,7 +602,7 @@ Para transparentar la autoría y la coordinación entre integrantes en el códig
 2. **Bloques de Coordinación Inter-Módulo:**
    Cuando una clase requiere invocar o adaptarse a las reglas de otro integrante, se incluirá un comentario explicativo formal:
    ```java
-   // [COLABORACIÓN - Sofía Fernández & Juan Pérez]:
+   // [COLABORACIÓN - Alfonsina & Juan]:
    // Se valida que el socio no registre deudas previas antes de permitir la renovación
    // de la membresía. Si está vencido, se computan los intereses en calcularMontoTotal().
    if (!this.estaAlDia()) {
@@ -610,14 +610,14 @@ Para transparentar la autoría y la coordinación entre integrantes en el códig
    }
    ```
    ```java
-   // [COLABORACIÓN - Lucas Rodríguez & María Gomez]:
+   // [COLABORACIÓN - Merlina & Rocio]:
    // Al desinscribir un socio de una clase grupal, se verifica si posee una rutina
    // asignada para sugerirle el entrenamiento libre en la sala de musculación.
    ```
 
 3. **Etiquetas de Revisión Cruzada (Code Review):**
    ```java
-   // [CODE-REVIEW - Camila Díaz]: Persistencia testeada con serialización atómica en JSON.
+   // [CODE-REVIEW - Joel]: Persistencia testeada con serialización atómica en JSON.
    ```
 
 ---

@@ -11,8 +11,8 @@ import java.util.Locale;
 /**
  * Utilitario para el formateo homogéneo de fechas, horas y montos monetarios.
  *
- * @author Sofia Fernández (Integrante 4 - Finanzas & Facturación)
- * @author Nicolás Martínez (Integrante 5 - UI/UX & Presentación)
+ * @author Alfonsina
+ * @author Sara
  * @version 1.0.0
  */
 public final class Formatters {

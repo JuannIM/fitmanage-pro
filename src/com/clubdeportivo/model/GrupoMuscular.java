@@ -3,7 +3,7 @@ package com.clubdeportivo.model;
 /**
  * Grupos musculares anatómicos para clasificación de ejercicios y dosificación de cargas.
  *
- * @author María Gomez (Integrante 2 - Entrenamiento & Dominio Deportivo)
+ * @author Rocio
  * @version 1.0.0
  */
 public enum GrupoMuscular {

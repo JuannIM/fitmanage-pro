@@ -3,7 +3,7 @@ package com.clubdeportivo.model;
 /**
  * Medios de pago autorizados en la administración contable del club.
  *
- * @author Sofia Fernández (Integrante 4 - Finanzas & Facturación)
+ * @author Alfonsina
  * @version 1.0.0
  */
 public enum MetodoPago {

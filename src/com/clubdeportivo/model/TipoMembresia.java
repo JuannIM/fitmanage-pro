@@ -4,8 +4,8 @@ package com.clubdeportivo.model;
  * Categorías de planes y membresías disponibles en FitManage Pro.
  * Define las tarifas base mensuales y el acceso a clases dirigidas.
  *
- * @author Sofia Fernández (Integrante 4 - Finanzas & Facturación)
- * @author Lucas Rodríguez (Integrante 3 - Logística & Clases)
+ * @author Alfonsina
+ * @author Merlina
  * @version 1.0.0
  */
 public enum TipoMembresia {

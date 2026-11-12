@@ -27,8 +27,8 @@ import java.util.Locale;
  * Panel de cronograma de clases grupales y gestión rigurosa de aforo.
  * Demuestra control de excepciones de negocio (CupoAgotadoException).
  *
- * @author Lucas Rodríguez (Integrante 3 - Gestor de Logística, Clases & Horarios)
- * @author María Gomez (Integrante 2 - Entrenamiento & Dominio Deportivo)
+ * @author Merlina
+ * @author Rocio
  * @version 1.0.0
  */
 public class ClasesPanel extends JPanel {

@@ -15,8 +15,8 @@ import java.util.Optional;
 /**
  * Servicio de diseño deportivo, cálculo de volumen global y prescripción de rutinas.
  *
- * @author María Gomez (Integrante 2 - Especialista en Entrenamiento & Dominio Deportivo)
- * @author Juan Pérez (Integrante 1 - Arquitectura Core)
+ * @author Rocio
+ * @author Juan
  * @version 1.0.0
  */
 public class RutinaService {

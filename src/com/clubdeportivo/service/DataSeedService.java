@@ -12,8 +12,8 @@ import java.time.LocalTime;
  * Servicio de inicialización y siembra de datos de prueba completos para el sistema FitManage Pro.
  * Garantiza que el evaluador disponga de un entorno rico, variado y funcional desde el primer segundo.
  *
- * @author Camila Díaz (Integrante 6 - Persistencia, QA & Auditoría)
- * @author Nicolás Martínez (Integrante 5 - UI/UX & Presentación)
+ * @author Joel
+ * @author Sara
  * @version 1.0.0
  */
 public class DataSeedService {

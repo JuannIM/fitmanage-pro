@@ -6,7 +6,7 @@ import com.clubdeportivo.util.Formatters;
  * Representa un ejercicio físico individual con parámetros de carga y volumen.
  * Es un componente que vive en composición estricta dentro de una Rutina.
  *
- * @author María Gomez (Integrante 2 - Especialista en Entrenamiento & Dominio Deportivo)
+ * @author Rocio
  * @version 1.0.0
  */
 public class Ejercicio {

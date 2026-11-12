@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 /**
  * Registro inmutable de intento de ingreso por molinete o recepción.
  *
- * @author Camila Díaz (Integrante 6 - Persistencia & QA)
- * @author Lucas Rodríguez (Integrante 3 - Logística & Clases)
+ * @author Joel
+ * @author Merlina
  * @version 1.0.0
  */
 public class Asistencia {

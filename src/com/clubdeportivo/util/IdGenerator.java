@@ -5,8 +5,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Generador centralizado de identificadores alfanuméricos legibles y únicos.
  *
- * @author Juan Pérez (Integrante 1 - Arquitectura Core)
- * @author Camila Díaz (Integrante 6 - Persistencia & QA)
+ * @author Juan
+ * @author Joel
  * @version 1.0.0
  */
 public final class IdGenerator {

@@ -45,7 +45,7 @@ El presente documento certifica la implementación completa, verificación autom
 | **8** | **Persistencia Autónoma en JSON** | **CUMPLIDO** | `JsonPersistenceEngine.java`, `repository/*` | Serializador/deserializador nativo con guardado atómico (`.tmp` + `ATOMIC_MOVE`) en `data/*.json`. |
 | **9** | **Semillero de Datos Demo** | **CUMPLIDO** | `DataSeedService.java`, `data/*.json` | 10 socios (activos, morosos, antiguos con 10% desc.), 5 instructores, 5 clases y 3 rutinas listos para usar. |
 | **10** | **Interfaz Gráfica Swing** | **CUMPLIDO** | `MainFrame.java`, `gui/*`, `theme/*` | `CardLayout`, navegación por sidebar oscura, botones hover, `StatusBadgeCellRenderer`, `MetricCard`, `CheckInDialog`. |
-| **11** | **Simulación de 6 Integrantes** | **CUMPLIDO** | Encabezados Javadoc y tags `[COLABORACIÓN]` | Juan Pérez, María Gomez, Lucas Rodríguez, Sofia Fernández, Nicolás Martínez, Camila Díaz. |
+| **11** | **Simulación de 6 Integrantes** | **CUMPLIDO** | Encabezados Javadoc y tags `[COLABORACIÓN]` | Juan, Rocio, Merlina, Alfonsina, Sara, Joel. |
 | **12** | **Scripts de Automatización** | **CUMPLIDO** | `compile.sh`, `run.sh`, `test.sh` | Scripts bash con permisos `+x`, manejo de errores (`set -e`) y feedback en consola. |
 | **13** | **Análisis Graphify** | **CUMPLIDO** | `graphify-out/` | Grafo de conocimiento con 852 nodos, 2168 aristas, 40 comunidades y 0 ciclos de importación. |
 
@@ -123,14 +123,14 @@ $$\text{GUI} \longrightarrow \text{SERVICE} \longrightarrow \text{REPOSITORY} \l
 
 ## 5. TRAZABILIDAD DEL TRABAJO COLABORATIVO (6 INTEGRANTES)
 
-| Integrante | Rol | Aportes Principales en el Código | Comentarios de Integración |
-| :--- | :--- | :--- | :--- |
-| **Juan Pérez** | *Líder Técnico & Core POO* | `Persona.java`, `Socio.java`, `Autenticable.java`, `Reportable.java` | Establece métodos abstractos y polimorfismo. |
-| **María Gomez** | *Entrenamiento Deportivo* | `Rutina.java`, `Ejercicio.java`, `GrupoMuscular.java`, `RutinaService.java` | Composición fuerte y fórmula de tonelaje acumulado. |
-| **Lucas Rodríguez** | *Logística & Clases* | `ClaseGrupal.java`, `Disciplina.java`, `CupoAgotadoException.java`, `ClasesPanel.java` | Control de aforo máximo y agregación débil con profesores. |
-| **Sofia Fernández** | *Finanzas & Facturación* | `Membresia.java`, `Pago.java`, `Facturable.java`, `FacturacionService.java`, `PagosPanel.java` | Regla del 10% por antigüedad y recibos imprimibles. |
-| **Nicolás Martínez** | *UI/UX & Swing* | `MainFrame.java`, `DashboardPanel.java`, `CheckInDialog.java`, `ThemeConfig.java`, Componentes | CardLayout, badges semafóricos, búsqueda en vivo y hover. |
-| **Camila Díaz** | *Persistencia & QA* | `JsonPersistenceEngine.java`, `repository/*`, `AccesoService.java`, `SistemaTest.java`, Scripts | Motor JSON atómico, molinete en tiempo real y tests. |
+| Integrante | Aportes Principales en el Código | Comentarios de Integración |
+| :--- | :--- | :--- |
+| **Juan** | `Persona.java`, `Socio.java`, `Autenticable.java`, `Reportable.java` | Establece métodos abstractos y polimorfismo. |
+| **Rocio** | `Rutina.java`, `Ejercicio.java`, `GrupoMuscular.java`, `RutinaService.java` | Composición fuerte y fórmula de tonelaje acumulado. |
+| **Merlina** | `ClaseGrupal.java`, `Disciplina.java`, `CupoAgotadoException.java`, `ClasesPanel.java` | Control de aforo máximo y agregación con profesores. |
+| **Alfonsina** | `Membresia.java`, `Pago.java`, `Facturable.java`, `FacturacionService.java`, `PagosPanel.java` | Regla del 10% por antigüedad y recibos imprimibles. |
+| **Sara** | `MainFrame.java`, `DashboardPanel.java`, `CheckInDialog.java`, `ThemeConfig.java`, Componentes | CardLayout, badges semafóricos, búsqueda en vivo y hover. |
+| **Joel** | `JsonPersistenceEngine.java`, `repository/*`, `AccesoService.java`, `SistemaTest.java`, Scripts | Motor JSON atómico, molinete en tiempo real y tests. |
 
 ---
 
