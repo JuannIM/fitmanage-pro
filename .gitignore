@@ -29,4 +29,7 @@ PLAN*.md
 AUDIT*.md
 *AUDIT*.md
 
+# Datos temporales de pruebas (manteniendo data/*.json principales rastreados)
+data/test_*.json
+
 
