@@ -43,6 +43,7 @@ classDiagram
         <<interface>>
         +autenticar(String credencial) boolean
         +validarAcceso(String puntoControl) boolean
+        +actualizarClave(String nuevaClave) void
     }
 
     class Reportable {
@@ -60,6 +61,9 @@ classDiagram
         PENDIENTE
         VENCIDO
         INACTIVO
+        -String etiqueta
+        +getEtiqueta() String
+        +toString() String
     }
 
     class TipoMembresia {
@@ -68,8 +72,13 @@ classDiagram
         MUSCULACION
         CLASES_GRUPALES
         VIP_TOTAL
+        -String nombre
+        -double precioBase
+        -boolean permiteClases
+        +getNombre() String
         +getPrecioBase() double
         +permiteClases() boolean
+        +toString() String
     }
 
     class Disciplina {
@@ -80,6 +89,9 @@ classDiagram
         FUNCIONAL
         BOXEO
         PILATES
+        -String nombreVisible
+        +getNombreVisible() String
+        +toString() String
     }
 
     class GrupoMuscular {
@@ -90,6 +102,9 @@ classDiagram
         HOMBROS
         BRAZOS
         CORE
+        -String descripcion
+        +getDescripcion() String
+        +toString() String
     }
 
     class MetodoPago {
@@ -98,12 +113,18 @@ classDiagram
         TARJETA_DEBITO
         TARJETA_CREDITO
         TRANSFERENCIA
+        -String descripcion
+        +getDescripcion() String
+        +toString() String
     }
 
     class TipoAcceso {
         <<enumeration>>
         GENERAL
         CLASE_GRUPAL
+        -String descripcion
+        +getDescripcion() String
+        +toString() String
     }
 
     class EstadoAcceso {
@@ -113,6 +134,11 @@ classDiagram
         DENEGADO_SIN_CUPO
         DENEGADO_MEMBRESIA_INSUFICIENTE
         DENEGADO_NO_ENCONTRADO
+        -String mensaje
+        -boolean aprobado
+        +getMensaje() String
+        +esAprobado() boolean
+        +toString() String
     }
 
     %% ==========================================
@@ -129,12 +155,22 @@ classDiagram
         #LocalDate fechaNacimiento
         #LocalDate fechaRegistro
         +getId() String
+        +setId(String id) void
         +getDni() String
+        +setDni(String dni) void
+        +getNombre() String
+        +setNombre(String nombre) void
+        +getApellido() String
+        +setApellido(String apellido) void
         +getNombreCompleto() String
         +getEmail() String
+        +setEmail(String email) void
         +getTelefono() String
+        +setTelefono(String telefono) void
         +getFechaNacimiento() LocalDate
+        +setFechaNacimiento(LocalDate fechaNacimiento) void
         +getFechaRegistro() LocalDate
+        +setFechaRegistro(LocalDate fechaRegistro) void
         +calcularEdad() int
         +mostrarDetalle()* String
         +getRol()* String
@@ -142,20 +178,27 @@ classDiagram
     }
 
     class Socio {
+        +int DIAS_GRACIA_CUOTA$
         -String numeroSocio
         -EstadoCuota estadoCuota
         -Membresia membresiaActual
         -List~Rutina~ rutinasAsignadas
         -List~Asistencia~ historialAsistencias
+        -double porcentajeDescuentoManual
         +getNumeroSocio() String
+        +setNumeroSocio(String numeroSocio) void
         +getEstadoCuota() EstadoCuota
         +setEstadoCuota(EstadoCuota estado) void
         +getMembresiaActual() Membresia
         +setMembresiaActual(Membresia m) void
         +asignarRutina(Rutina r) void
+        +removerRutina(String rutinaId) void
         +registrarAsistencia(Asistencia a) void
         +getRutinasAsignadas() List~Rutina~
         +getHistorialAsistencias() List~Asistencia~
+        +getPorcentajeDescuentoManual() double
+        +calcularMesesAntiguedad() int
+        +tieneDescuentoAntiguedad() boolean
         +mostrarDetalle() String
         +getRol() String
         +validarIngreso(TipoAcceso tipo) boolean
@@ -177,11 +220,16 @@ classDiagram
         -List~ClaseGrupal~ clasesAsignadas
         -String turnoDisponibilidad
         +getLegajo() String
+        +setLegajo(String legajo) void
         +getEspecialidad() String
+        +setEspecialidad(String especialidad) void
         +getSueldoBase() double
+        +setSueldoBase(double sueldoBase) void
         +getHonorarioPorClase() double
+        +setHonorarioPorClase(double honorarioPorClase) void
         +getClasesAsignadas() List~ClaseGrupal~
         +getTurnoDisponibilidad() String
+        +setTurnoDisponibilidad(String turnoDisponibilidad) void
         +asignarClase(ClaseGrupal c) void
         +removerClase(ClaseGrupal c) void
         +calcularLiquidacionMensual() double
@@ -205,13 +253,21 @@ classDiagram
         -int descansoSegundos
         -String notasTecnicas
         +getId() String
+        +setId(String id) void
         +getNombre() String
+        +setNombre(String nombre) void
         +getGrupoMuscular() GrupoMuscular
+        +setGrupoMuscular(GrupoMuscular grupoMuscular) void
         +getSeries() int
+        +setSeries(int series) void
         +getRepeticiones() int
+        +setRepeticiones(int repeticiones) void
         +getPesoSugeridoKg() double
+        +setPesoSugeridoKg(double pesoSugeridoKg) void
         +getDescansoSegundos() int
+        +setDescansoSegundos(int descansoSegundos) void
         +getNotasTecnicas() String
+        +setNotasTecnicas(String notasTecnicas) void
         +calcularVolumenTotal() double
         +mostrarResumen() String
     }
@@ -226,11 +282,22 @@ classDiagram
         -String instructorCreadorId
         -List~Ejercicio~ ejercicios
         +getId() String
+        +setId(String id) void
         +getNombre() String
+        +setNombre(String nombre) void
         +getObjetivo() String
+        +setObjetivo(String objetivo) void
         +getNivelDificultad() String
+        +setNivelDificultad(String nivelDificultad) void
+        +getFechaCreacion() LocalDate
+        +setFechaCreacion(LocalDate fechaCreacion) void
+        +getFechaRevision() LocalDate
+        +setFechaRevision(LocalDate fechaRevision) void
+        +getInstructorCreadorId() String
+        +setInstructorCreadorId(String instructorCreadorId) void
         +agregarEjercicio(Ejercicio e) void
         +eliminarEjercicio(String ejercicioId) boolean
+        +vaciarEjercicios() void
         +getEjercicios() List~Ejercicio~
         +calcularVolumenGlobal() double
         +getCantidadEjercicios() int
@@ -249,17 +316,26 @@ classDiagram
         -Instructor instructor
         -List~Socio~ sociosInscriptos
         +getId() String
+        +setId(String id) void
         +getNombre() String
+        +setNombre(String nombre) void
         +getDisciplina() Disciplina
+        +setDisciplina(Disciplina disciplina) void
         +getDiaSemana() DayOfWeek
+        +setDiaSemana(DayOfWeek diaSemana) void
         +getHoraInicio() LocalTime
+        +setHoraInicio(LocalTime horaInicio) void
         +getDuracionMinutos() int
+        +setDuracionMinutos(int duracionMinutos) void
         +getSala() String
+        +setSala(String sala) void
         +getCupoMaximo() int
+        +setCupoMaximo(int cupoMaximo) void
         +getInstructor() Instructor
         +setInstructor(Instructor i) void
         +getSociosInscriptos() List~Socio~
         +inscribirSocio(Socio s) boolean
+        +restaurarInscripcion(Socio s) void
         +desinscribirSocio(String numeroSocio) boolean
         +tieneCupoDisponible() boolean
         +getCuposRestantes() int
@@ -274,11 +350,19 @@ classDiagram
         -LocalDate fechaVencimiento
         -boolean renovacionAutomatica
         +getId() String
+        +setId(String id) void
         +getTipo() TipoMembresia
+        +setTipo(TipoMembresia tipo) void
         +getPrecioBase() double
+        +setPrecioBase(double precioBase) void
         +getFechaInicio() LocalDate
+        +setFechaInicio(LocalDate fechaInicio) void
         +getFechaVencimiento() LocalDate
+        +setFechaVencimiento(LocalDate fechaVencimiento) void
+        +isRenovacionAutomatica() boolean
+        +setRenovacionAutomatica(boolean renovacionAutomatica) void
         +estaVencida() boolean
+        +estaEnPeriodoGracia(int diasGracia) boolean
         +extenderPeriodo(int dias) void
     }
 
@@ -291,16 +375,24 @@ classDiagram
         -MetodoPago metodoPago
         -String concepto
         +getId() String
+        +setId(String id) void
         +getNumeroComprobante() String
+        +setNumeroComprobante(String numeroComprobante) void
         +getSocioId() String
+        +setSocioId(String socioId) void
         +getMonto() double
+        +setMonto(double monto) void
         +getFechaHoraPago() LocalDateTime
+        +setFechaHoraPago(LocalDateTime fechaHoraPago) void
         +getMetodoPago() MetodoPago
+        +setMetodoPago(MetodoPago metodoPago) void
         +getConcepto() String
+        +setConcepto(String concepto) void
         +generarReciboImprimible() String
     }
 
     class Asistencia {
+        <<immutable>>
         -String id
         -String socioId
         -LocalDateTime fechaHora
@@ -318,10 +410,28 @@ classDiagram
         +esAccesoValido() boolean
     }
 
+    class Exception
+    class RuntimeException
+
     class CupoAgotadoException {
         <<exception>>
-        +CupoAgotadoException(String mensaje)
+        -long serialVersionUID$
+        -String idClase
+        -int cupoMaximo
+        +CupoAgotadoException(String idClase, String nombreClase, int cupoMaximo)
+        +getIdClase() String
+        +getCupoMaximo() int
     }
+
+    class PersistenceException {
+        <<exception>>
+        -long serialVersionUID$
+        +PersistenceException(String message)
+        +PersistenceException(String message, Throwable cause)
+    }
+
+    Exception <|-- CupoAgotadoException : Herencia
+    RuntimeException <|-- PersistenceException : Herencia
 
     %% ==========================================
     %% RELACIONES ESTRUCTURALES Y DEPENDENCIAS
@@ -361,9 +471,10 @@ Las interfaces representan un acuerdo formal de métodos que una clase se compro
    - `aplicarDescuento(double)`: Permite bonificaciones personalizadas.
 
 2. **`Autenticable`**:
-   - **Propósito:** Estandariza la seguridad para identificar personas en el sistema (por DNI, email o legajo).
+   - **Propósito:** Estandariza la seguridad para identificar personas en el sistema (por DNI, email o N° de Socio).
    - `autenticar(String)`: Verifica credenciales en un punto de acceso.
    - `validarAcceso(String)`: Comprueba si tiene privilegios para acceder a una sala o recurso particular.
+   - `actualizarClave(String)`: Método `default` extensible para actualizar la credencial asignada.
 
 3. **`Reportable`**:
    - **Propósito:** Habilita a las entidades a exportar métricas estructuradas para el panel de estadísticas y auditoría gerencial.
@@ -385,9 +496,9 @@ Las interfaces representan un acuerdo formal de métodos que una clase se compro
 
 ### 3.3 Subclase: `Socio`
 - Extiende de `Persona` e implementa `Facturable`, `Autenticable` y `Reportable`.
-- **Encapsulamiento:** Mantiene su `numeroSocio`, `estadoCuota`, `membresiaActual`, colección de rutinas y asistencias en estado privado.
+- **Encapsulamiento:** Mantiene su `numeroSocio`, `estadoCuota`, `membresiaActual`, `porcentajeDescuentoManual`, colección de rutinas y asistencias en estado privado, además de la constante `DIAS_GRACIA_CUOTA = 5`.
 - **Regla Polimórfica de Acceso:**  
-  Sobrescribe `validarIngreso(TipoAcceso tipo)`: si su estado es `AL_DIA`, devuelve `true`; si su cuota está `VENCIDO`, devuelve `false` independientemente del tipo de acceso solicitado.
+  Sobrescribe `validarIngreso(TipoAcceso tipo)`: rechaza socios con estado `VENCIDO` o `INACTIVO` (y con estado `AL_DIA` si la membresía está vencida), tolera estado `PENDIENTE` únicamente dentro del período de gracia de `DIAS_GRACIA_CUOTA` días (`Membresia.estaEnPeriodoGracia`), y verifica `permiteClases()` cuando el acceso es `CLASE_GRUPAL`.
 
 ---
 

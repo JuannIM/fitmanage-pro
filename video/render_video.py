@@ -5,6 +5,8 @@ import os
 import sys
 import time
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 WIDTH = 1920
 HEIGHT = 1080
 FPS = 30
@@ -316,7 +318,7 @@ def render_scene_1(ctx, t):
         "✓ Java 21 LTS Puro (Sin Maven/Gradle)",
         "✓ UI Swing Ejecutiva Moderna",
         "✓ Persistencia Atómica JSON",
-        "✓ Cobertura 100% Tests"
+        "✓ 17/17 Tests • 54 Clases Java"
     ]
     px = box_x + 70
     for p in pills:
@@ -364,10 +366,10 @@ def render_scene_2(ctx, t):
     # Dynamic status simulator inside Card 1
     sub_box_y = row1_y + 150
     draw_card(ctx, col1_x + 30, sub_box_y, grid_w - 60, 135, r=10, bg_rgba=(0.05, 0.08, 0.14, 0.95), border_rgba=(0.14, 0.20, 0.32, 0.6))
-    draw_text(ctx, col1_x + 50, sub_box_y + 36, "Socio #102 - Martín Gómez (Plan Pro)", size=15, color=C_TEXT_WHITE, bold=True)
+    draw_text(ctx, col1_x + 50, sub_box_y + 36, "SOC-101 - Juan Carlos Rossi (Pase Libre Total $18.500)", size=15, color=C_TEXT_WHITE, bold=True)
     draw_badge(ctx, col1_x + 560, sub_box_y + 38, "● CUOTA AL DÍA", font_size=11, bg_color=(0.06, 0.72, 0.50, 0.25), text_color=C_EMERALD, border=(0.06, 0.72, 0.50, 0.8))
 
-    draw_text(ctx, col1_x + 50, sub_box_y + 82, "Socio #108 - Lucas Varela (Plan Estudiante)", size=15, color=C_TEXT_WHITE, bold=True)
+    draw_text(ctx, col1_x + 50, sub_box_y + 82, "SOC-103 - Martín A. Díaz (Solo Musculación $12.000)", size=15, color=C_TEXT_WHITE, bold=True)
     draw_badge(ctx, col1_x + 560, sub_box_y + 84, "● MOROSO (VENCIDO)", font_size=11, bg_color=(0.94, 0.27, 0.40, 0.25), text_color=C_ROSE, border=(0.94, 0.27, 0.40, 0.8))
 
     draw_text(ctx, col1_x + 50, sub_box_y + 118, "Regla de Negocio: Detección automática de mora y bloqueo en molinete.", size=12, color=C_AMBER)
@@ -403,7 +405,7 @@ def render_scene_2(ctx, t):
     # Salary breakdown box
     sal_box_y = row2_y + 150
     draw_card(ctx, col1_x + 30, sal_box_y, grid_w - 60, 135, r=10, bg_rgba=(0.05, 0.08, 0.14, 0.95), border_rgba=(0.14, 0.20, 0.32, 0.6))
-    draw_text(ctx, col1_x + 50, sal_box_y + 36, "Prof. Carlos Rossi (Especialidad: Musculación & HIIT)", size=15, color=C_TEXT_WHITE, bold=True)
+    draw_text(ctx, col1_x + 50, sal_box_y + 36, "Prof. Valeria Ramos (Entrenamiento Funcional & HIIT)", size=15, color=C_TEXT_WHITE, bold=True)
     draw_badge(ctx, col1_x + 560, sal_box_y + 38, "LIQUIDADO", font_size=11, bg_color=(0.06, 0.72, 0.50, 0.25), text_color=C_EMERALD)
 
     draw_text(ctx, col1_x + 50, sal_box_y + 75, "Fórmula: SalarioTotal = HorasMensuales × TarifaHora + BonificaciónEspecialidad", size=13, color=C_CYAN)
@@ -686,7 +688,7 @@ def render_scene_4(ctx, t):
     draw_card(ctx, c2_x + 25, rec_y, col_w - 50, 310, r=12, bg_rgba=(0.04, 0.07, 0.13, 0.95), border_rgba=(0.96, 0.62, 0.04, 0.6))
     draw_text(ctx, c2_x + 45, rec_y + 35, "LIQUIDACIÓN DE CUOTA MENSUAL", size=14, color=C_AMBER, bold=True)
 
-    draw_text(ctx, c2_x + 45, rec_y + 75, "Socio: Martín Gómez (Antigüedad: 24 meses)", size=13, color=C_TEXT_WHITE)
+    draw_text(ctx, c2_x + 45, rec_y + 75, "Socio: Juan Carlos Rossi (Antigüedad: 15 meses)", size=13, color=C_TEXT_WHITE)
     draw_text(ctx, c2_x + 45, rec_y + 100, "Condición: Antigüedad > 12 meses [CUMPLE ✓]", size=12, color=C_EMERALD)
 
     ctx.set_source_rgba(0.25, 0.35, 0.50, 0.5)
@@ -695,11 +697,11 @@ def render_scene_4(ctx, t):
     ctx.line_to(c2_x + col_w - 45, rec_y + 115)
     ctx.stroke()
 
-    draw_text(ctx, c2_x + 45, rec_y + 145, "Cuota Base Membresía Full:", size=14, color=C_TEXT_MUTED)
-    draw_text(ctx, c2_x + col_w - 150, rec_y + 145, "$ 15.000,00", size=14, color=C_TEXT_WHITE, bold=True)
+    draw_text(ctx, c2_x + 45, rec_y + 145, "Cuota Base Pase Libre Total:", size=14, color=C_TEXT_MUTED)
+    draw_text(ctx, c2_x + col_w - 150, rec_y + 145, "$ 18.500,00", size=14, color=C_TEXT_WHITE, bold=True)
 
     draw_text(ctx, c2_x + 45, rec_y + 180, "Bonificación Antigüedad (-10%):", size=14, color=C_EMERALD)
-    draw_text(ctx, c2_x + col_w - 150, rec_y + 180, "- $ 1.500,00", size=14, color=C_EMERALD, bold=True)
+    draw_text(ctx, c2_x + col_w - 150, rec_y + 180, "- $ 1.850,00", size=14, color=C_EMERALD, bold=True)
 
     ctx.set_source_rgba(0.25, 0.35, 0.50, 0.5)
     ctx.move_to(c2_x + 45, rec_y + 205)
@@ -707,7 +709,7 @@ def render_scene_4(ctx, t):
     ctx.stroke()
 
     draw_text(ctx, c2_x + 45, rec_y + 245, "TOTAL A FACTURAR:", size=16, color=C_TEXT_WHITE, bold=True)
-    draw_text(ctx, c2_x + col_w - 165, rec_y + 245, "$ 13.500,00", size=18, color=C_CYAN, bold=True)
+    draw_text(ctx, c2_x + col_w - 165, rec_y + 245, "$ 16.650,00", size=18, color=C_CYAN, bold=True)
 
     draw_badge(ctx, c2_x + 45, rec_y + 288, "FACTURA GENERADA EXITOSAMENTE", font_size=11, bg_color=(0.06, 0.72, 0.50, 0.25), text_color=C_EMERALD)
 
@@ -733,7 +735,7 @@ def render_scene_4(ctx, t):
     ctx.fill()
     draw_text(ctx, c3_x + 64, turn_y + 111, "✓", size=18, color=C_TEXT_WHITE, bold=True)
     draw_text(ctx, c3_x + 100, turn_y + 92, "ACCESO CONCEDIDO", size=16, color=C_EMERALD, bold=True)
-    draw_text(ctx, c3_x + 100, turn_y + 115, "Socio #102: Martín Gómez • Cuota AL DÍA", size=12, color=C_TEXT_WHITE)
+    draw_text(ctx, c3_x + 100, turn_y + 115, "SOC-101: Juan Carlos Rossi • Cuota AL DÍA", size=12, color=C_TEXT_WHITE)
     draw_text(ctx, c3_x + 100, turn_y + 135, "Molinete Destrabado | Registro en asistencias.json", size=11, color=(0.7, 0.95, 0.8))
 
     # Card Red Denied
@@ -743,7 +745,7 @@ def render_scene_4(ctx, t):
     ctx.fill()
     draw_text(ctx, c3_x + 64, turn_y + 231, "✗", size=18, color=C_TEXT_WHITE, bold=True)
     draw_text(ctx, c3_x + 100, turn_y + 212, "ACCESO BLOQUEADO", size=16, color=C_ROSE, bold=True)
-    draw_text(ctx, c3_x + 100, turn_y + 235, "Socio #108: Lucas Varela • Cuota VENCIDA", size=12, color=C_TEXT_WHITE)
+    draw_text(ctx, c3_x + 100, turn_y + 235, "SOC-103: Martín A. Díaz • Cuota VENCIDA", size=12, color=C_TEXT_WHITE)
     draw_text(ctx, c3_x + 100, turn_y + 255, "Molinete Bloqueado | Regularizar en Administración", size=11, color=(1.0, 0.7, 0.7))
 
     draw_text(ctx, c3_x + 30, col_y + 510, "Modal interactivo en Swing con semáforo cromático y registro de ingreso seguro sin demoras.", size=13, color=C_TEXT_WHITE)
@@ -779,17 +781,17 @@ def render_scene_5(ctx, t):
     draw_card(ctx, q_col1_x, q_y, q_col_w, q_col_h, r=16, bg_rgba=(0.06, 0.09, 0.17, 0.94), border_rgba=(0.06, 0.72, 0.50, 0.8))
     draw_badge(ctx, q_col1_x + 30, q_y + 44, "TEST SUITE AUTOMATIZADA (scripts/test.sh)", font_size=12, bg_color=(0.06, 0.72, 0.50, 0.3), text_color=C_EMERALD)
     draw_text(ctx, q_col1_x + 30, q_y + 88, "100% Tests Automatizados Aprobados", size=24, color=C_TEXT_WHITE, bold=True)
-    draw_badge(ctx, q_col1_x + 590, q_y + 88, "7 / 7 PASS (100%)", font_size=14, bg_color=(0.06, 0.72, 0.50, 0.3), text_color=C_EMERALD, border=(0.06, 0.72, 0.50, 0.9))
+    draw_badge(ctx, q_col1_x + 580, q_y + 88, "17 / 17 PASS (100%)", font_size=14, bg_color=(0.06, 0.72, 0.50, 0.3), text_color=C_EMERALD, border=(0.06, 0.72, 0.50, 0.9))
 
-    # 7 Tests Checklist
+    # 17 Tests Checklist (grouped cleanly in 7 rows)
     tests = [
-        "1. Herencia y Polimorfismo en Persona (Socio / Instructor)",
-        "2. Composición Fuerte Rutina *-- Ejercicio (Cálculo de Tonelaje)",
-        "3. Control de Cupo y Excepción CupoAgotadoException",
-        "4. Regla de Negocio: Descuento 10% por Antigüedad (>12 meses)",
-        "5. Motor JsonPersistenceEngine y Guardado Atómico OS",
-        "6. Validación de Estados de Cuota y Check-In en Molinete",
-        "7. Generación de Reportes Ejecutivos sin Dependencias Externas"
+        "1-4. Herencia Persona, Rutina *-- Ejercicio, Cupo y Dto. 10%",
+        "5-7. Check-In Molinete, Persistencia JSON Atómica e Interfaces",
+        "8-10. Sincronización IdGenerator, Hidratación y Concurrencia",
+        "11-13. Validación PersistenceException, RutinaService y Gracia",
+        "14-15. DataSeedService Idempotente e Integridad Referencial",
+        "16. Facturación, Bono Docente e Invariantes de Dominio",
+        "17. Smoke Tests GUI Swing Headless-Safe (54 archivos .java)"
     ]
     ty = q_y + 130
     for test_desc in tests:
@@ -813,9 +815,9 @@ def render_scene_5(ctx, t):
     m_h = 135
     m_cards = [
         ("0 CICLOS", "Aciclicidad Estricta", "Grafo Acíclico Dirigido verificado en graphify-out/", C_EMERALD),
-        ("865 NODOS", "Indexación Completa", "Clases, interfaces, métodos y atributos mapeados", C_CYAN),
-        ("2.168 ARISTAS", "Relaciones Trazadas", "Herencia, composición, llamadas y agregaciones", C_PURPLE),
-        ("40 COMUNIDADES", "Modularidad Pura", "Alta cohesión de paquetes con acoplamiento mínimo", C_AMBER)
+        ("1.001 NODOS", "Indexación Completa", "Clases, interfaces, métodos y atributos mapeados", C_CYAN),
+        ("2.738 ARISTAS", "Relaciones Trazadas", "Herencia, composición, llamadas y agregaciones", C_PURPLE),
+        ("47 COMUNIDADES", "Modularidad Pura", "Alta cohesión de paquetes con acoplamiento mínimo", C_AMBER)
     ]
     for mi, (val, tit, des, clr) in enumerate(m_cards):
         mx = q_col2_x + 30 + (mi % 2) * (m_w + 20)
@@ -851,8 +853,10 @@ def render_scene_5(ctx, t):
 # MAIN RENDER PIPELINE
 # ==========================================
 def render_all():
-    out_video = "/home/juancito/Documents/Orca/java/video/fitmanage_presentacion.mp4"
-    audio_wav = "/home/juancito/Documents/Orca/java/video/soundtrack.wav"
+    out_video = os.path.join(BASE_DIR, "fitmanage_presentacion.mp4")
+    audio_wav = os.path.join(BASE_DIR, "soundtrack.wav")
+    capturas_dir = os.path.join(BASE_DIR, "capturas")
+    os.makedirs(capturas_dir, exist_ok=True)
 
     if not os.path.exists(audio_wav):
         print(f"Error: audio file {audio_wav} not found! Run generate_audio.py first.")
@@ -889,11 +893,11 @@ def render_all():
 
     # Frame extraction checkpoints for self-audit stills
     capture_frames = {
-        int(4.0 * FPS): "/home/juancito/Documents/Orca/java/video/capturas/escena1_titulo_equipo.png",
-        int(12.0 * FPS): "/home/juancito/Documents/Orca/java/video/capturas/escena2_dominio_negocio.png",
-        int(20.0 * FPS): "/home/juancito/Documents/Orca/java/video/capturas/escena3_arquitectura_poo.png",
-        int(30.0 * FPS): "/home/juancito/Documents/Orca/java/video/capturas/escena4_tecnologia_checkin.png",
-        int(38.0 * FPS): "/home/juancito/Documents/Orca/java/video/capturas/escena5_calidad_graphify.png"
+        int(4.0 * FPS): os.path.join(capturas_dir, "escena1_titulo_equipo.png"),
+        int(12.0 * FPS): os.path.join(capturas_dir, "escena2_dominio_negocio.png"),
+        int(20.0 * FPS): os.path.join(capturas_dir, "escena3_arquitectura_poo.png"),
+        int(30.0 * FPS): os.path.join(capturas_dir, "escena4_tecnologia_checkin.png"),
+        int(38.0 * FPS): os.path.join(capturas_dir, "escena5_calidad_graphify.png"),
     }
 
     for frame_idx in range(TOTAL_FRAMES):

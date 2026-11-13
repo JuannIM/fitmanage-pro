@@ -3,6 +3,7 @@ import struct
 import wave
 import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLE_RATE = 44100
 DURATION = 42.0
 TOTAL_SAMPLES = int(SAMPLE_RATE * DURATION)
@@ -151,7 +152,8 @@ def generate_track():
     print(f"Mastering complete. Peak level: {max_peak:.2f}")
 
     # Write WAV file
-    out_wav = "/home/juancito/Documents/Orca/java/video/soundtrack.wav"
+    os.makedirs(BASE_DIR, exist_ok=True)
+    out_wav = os.path.join(BASE_DIR, "soundtrack.wav")
     with wave.open(out_wav, "wb") as wf:
         wf.setnchannels(2)
         wf.setsampwidth(2)
