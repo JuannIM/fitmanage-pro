@@ -1,6 +1,7 @@
 package com.clubdeportivo.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Registro inmutable de intento de ingreso por molinete o recepción.
@@ -9,15 +10,15 @@ import java.time.LocalDateTime;
  * @author Merlina
  * @version 1.0.0
  */
-public class Asistencia {
+public final class Asistencia {
 
-    private String id;
-    private String socioId;
-    private LocalDateTime fechaHora;
-    private TipoAcceso tipoAcceso;
-    private String claseId;
-    private EstadoAcceso estadoAcceso;
-    private String observacion;
+    private final String id;
+    private final String socioId;
+    private final LocalDateTime fechaHora;
+    private final TipoAcceso tipoAcceso;
+    private final String claseId;
+    private final EstadoAcceso estadoAcceso;
+    private final String observacion;
 
     public Asistencia(String id, String socioId, LocalDateTime fechaHora,
                       TipoAcceso tipoAcceso, String claseId,
@@ -35,61 +36,45 @@ public class Asistencia {
         return estadoAcceso == EstadoAcceso.PERMITIDO;
     }
 
-    // Getters y Setters
+    // Getters
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getSocioId() {
         return socioId;
     }
 
-    public void setSocioId(String socioId) {
-        this.socioId = socioId;
-    }
-
     public LocalDateTime getFechaHora() {
         return fechaHora;
-    }
-
-    public void setFechaHora(LocalDateTime fechaHora) {
-        this.fechaHora = fechaHora;
     }
 
     public TipoAcceso getTipoAcceso() {
         return tipoAcceso;
     }
 
-    public void setTipoAcceso(TipoAcceso tipoAcceso) {
-        this.tipoAcceso = tipoAcceso;
-    }
-
     public String getClaseId() {
         return claseId;
-    }
-
-    public void setClaseId(String claseId) {
-        this.claseId = claseId;
     }
 
     public EstadoAcceso getEstadoAcceso() {
         return estadoAcceso;
     }
 
-    public void setEstadoAcceso(EstadoAcceso estadoAcceso) {
-        this.estadoAcceso = estadoAcceso;
-    }
-
     public String getObservacion() {
         return observacion;
     }
 
-    public void setObservacion(String observacion) {
-        this.observacion = observacion;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Asistencia that)) return false;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

@@ -69,7 +69,12 @@ public class Instructor extends Persona implements Reportable {
         int clasesMensuales = clasesAsignadas.size() * 4;
         double variableClases = clasesMensuales * honorarioPorClase;
         // Bono por especialidad si dicta más de 3 disciplinas distintas
-        double bono = (clasesAsignadas.size() >= 3) ? 15000.0 : 0.0;
+        long disciplinasDistintas = clasesAsignadas.stream()
+                .map(ClaseGrupal::getDisciplina)
+                .filter(Objects::nonNull)
+                .distinct()
+                .count();
+        double bono = (disciplinasDistintas > 3) ? 15000.0 : 0.0;
         return sueldoBase + variableClases + bono;
     }
 
@@ -114,7 +119,10 @@ public class Instructor extends Persona implements Reportable {
     }
 
     public void setLegajo(String legajo) {
-        this.legajo = legajo;
+        if (legajo == null || legajo.isBlank()) {
+            throw new IllegalArgumentException("El legajo no puede ser nulo ni vacío.");
+        }
+        this.legajo = legajo.trim();
     }
 
     public String getEspecialidad() {
@@ -122,7 +130,10 @@ public class Instructor extends Persona implements Reportable {
     }
 
     public void setEspecialidad(String especialidad) {
-        this.especialidad = especialidad;
+        if (especialidad == null || especialidad.isBlank()) {
+            throw new IllegalArgumentException("La especialidad no puede ser nula ni vacía.");
+        }
+        this.especialidad = especialidad.trim();
     }
 
     public double getSueldoBase() {
@@ -150,6 +161,9 @@ public class Instructor extends Persona implements Reportable {
     }
 
     public void setTurnoDisponibilidad(String turnoDisponibilidad) {
-        this.turnoDisponibilidad = turnoDisponibilidad;
+        if (turnoDisponibilidad == null || turnoDisponibilidad.isBlank()) {
+            throw new IllegalArgumentException("El turno de disponibilidad no puede ser nulo ni vacío.");
+        }
+        this.turnoDisponibilidad = turnoDisponibilidad.trim();
     }
 }

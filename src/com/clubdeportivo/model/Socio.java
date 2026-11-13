@@ -16,6 +16,8 @@ import java.util.*;
  */
 public class Socio extends Persona implements Facturable, Autenticable, Reportable {
 
+    public static final int DIAS_GRACIA_CUOTA = 5;
+
     private String numeroSocio;
     private EstadoCuota estadoCuota;
     private Membresia membresiaActual;
@@ -54,18 +56,23 @@ public class Socio extends Persona implements Facturable, Autenticable, Reportab
 
     @Override
     public boolean validarIngreso(TipoAcceso tipo) {
-        // [COLABORACIÓN - Juan & Joel]:
-        // Para ingresar al predio la cuota debe estar AL_DIA o PENDIENTE (período de gracia).
-        // Si está VENCIDO o INACTIVO, el molinete deniega el acceso.
+        if (tipo == null || membresiaActual == null) {
+            return false;
+        }
         if (estadoCuota == EstadoCuota.VENCIDO || estadoCuota == EstadoCuota.INACTIVO) {
             return false;
         }
-
-        // Si el tipo de acceso es clase grupal, la membresía debe habilitarlo
-        if (tipo == TipoAcceso.CLASE_GRUPAL) {
-            return membresiaActual != null && membresiaActual.getTipo().permiteClases();
+        if (estadoCuota == EstadoCuota.AL_DIA && membresiaActual.estaVencida()) {
+            return false;
         }
-
+        if (estadoCuota == EstadoCuota.PENDIENTE
+                && membresiaActual.estaVencida()
+                && !membresiaActual.estaEnPeriodoGracia(DIAS_GRACIA_CUOTA)) {
+            return false;
+        }
+        if (tipo == TipoAcceso.CLASE_GRUPAL) {
+            return membresiaActual.getTipo().permiteClases();
+        }
         return true;
     }
 
@@ -150,9 +157,11 @@ public class Socio extends Persona implements Facturable, Autenticable, Reportab
 
     @Override
     public boolean autenticar(String credencial) {
-        if (credencial == null) return false;
+        if (credencial == null || credencial.isBlank()) return false;
         String c = credencial.trim();
-        return c.equalsIgnoreCase(dni) || c.equalsIgnoreCase(numeroSocio) || c.equalsIgnoreCase(email);
+        return (dni != null && !dni.isBlank() && c.equalsIgnoreCase(dni))
+                || (numeroSocio != null && !numeroSocio.isBlank() && c.equalsIgnoreCase(numeroSocio))
+                || (email != null && !email.isBlank() && c.equalsIgnoreCase(email));
     }
 
     @Override
@@ -211,7 +220,10 @@ public class Socio extends Persona implements Facturable, Autenticable, Reportab
     }
 
     public void setNumeroSocio(String numeroSocio) {
-        this.numeroSocio = numeroSocio;
+        if (numeroSocio == null || numeroSocio.isBlank()) {
+            throw new IllegalArgumentException("El número de socio no puede ser nulo ni vacío.");
+        }
+        this.numeroSocio = numeroSocio.trim();
     }
 
     public EstadoCuota getEstadoCuota() {
@@ -219,6 +231,9 @@ public class Socio extends Persona implements Facturable, Autenticable, Reportab
     }
 
     public void setEstadoCuota(EstadoCuota estadoCuota) {
+        if (estadoCuota == null) {
+            throw new IllegalArgumentException("El estado de cuota no puede ser nulo.");
+        }
         this.estadoCuota = estadoCuota;
     }
 

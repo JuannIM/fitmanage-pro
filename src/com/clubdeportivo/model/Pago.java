@@ -2,6 +2,7 @@ package com.clubdeportivo.model;
 
 import com.clubdeportivo.util.Formatters;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Transacción económica formal emitida por cobro de membresías o servicios.
@@ -22,10 +23,13 @@ public class Pago {
     public Pago(String id, String numeroComprobante, String socioId,
                 double monto, LocalDateTime fechaHoraPago,
                 MetodoPago metodoPago, String concepto) {
+        if (!Double.isFinite(monto) || monto <= 0.0) {
+            throw new IllegalArgumentException("El monto del pago debe ser un número finito mayor a 0.");
+        }
         this.id = id;
         this.numeroComprobante = numeroComprobante;
         this.socioId = socioId;
-        this.monto = Math.max(0.0, monto);
+        this.monto = monto;
         this.fechaHoraPago = (fechaHoraPago != null) ? fechaHoraPago : LocalDateTime.now();
         this.metodoPago = (metodoPago != null) ? metodoPago : MetodoPago.EFECTIVO;
         this.concepto = (concepto != null) ? concepto : "Cuota Social Mensual";
@@ -59,7 +63,10 @@ public class Pago {
     }
 
     public void setId(String id) {
-        this.id = id;
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("El ID del pago no puede ser nulo ni vacío.");
+        }
+        this.id = id.trim();
     }
 
     public String getNumeroComprobante() {
@@ -67,7 +74,10 @@ public class Pago {
     }
 
     public void setNumeroComprobante(String numeroComprobante) {
-        this.numeroComprobante = numeroComprobante;
+        if (numeroComprobante == null || numeroComprobante.isBlank()) {
+            throw new IllegalArgumentException("El número de comprobante no puede ser nulo ni vacío.");
+        }
+        this.numeroComprobante = numeroComprobante.trim();
     }
 
     public String getSocioId() {
@@ -75,7 +85,10 @@ public class Pago {
     }
 
     public void setSocioId(String socioId) {
-        this.socioId = socioId;
+        if (socioId == null || socioId.isBlank()) {
+            throw new IllegalArgumentException("El ID del socio no puede ser nulo ni vacío.");
+        }
+        this.socioId = socioId.trim();
     }
 
     public double getMonto() {
@@ -83,7 +96,10 @@ public class Pago {
     }
 
     public void setMonto(double monto) {
-        this.monto = Math.max(0.0, monto);
+        if (!Double.isFinite(monto) || monto <= 0.0) {
+            throw new IllegalArgumentException("El monto del pago debe ser un número finito mayor a 0.");
+        }
+        this.monto = monto;
     }
 
     public LocalDateTime getFechaHoraPago() {
@@ -91,6 +107,9 @@ public class Pago {
     }
 
     public void setFechaHoraPago(LocalDateTime fechaHoraPago) {
+        if (fechaHoraPago == null) {
+            throw new IllegalArgumentException("La fecha y hora de pago no pueden ser nulas.");
+        }
         this.fechaHoraPago = fechaHoraPago;
     }
 
@@ -99,6 +118,9 @@ public class Pago {
     }
 
     public void setMetodoPago(MetodoPago metodoPago) {
+        if (metodoPago == null) {
+            throw new IllegalArgumentException("El método de pago no puede ser nulo.");
+        }
         this.metodoPago = metodoPago;
     }
 
@@ -107,7 +129,22 @@ public class Pago {
     }
 
     public void setConcepto(String concepto) {
-        this.concepto = concepto;
+        if (concepto == null || concepto.isBlank()) {
+            throw new IllegalArgumentException("El concepto del pago no puede ser nulo ni vacío.");
+        }
+        this.concepto = concepto.trim();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Pago pago)) return false;
+        return Objects.equals(id, pago.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

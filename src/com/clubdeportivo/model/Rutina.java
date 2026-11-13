@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Contenedor de planificación de entrenamiento físico.
@@ -43,9 +45,17 @@ public class Rutina {
     // =========================================================================
 
     public void agregarEjercicio(Ejercicio ejercicio) {
-        if (ejercicio != null) {
-            this.ejercicios.add(ejercicio);
+        if (ejercicio == null) return;
+        if (ejercicio.getId() != null) {
+            for (Ejercicio existente : ejercicios) {
+                if (ejercicio.getId().equals(existente.getId())) {
+                    return;
+                }
+            }
+        } else if (ejercicios.contains(ejercicio)) {
+            return;
         }
+        this.ejercicios.add(ejercicio);
     }
 
     public boolean eliminarEjercicio(String ejercicioId) {
@@ -78,13 +88,14 @@ public class Rutina {
     }
 
     public String mostrarFichaRutina() {
+        Locale locale = Locale.of("es", "AR");
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format("=== RUTINA: %s (ID: %s) ===\n", nombre, id));
-        sb.append(String.format("Objetivo: %s | Nivel: %s\n", objetivo, nivelDificultad));
-        sb.append(String.format("Ejercicios (%d) - Volumen Total: %.1f kg acumulados\n",
+        sb.append(String.format(locale, "=== RUTINA: %s (ID: %s) ===\n", nombre, id));
+        sb.append(String.format(locale, "Objetivo: %s | Nivel: %s\n", objetivo, nivelDificultad));
+        sb.append(String.format(locale, "Ejercicios (%d) - Volumen Total: %.1f kg acumulados\n",
                 ejercicios.size(), calcularVolumenGlobal()));
         for (int i = 0; i < ejercicios.size(); i++) {
-            sb.append(String.format("  [%d] %s\n", i + 1, ejercicios.get(i).mostrarResumen()));
+            sb.append(String.format(locale, "  [%d] %s\n", i + 1, ejercicios.get(i).mostrarResumen()));
         }
         return sb.toString();
     }
@@ -95,7 +106,10 @@ public class Rutina {
     }
 
     public void setId(String id) {
-        this.id = id;
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("El ID de la rutina no puede ser nulo ni vacío.");
+        }
+        this.id = id.trim();
     }
 
     public String getNombre() {
@@ -103,7 +117,10 @@ public class Rutina {
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre de la rutina no puede ser nulo ni vacío.");
+        }
+        this.nombre = nombre.trim();
     }
 
     public String getObjetivo() {
@@ -111,7 +128,10 @@ public class Rutina {
     }
 
     public void setObjetivo(String objetivo) {
-        this.objetivo = objetivo;
+        if (objetivo == null || objetivo.isBlank()) {
+            throw new IllegalArgumentException("El objetivo de la rutina no puede ser nulo ni vacío.");
+        }
+        this.objetivo = objetivo.trim();
     }
 
     public String getNivelDificultad() {
@@ -119,7 +139,10 @@ public class Rutina {
     }
 
     public void setNivelDificultad(String nivelDificultad) {
-        this.nivelDificultad = nivelDificultad;
+        if (nivelDificultad == null || nivelDificultad.isBlank()) {
+            throw new IllegalArgumentException("El nivel de dificultad no puede ser nulo ni vacío.");
+        }
+        this.nivelDificultad = nivelDificultad.trim();
     }
 
     public LocalDate getFechaCreacion() {
@@ -127,6 +150,9 @@ public class Rutina {
     }
 
     public void setFechaCreacion(LocalDate fechaCreacion) {
+        if (fechaCreacion == null) {
+            throw new IllegalArgumentException("La fecha de creación no puede ser nula.");
+        }
         this.fechaCreacion = fechaCreacion;
     }
 
@@ -135,6 +161,9 @@ public class Rutina {
     }
 
     public void setFechaRevision(LocalDate fechaRevision) {
+        if (fechaRevision == null) {
+            throw new IllegalArgumentException("La fecha de revisión no puede ser nula.");
+        }
         this.fechaRevision = fechaRevision;
     }
 
@@ -143,7 +172,22 @@ public class Rutina {
     }
 
     public void setInstructorCreadorId(String instructorCreadorId) {
-        this.instructorCreadorId = instructorCreadorId;
+        if (instructorCreadorId == null || instructorCreadorId.isBlank()) {
+            throw new IllegalArgumentException("El ID del instructor creador no puede ser nulo ni vacío.");
+        }
+        this.instructorCreadorId = instructorCreadorId.trim();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Rutina rutina)) return false;
+        return Objects.equals(id, rutina.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

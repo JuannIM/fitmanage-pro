@@ -24,7 +24,7 @@ public final class Formatters {
     private static final DecimalFormat CURRENCY_FORMAT;
 
     static {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(new Locale("es", "AR"));
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.of("es", "AR"));
         symbols.setGroupingSeparator('.');
         symbols.setDecimalSeparator(',');
         CURRENCY_FORMAT = new DecimalFormat("$ #,##0.00", symbols);
@@ -52,5 +52,9 @@ public final class Formatters {
         synchronized (CURRENCY_FORMAT) {
             return CURRENCY_FORMAT.format(monto);
         }
+    }
+
+    public static String formatearPesoKg(double kg) {
+        return String.format(Locale.US, "%.1f kg", kg);
     }
 }

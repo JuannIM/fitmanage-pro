@@ -1,8 +1,9 @@
 package com.clubdeportivo.repository;
 
+import com.clubdeportivo.model.Asistencia;
 import com.clubdeportivo.model.EstadoAcceso;
 import com.clubdeportivo.model.TipoAcceso;
-import com.clubdeportivo.model.Asistencia;
+import com.clubdeportivo.util.IdGenerator;
 import com.clubdeportivo.util.JsonPersistenceEngine;
 
 import java.io.IOException;
@@ -11,7 +12,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Repositorio de Asistencias y registros de molinete con persistencia en data/asistencias.json.
@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AsistenciaRepository implements IRepository<Asistencia, String> {
 
+    private final Object lock = new Object();
     private final Path archivoDatos;
     private final Map<String, Asistencia> cacheEnMemoria;
 
@@ -30,96 +31,158 @@ public class AsistenciaRepository implements IRepository<Asistencia, String> {
     }
 
     public AsistenciaRepository(Path archivoDatos) {
-        this.archivoDatos = archivoDatos;
-        this.cacheEnMemoria = new ConcurrentHashMap<>();
-        cargarDesdeDisco();
+        this.archivoDatos = Objects.requireNonNull(archivoDatos, "La ruta del archivo de asistencias no puede ser nula.");
+        this.cacheEnMemoria = new LinkedHashMap<>();
+        cargarInicialDesdeDisco();
     }
 
     @Override
     public Asistencia guardar(Asistencia asistencia) {
-        if (asistencia == null || asistencia.getId() == null) {
-            throw new IllegalArgumentException("La asistencia o su ID no pueden ser nulos.");
+        if (asistencia == null || asistencia.getId() == null || asistencia.getId().isBlank()) {
+            throw new IllegalArgumentException("La asistencia o su ID no pueden ser nulos ni vacíos.");
         }
-        cacheEnMemoria.put(asistencia.getId(), asistencia);
-        guardarEnDisco();
-        return asistencia;
+        synchronized (lock) {
+            Asistencia previo = cacheEnMemoria.get(asistencia.getId());
+            cacheEnMemoria.put(asistencia.getId(), asistencia);
+            try {
+                guardarEnDisco();
+            } catch (PersistenceException e) {
+                if (previo != null) {
+                    cacheEnMemoria.put(asistencia.getId(), previo);
+                } else {
+                    cacheEnMemoria.remove(asistencia.getId());
+                }
+                throw e;
+            }
+            return asistencia;
+        }
     }
 
     @Override
     public Optional<Asistencia> buscarPorId(String id) {
         if (id == null) return Optional.empty();
-        return Optional.ofNullable(cacheEnMemoria.get(id));
+        synchronized (lock) {
+            return Optional.ofNullable(cacheEnMemoria.get(id));
+        }
     }
 
     public List<Asistencia> buscarPorSocioId(String socioId) {
         if (socioId == null) return Collections.emptyList();
-        return cacheEnMemoria.values().stream()
-                .filter(a -> a.getSocioId().equalsIgnoreCase(socioId))
-                .sorted(Comparator.comparing(Asistencia::getFechaHora).reversed())
-                .toList();
+        synchronized (lock) {
+            return cacheEnMemoria.values().stream()
+                    .filter(a -> a.getSocioId() != null && a.getSocioId().equalsIgnoreCase(socioId))
+                    .sorted(Comparator.comparing(Asistencia::getFechaHora).reversed())
+                    .toList();
+        }
     }
 
     public List<Asistencia> listarAsistenciasDeHoy() {
         LocalDate hoy = LocalDate.now();
-        return cacheEnMemoria.values().stream()
-                .filter(a -> a.getFechaHora().toLocalDate().isEqual(hoy) && a.esAccesoValido())
-                .sorted(Comparator.comparing(Asistencia::getFechaHora).reversed())
-                .toList();
+        synchronized (lock) {
+            return cacheEnMemoria.values().stream()
+                    .filter(a -> a.getFechaHora().toLocalDate().isEqual(hoy) && a.esAccesoValido())
+                    .sorted(Comparator.comparing(Asistencia::getFechaHora).reversed())
+                    .toList();
+        }
     }
 
     @Override
     public List<Asistencia> listarTodos() {
-        List<Asistencia> lista = new ArrayList<>(cacheEnMemoria.values());
-        lista.sort(Comparator.comparing(Asistencia::getFechaHora).reversed());
-        return lista;
+        synchronized (lock) {
+            List<Asistencia> lista = new ArrayList<>(cacheEnMemoria.values());
+            lista.sort(Comparator.comparing(Asistencia::getFechaHora).reversed());
+            return lista;
+        }
     }
 
     @Override
     public boolean eliminarPorId(String id) {
         if (id == null) return false;
-        boolean eliminado = cacheEnMemoria.remove(id) != null;
-        if (eliminado) {
-            guardarEnDisco();
+        synchronized (lock) {
+            Asistencia previo = cacheEnMemoria.remove(id);
+            if (previo == null) {
+                return false;
+            }
+            try {
+                guardarEnDisco();
+            } catch (PersistenceException e) {
+                cacheEnMemoria.put(id, previo);
+                throw e;
+            }
+            return true;
         }
-        return eliminado;
     }
 
     @Override
     public int contar() {
-        return cacheEnMemoria.size();
+        synchronized (lock) {
+            return cacheEnMemoria.size();
+        }
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void cargarDesdeDisco() {
-        cacheEnMemoria.clear();
-        try {
-            Object json = JsonPersistenceEngine.readFromFile(archivoDatos);
-            if (json instanceof List<?> lista) {
-                for (Object item : lista) {
-                    if (item instanceof Map<?, ?> map) {
-                        Asistencia asistencia = deserializarAsistencia((Map<String, Object>) map);
-                        if (asistencia != null) {
-                            cacheEnMemoria.put(asistencia.getId(), asistencia);
+        cargarInicialDesdeDisco();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void cargarInicialDesdeDisco() {
+        synchronized (lock) {
+            Map<String, Asistencia> nuevosDatos = new LinkedHashMap<>();
+            int maxAsistencia = 0;
+
+            try {
+                Object json = JsonPersistenceEngine.readFromFile(archivoDatos);
+                if (json != null) {
+                    if (!(json instanceof List<?> lista)) {
+                        throw new PersistenceException("Formato JSON inválido en " + archivoDatos + ": se esperaba una lista de asistencias.");
+                    }
+                    for (int i = 0; i < lista.size(); i++) {
+                        Object item = lista.get(i);
+                        if (!(item instanceof Map<?, ?> map)) {
+                            throw new PersistenceException("Registro corrupto en " + archivoDatos + " (índice " + i + "): se esperaba un objeto JSON.");
                         }
+                        Asistencia asistencia;
+                        try {
+                            asistencia = deserializarAsistencia((Map<String, Object>) map);
+                        } catch (RuntimeException e) {
+                            throw new PersistenceException("Error deserializando asistencia en " + archivoDatos + " (índice " + i + "): " + e.getMessage(), e);
+                        }
+                        if (asistencia == null || asistencia.getId() == null || asistencia.getId().isBlank()) {
+                            throw new PersistenceException("Registro de asistencia inválido o sin ID en " + archivoDatos + " (índice " + i + ").");
+                        }
+                        nuevosDatos.put(asistencia.getId(), asistencia);
+                        maxAsistencia = Math.max(maxAsistencia, IdGenerator.extraerSufijoNumerico(asistencia.getId(), "ASI-"));
                     }
                 }
+            } catch (IOException | RuntimeException e) {
+                if (e instanceof PersistenceException pe) {
+                    throw pe;
+                }
+                throw new PersistenceException("No se pudo leer " + archivoDatos + ": " + e.getMessage(), e);
             }
-        } catch (IOException e) {
-            System.err.println(">> [WARN] No se pudo leer " + archivoDatos + ": " + e.getMessage());
+
+            cacheEnMemoria.clear();
+            cacheEnMemoria.putAll(nuevosDatos);
+            IdGenerator.actualizarSecuenciaAsistencia(maxAsistencia);
         }
     }
 
     @Override
     public void guardarEnDisco() {
-        try {
-            List<Map<String, Object>> listaSerializada = new ArrayList<>();
-            for (Asistencia a : cacheEnMemoria.values()) {
-                listaSerializada.add(serializarAsistencia(a));
+        synchronized (lock) {
+            try {
+                List<Map<String, Object>> listaSerializada = new ArrayList<>();
+                for (Asistencia a : cacheEnMemoria.values()) {
+                    listaSerializada.add(serializarAsistencia(a));
+                }
+                JsonPersistenceEngine.saveToFile(archivoDatos, listaSerializada);
+            } catch (IOException | RuntimeException e) {
+                if (e instanceof PersistenceException pe) {
+                    throw pe;
+                }
+                throw new PersistenceException("Fallo al escribir en " + archivoDatos + ": " + e.getMessage(), e);
             }
-            JsonPersistenceEngine.saveToFile(archivoDatos, listaSerializada);
-        } catch (IOException e) {
-            System.err.println(">> [ERROR] Fallo al escribir en " + archivoDatos + ": " + e.getMessage());
         }
     }
 
@@ -136,19 +199,14 @@ public class AsistenciaRepository implements IRepository<Asistencia, String> {
     }
 
     private Asistencia deserializarAsistencia(Map<String, Object> map) {
-        try {
-            String id = (String) map.get("id");
-            String socioId = (String) map.get("socioId");
-            LocalDateTime fechaHora = LocalDateTime.parse((String) map.get("fechaHora"));
-            TipoAcceso tipo = TipoAcceso.valueOf((String) map.get("tipoAcceso"));
-            String claseId = (String) map.get("claseId");
-            EstadoAcceso estado = EstadoAcceso.valueOf((String) map.get("estadoAcceso"));
-            String obs = (String) map.get("observacion");
+        String id = (String) map.get("id");
+        String socioId = (String) map.get("socioId");
+        LocalDateTime fechaHora = LocalDateTime.parse((String) map.get("fechaHora"));
+        TipoAcceso tipo = TipoAcceso.valueOf((String) map.get("tipoAcceso"));
+        String claseId = (String) map.get("claseId");
+        EstadoAcceso estado = EstadoAcceso.valueOf((String) map.get("estadoAcceso"));
+        String obs = (String) map.get("observacion");
 
-            return new Asistencia(id, socioId, fechaHora, tipo, claseId, estado, obs);
-        } catch (Exception e) {
-            System.err.println(">> [ERROR] Deserializando asistencia: " + e.getMessage());
-            return null;
-        }
+        return new Asistencia(id, socioId, fechaHora, tipo, claseId, estado, obs);
     }
 }

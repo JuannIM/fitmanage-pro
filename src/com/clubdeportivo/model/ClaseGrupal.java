@@ -15,7 +15,7 @@ import java.util.*;
  * @author Rocio
  * @version 1.0.0
  */
-public class ClaseGrupal {
+public final class ClaseGrupal {
 
     private String id;
     private String nombre;
@@ -89,6 +89,17 @@ public class ClaseGrupal {
         return sociosInscriptos.add(socio);
     }
 
+    public void restaurarInscripcion(Socio socio) {
+        if (socio == null) return;
+        for (Socio existente : sociosInscriptos) {
+            if ((socio.getId() != null && socio.getId().equals(existente.getId()))
+                    || (socio.getNumeroSocio() != null && socio.getNumeroSocio().equalsIgnoreCase(existente.getNumeroSocio()))) {
+                return;
+            }
+        }
+        sociosInscriptos.add(socio);
+    }
+
     public boolean desinscribirSocio(String numeroSocio) {
         if (numeroSocio == null) return false;
         return sociosInscriptos.removeIf(s -> numeroSocio.equalsIgnoreCase(s.getNumeroSocio())
@@ -96,7 +107,7 @@ public class ClaseGrupal {
     }
 
     public String mostrarFichaClase() {
-        String diaStr = diaSemana.getDisplayName(TextStyle.FULL, new Locale("es", "AR"));
+        String diaStr = diaSemana.getDisplayName(TextStyle.FULL, Locale.of("es", "AR"));
         String profStr = (instructor != null) ? instructor.getNombreCompleto() : "A confirmar";
         return String.format("[%s] %s (%s) | %s %s (%d min) | Sala: %s | Ocupación: %d/%d (Libres: %d) | Prof: %s",
                 id, nombre, disciplina.getNombreVisible(), diaStr,
@@ -110,7 +121,10 @@ public class ClaseGrupal {
     }
 
     public void setId(String id) {
-        this.id = id;
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("El ID de la clase no puede ser nulo ni vacío.");
+        }
+        this.id = id.trim();
     }
 
     public String getNombre() {
@@ -118,7 +132,10 @@ public class ClaseGrupal {
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre de la clase no puede ser nulo ni vacío.");
+        }
+        this.nombre = nombre.trim();
     }
 
     public Disciplina getDisciplina() {
@@ -126,6 +143,9 @@ public class ClaseGrupal {
     }
 
     public void setDisciplina(Disciplina disciplina) {
+        if (disciplina == null) {
+            throw new IllegalArgumentException("La disciplina no puede ser nula.");
+        }
         this.disciplina = disciplina;
     }
 
@@ -134,6 +154,9 @@ public class ClaseGrupal {
     }
 
     public void setDiaSemana(DayOfWeek diaSemana) {
+        if (diaSemana == null) {
+            throw new IllegalArgumentException("El día de la semana no puede ser nulo.");
+        }
         this.diaSemana = diaSemana;
     }
 
@@ -142,6 +165,9 @@ public class ClaseGrupal {
     }
 
     public void setHoraInicio(LocalTime horaInicio) {
+        if (horaInicio == null) {
+            throw new IllegalArgumentException("La hora de inicio no puede ser nula.");
+        }
         this.horaInicio = horaInicio;
     }
 
@@ -158,7 +184,10 @@ public class ClaseGrupal {
     }
 
     public void setSala(String sala) {
-        this.sala = sala;
+        if (sala == null || sala.isBlank()) {
+            throw new IllegalArgumentException("La sala no puede ser nula ni vacía.");
+        }
+        this.sala = sala.trim();
     }
 
     public int getCupoMaximo() {
@@ -166,7 +195,12 @@ public class ClaseGrupal {
     }
 
     public void setCupoMaximo(int cupoMaximo) {
-        this.cupoMaximo = Math.max(1, cupoMaximo);
+        if (cupoMaximo < 1 || cupoMaximo < sociosInscriptos.size()) {
+            throw new IllegalArgumentException(
+                    "El cupo máximo debe ser al menos 1 y no menor a la cantidad de socios inscriptos ("
+                            + sociosInscriptos.size() + ").");
+        }
+        this.cupoMaximo = cupoMaximo;
     }
 
     public Instructor getInstructor() {

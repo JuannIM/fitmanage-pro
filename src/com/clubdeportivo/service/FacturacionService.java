@@ -30,14 +30,29 @@ public class FacturacionService {
      * Procesa el cobro formal de la cuota de un socio, computando descuentos y renovando vigencia.
      */
     public Pago cobrarCuota(String socioId, MetodoPago metodoPago, String concepto) {
+        if (socioId == null || socioId.isBlank()) {
+            throw new IllegalArgumentException("El ID del socio es obligatorio.");
+        }
+        if (metodoPago == null) {
+            throw new IllegalArgumentException("El método de pago es obligatorio.");
+        }
+
         Socio socio = socioRepository.buscarPorId(socioId)
                 .orElseThrow(() -> new IllegalArgumentException("Socio no encontrado: " + socioId));
 
+        if (socio.getMembresiaActual() == null) {
+            throw new IllegalStateException("El socio no posee una membresía activa configurada.");
+        }
+
         double montoTotal = socio.calcularMontoTotal();
+        if (!Double.isFinite(montoTotal) || montoTotal <= 0.0) {
+            throw new IllegalStateException("El monto a cobrar debe ser un valor positivo mayor a cero.");
+        }
+
         String comprobanteNum = IdGenerator.generarNumeroComprobante();
-        String id = "PAG-" + System.currentTimeMillis();
-        String conc = (concepto != null && !concepto.isBlank()) ? concepto :
-                "Pago Cuota Mensual - " + (socio.getMembresiaActual() != null ? socio.getMembresiaActual().getTipo().getNombre() : "General");
+        String id = IdGenerator.generarIdPago();
+        String conc = (concepto != null && !concepto.isBlank()) ? concepto.trim() :
+                "Pago Cuota Mensual - " + socio.getMembresiaActual().getTipo().getNombre();
 
         Pago nuevoPago = new Pago(
                 id, comprobanteNum, socio.getId(), montoTotal,
@@ -47,10 +62,8 @@ public class FacturacionService {
         pagoRepository.guardar(nuevoPago);
 
         // Actualizar estado del socio a AL_DIA y renovar vigencia por 30 días
+        socio.getMembresiaActual().extenderPeriodo(30);
         socio.setEstadoCuota(EstadoCuota.AL_DIA);
-        if (socio.getMembresiaActual() != null) {
-            socio.getMembresiaActual().extenderPeriodo(30);
-        }
         socioRepository.guardar(socio);
 
         return nuevoPago;

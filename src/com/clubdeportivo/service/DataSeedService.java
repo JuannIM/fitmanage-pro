@@ -43,8 +43,14 @@ public class DataSeedService {
      * Si los repositorios están vacíos, inyecta la población inicial demo.
      */
     public void sembrarSiEsNecesario() {
-        if (socioRepo.contar() > 0 && instructorRepo.contar() > 0 && claseRepo.contar() > 0) {
-            return; // Ya hay datos persistidos
+        boolean todosVacios = socioRepo.contar() == 0
+                && instructorRepo.contar() == 0
+                && claseRepo.contar() == 0
+                && rutinaRepo.contar() == 0
+                && pagoRepo.contar() == 0
+                && asistenciaRepo.contar() == 0;
+        if (!todosVacios) {
+            return; // Al menos un repositorio ya tiene datos persistidos; no sobrescribir
         }
 
         System.out.println(">> [SEED] Inicializando semillero de datos de FitManage Pro...");

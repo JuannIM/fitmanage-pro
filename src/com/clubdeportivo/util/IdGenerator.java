@@ -17,6 +17,7 @@ public final class IdGenerator {
     private static final AtomicInteger RUTINA_SEQ = new AtomicInteger(100);
     private static final AtomicInteger EJERCICIO_SEQ = new AtomicInteger(1000);
     private static final AtomicInteger PAGO_SEQ = new AtomicInteger(1000);
+    private static final AtomicInteger PAGO_ID_SEQ = new AtomicInteger(1000);
     private static final AtomicInteger ASISTENCIA_SEQ = new AtomicInteger(10000);
 
     private IdGenerator() {
@@ -47,13 +48,80 @@ public final class IdGenerator {
         return "REC-2026-" + PAGO_SEQ.incrementAndGet();
     }
 
+    public static String generarIdPago() {
+        return "PAG-" + PAGO_ID_SEQ.incrementAndGet();
+    }
+
     public static String generarIdAsistencia() {
         return "ASI-" + ASISTENCIA_SEQ.incrementAndGet();
     }
 
     public static void actualizarSecuenciaSocio(int maxExistente) {
-        if (maxExistente > SOCIO_SEQ.get()) {
-            SOCIO_SEQ.set(maxExistente);
+        if (maxExistente > 0) {
+            SOCIO_SEQ.accumulateAndGet(maxExistente, Math::max);
+        }
+    }
+
+    public static void actualizarSecuenciaInstructor(int maxExistente) {
+        if (maxExistente > 0) {
+            INSTRUCTOR_SEQ.accumulateAndGet(maxExistente, Math::max);
+        }
+    }
+
+    public static void actualizarSecuenciaClase(int maxExistente) {
+        if (maxExistente > 0) {
+            CLASE_SEQ.accumulateAndGet(maxExistente, Math::max);
+        }
+    }
+
+    public static void actualizarSecuenciaRutina(int maxExistente) {
+        if (maxExistente > 0) {
+            RUTINA_SEQ.accumulateAndGet(maxExistente, Math::max);
+        }
+    }
+
+    public static void actualizarSecuenciaEjercicio(int maxExistente) {
+        if (maxExistente > 0) {
+            EJERCICIO_SEQ.accumulateAndGet(maxExistente, Math::max);
+        }
+    }
+
+    public static void actualizarSecuenciaPago(int maxExistente) {
+        if (maxExistente > 0) {
+            PAGO_SEQ.accumulateAndGet(maxExistente, Math::max);
+        }
+    }
+
+    public static void actualizarSecuenciaIdPago(int maxExistente) {
+        if (maxExistente > 0) {
+            PAGO_ID_SEQ.accumulateAndGet(maxExistente, Math::max);
+        }
+    }
+
+    public static void actualizarSecuenciaAsistencia(int maxExistente) {
+        if (maxExistente > 0) {
+            ASISTENCIA_SEQ.accumulateAndGet(maxExistente, Math::max);
+        }
+    }
+
+    public static int extraerSufijoNumerico(String id, String prefijo) {
+        if (id == null || prefijo == null || !id.startsWith(prefijo)) {
+            return -1;
+        }
+        String sufijo = id.substring(prefijo.length());
+        if (sufijo.isEmpty()) {
+            return -1;
+        }
+        for (int i = 0; i < sufijo.length(); i++) {
+            char c = sufijo.charAt(i);
+            if (c < '0' || c > '9') {
+                return -1;
+            }
+        }
+        try {
+            return Integer.parseInt(sufijo);
+        } catch (NumberFormatException e) {
+            return -1;
         }
     }
 }

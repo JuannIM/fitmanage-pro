@@ -32,13 +32,22 @@ public class Membresia {
         return LocalDate.now().isAfter(fechaVencimiento);
     }
 
+    public boolean estaEnPeriodoGracia(int diasGracia) {
+        if (fechaVencimiento == null) return false;
+        LocalDate hoy = LocalDate.now();
+        return estaVencida() && !hoy.isAfter(fechaVencimiento.plusDays(Math.max(0, diasGracia)));
+    }
+
     public void extenderPeriodo(int dias) {
-        if (fechaVencimiento == null) {
-            fechaVencimiento = LocalDate.now().plusDays(dias);
-        } else if (estaVencida()) {
-            fechaVencimiento = LocalDate.now().plusDays(dias);
+        if (dias <= 0) {
+            throw new IllegalArgumentException("Los días de extensión deben ser mayores a 0.");
+        }
+        if (fechaVencimiento == null || estaVencida()) {
+            LocalDate hoy = LocalDate.now();
+            this.fechaInicio = hoy;
+            this.fechaVencimiento = hoy.plusDays(dias);
         } else {
-            fechaVencimiento = fechaVencimiento.plusDays(dias);
+            this.fechaVencimiento = fechaVencimiento.plusDays(dias);
         }
     }
 
@@ -56,10 +65,11 @@ public class Membresia {
     }
 
     public void setTipo(TipoMembresia tipo) {
-        this.tipo = tipo;
-        if (tipo != null) {
-            this.precioBase = tipo.getPrecioBase();
+        if (tipo == null) {
+            throw new IllegalArgumentException("El tipo de membresía no puede ser nulo.");
         }
+        this.tipo = tipo;
+        this.precioBase = tipo.getPrecioBase();
     }
 
     public double getPrecioBase() {
@@ -67,6 +77,9 @@ public class Membresia {
     }
 
     public void setPrecioBase(double precioBase) {
+        if (!Double.isFinite(precioBase) || precioBase <= 0.0) {
+            throw new IllegalArgumentException("El precio base debe ser un número finito mayor a 0.");
+        }
         this.precioBase = precioBase;
     }
 

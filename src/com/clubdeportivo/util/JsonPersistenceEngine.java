@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Motor de persistencia JSON autónomo y de alto rendimiento sin librerías externas.
@@ -16,7 +18,13 @@ import java.util.*;
  */
 public final class JsonPersistenceEngine {
 
+    private static final ConcurrentHashMap<Path, ReentrantReadWriteLock> FILE_LOCKS = new ConcurrentHashMap<>();
+
     private JsonPersistenceEngine() {
+    }
+
+    private static ReentrantReadWriteLock lockFor(Path path) {
+        return FILE_LOCKS.computeIfAbsent(path.toAbsolutePath().normalize(), p -> new ReentrantReadWriteLock());
     }
 
     /**
@@ -33,6 +41,16 @@ public final class JsonPersistenceEngine {
             sb.append("null");
         } else if (value instanceof String s) {
             sb.append('"').append(escapeString(s)).append('"');
+        } else if (value instanceof Double d) {
+            if (!Double.isFinite(d)) {
+                throw new IllegalArgumentException("No se puede serializar Double no finito: " + d);
+            }
+            sb.append(d);
+        } else if (value instanceof Float f) {
+            if (!Float.isFinite(f)) {
+                throw new IllegalArgumentException("No se puede serializar Float no finito: " + f);
+            }
+            sb.append(f);
         } else if (value instanceof Number || value instanceof Boolean) {
             sb.append(value);
         } else if (value instanceof Map<?, ?> map) {
@@ -127,18 +145,30 @@ public final class JsonPersistenceEngine {
      * Guarda atómicamente un objeto serializado a disco.
      */
     public static void saveToFile(Path path, Object data) throws IOException {
-        Path parent = path.getParent();
-        if (parent != null && !Files.exists(parent)) {
-            Files.createDirectories(parent);
-        }
-        String jsonContent = toJson(data);
-        Path tempPath = path.resolveSibling(path.getFileName().toString() + ".tmp");
-        Files.writeString(tempPath, jsonContent, StandardCharsets.UTF_8,
-                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+        Path normalized = path.toAbsolutePath().normalize();
+        ReentrantReadWriteLock.WriteLock writeLock = lockFor(normalized).writeLock();
+        writeLock.lock();
         try {
-            Files.move(tempPath, path, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-        } catch (AtomicMoveNotSupportedException e) {
-            Files.move(tempPath, path, StandardCopyOption.REPLACE_EXISTING);
+            Path parent = normalized.getParent();
+            if (parent != null && !Files.exists(parent)) {
+                Files.createDirectories(parent);
+            }
+            String jsonContent = toJson(data);
+            Path tempDir = (parent != null) ? parent : Paths.get(".").toAbsolutePath().normalize();
+            Path tempPath = Files.createTempFile(tempDir, normalized.getFileName().toString() + ".", ".tmp");
+            try {
+                Files.writeString(tempPath, jsonContent, StandardCharsets.UTF_8,
+                        StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+                try {
+                    Files.move(tempPath, normalized, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (AtomicMoveNotSupportedException e) {
+                    Files.move(tempPath, normalized, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } finally {
+                Files.deleteIfExists(tempPath);
+            }
+        } finally {
+            writeLock.unlock();
         }
     }
 
@@ -146,11 +176,18 @@ public final class JsonPersistenceEngine {
      * Lee un archivo JSON y lo deserializa.
      */
     public static Object readFromFile(Path path) throws IOException {
-        if (!Files.exists(path) || Files.size(path) == 0) {
-            return null;
+        Path normalized = path.toAbsolutePath().normalize();
+        ReentrantReadWriteLock.ReadLock readLock = lockFor(normalized).readLock();
+        readLock.lock();
+        try {
+            if (!Files.exists(normalized) || Files.size(normalized) == 0) {
+                return null;
+            }
+            String content = Files.readString(normalized, StandardCharsets.UTF_8);
+            return parseJson(content);
+        } finally {
+            readLock.unlock();
         }
-        String content = Files.readString(path, StandardCharsets.UTF_8);
-        return parseJson(content);
     }
 
     // =========================================================================
@@ -169,8 +206,14 @@ public final class JsonPersistenceEngine {
 
         Object parse() {
             skipWhitespace();
+            if (pos >= len) {
+                return null;
+            }
             Object result = parseValue();
             skipWhitespace();
+            if (pos < len) {
+                throw new IllegalArgumentException("Caracteres inesperados tras el fin del JSON en pos " + pos);
+            }
             return result;
         }
 
@@ -187,7 +230,9 @@ public final class JsonPersistenceEngine {
 
         private Object parseValue() {
             skipWhitespace();
-            if (pos >= len) return null;
+            if (pos >= len) {
+                throw new IllegalArgumentException("Se esperaba un valor JSON en pos " + pos);
+            }
             char c = src.charAt(pos);
             return switch (c) {
                 case '{' -> parseObject();
@@ -207,7 +252,7 @@ public final class JsonPersistenceEngine {
                 pos++;
                 return map;
             }
-            while (pos < len) {
+            while (true) {
                 skipWhitespace();
                 if (pos >= len || src.charAt(pos) != '"') {
                     throw new IllegalArgumentException("Se esperaba clave entre comillas en pos " + pos);
@@ -221,16 +266,23 @@ public final class JsonPersistenceEngine {
                 Object value = parseValue();
                 map.put(key, value);
                 skipWhitespace();
-                if (pos < len && src.charAt(pos) == ',') {
+                if (pos >= len) {
+                    throw new IllegalArgumentException("Objeto JSON sin cerrar en pos " + pos);
+                }
+                char next = src.charAt(pos);
+                if (next == ',') {
                     pos++;
-                } else if (pos < len && src.charAt(pos) == '}') {
+                    skipWhitespace();
+                    if (pos >= len || src.charAt(pos) == '}') {
+                        throw new IllegalArgumentException("Coma final inesperada en objeto JSON en pos " + pos);
+                    }
+                } else if (next == '}') {
                     pos++;
-                    break;
+                    return map;
                 } else {
                     throw new IllegalArgumentException("Se esperaba ',' o '}' en pos " + pos);
                 }
             }
-            return map;
         }
 
         private List<Object> parseArray() {
@@ -241,20 +293,27 @@ public final class JsonPersistenceEngine {
                 pos++;
                 return list;
             }
-            while (pos < len) {
+            while (true) {
                 Object item = parseValue();
                 list.add(item);
                 skipWhitespace();
-                if (pos < len && src.charAt(pos) == ',') {
+                if (pos >= len) {
+                    throw new IllegalArgumentException("Arreglo JSON sin cerrar en pos " + pos);
+                }
+                char next = src.charAt(pos);
+                if (next == ',') {
                     pos++;
-                } else if (pos < len && src.charAt(pos) == ']') {
+                    skipWhitespace();
+                    if (pos >= len || src.charAt(pos) == ']') {
+                        throw new IllegalArgumentException("Coma final inesperada en arreglo JSON en pos " + pos);
+                    }
+                } else if (next == ']') {
                     pos++;
-                    break;
+                    return list;
                 } else {
                     throw new IllegalArgumentException("Se esperaba ',' o ']' en pos " + pos);
                 }
             }
-            return list;
         }
 
         private String parseString() {
@@ -266,7 +325,9 @@ public final class JsonPersistenceEngine {
                     return sb.toString();
                 }
                 if (c == '\\') {
-                    if (pos >= len) break;
+                    if (pos >= len) {
+                        throw new IllegalArgumentException("Escape incompleto al final del JSON en pos " + pos);
+                    }
                     char esc = src.charAt(pos++);
                     switch (esc) {
                         case '"' -> sb.append('"');
@@ -278,19 +339,31 @@ public final class JsonPersistenceEngine {
                         case 'r' -> sb.append('\r');
                         case 't' -> sb.append('\t');
                         case 'u' -> {
-                            if (pos + 4 <= len) {
-                                String hex = src.substring(pos, pos + 4);
-                                sb.append((char) Integer.parseInt(hex, 16));
-                                pos += 4;
+                            if (pos + 4 > len) {
+                                throw new IllegalArgumentException("Escape unicode incompleto en pos " + pos);
                             }
+                            for (int i = 0; i < 4; i++) {
+                                if (!isHexDigit(src.charAt(pos + i))) {
+                                    throw new IllegalArgumentException("Dígito hexadecimal inválido en escape unicode en pos " + (pos + i));
+                                }
+                            }
+                            String hex = src.substring(pos, pos + 4);
+                            sb.append((char) Integer.parseInt(hex, 16));
+                            pos += 4;
                         }
-                        default -> sb.append(esc);
+                        default -> throw new IllegalArgumentException("Escape inválido '\\" + esc + "' en pos " + (pos - 1));
                     }
                 } else {
                     sb.append(c);
                 }
             }
-            return sb.toString();
+            throw new IllegalArgumentException("Cadena JSON sin cerrar al final del contenido en pos " + pos);
+        }
+
+        private static boolean isHexDigit(char c) {
+            return (c >= '0' && c <= '9')
+                    || (c >= 'a' && c <= 'f')
+                    || (c >= 'A' && c <= 'F');
         }
 
         private Boolean parseBoolean() {
@@ -314,24 +387,60 @@ public final class JsonPersistenceEngine {
 
         private Number parseNumber() {
             int start = pos;
-            if (pos < len && (src.charAt(pos) == '-' || src.charAt(pos) == '+')) {
+            if (pos < len && src.charAt(pos) == '-') {
                 pos++;
             }
+            if (pos >= len) {
+                throw new IllegalArgumentException("Número JSON inválido en pos " + start);
+            }
+            char firstDigit = src.charAt(pos);
+            if (firstDigit == '0') {
+                pos++;
+                if (pos < len && isAsciiDigit(src.charAt(pos))) {
+                    throw new IllegalArgumentException("Cero inicial inválido en número JSON en pos " + start);
+                }
+            } else if (firstDigit >= '1' && firstDigit <= '9') {
+                pos++;
+                while (pos < len && isAsciiDigit(src.charAt(pos))) {
+                    pos++;
+                }
+            } else {
+                throw new IllegalArgumentException("Token numérico inválido en pos " + start);
+            }
+
             boolean isFloating = false;
-            while (pos < len) {
-                char c = src.charAt(pos);
-                if (Character.isDigit(c)) {
+            if (pos < len && src.charAt(pos) == '.') {
+                isFloating = true;
+                pos++;
+                if (pos >= len || !isAsciiDigit(src.charAt(pos))) {
+                    throw new IllegalArgumentException("Punto decimal sin dígitos en pos " + pos);
+                }
+                while (pos < len && isAsciiDigit(src.charAt(pos))) {
                     pos++;
-                } else if (c == '.' || c == 'e' || c == 'E') {
-                    isFloating = true;
-                    pos++;
-                } else {
-                    break;
                 }
             }
+
+            if (pos < len && (src.charAt(pos) == 'e' || src.charAt(pos) == 'E')) {
+                isFloating = true;
+                pos++;
+                if (pos < len && (src.charAt(pos) == '+' || src.charAt(pos) == '-')) {
+                    pos++;
+                }
+                if (pos >= len || !isAsciiDigit(src.charAt(pos))) {
+                    throw new IllegalArgumentException("Exponente numérico inválido en pos " + pos);
+                }
+                while (pos < len && isAsciiDigit(src.charAt(pos))) {
+                    pos++;
+                }
+            }
+
             String numStr = src.substring(start, pos);
             if (isFloating) {
-                return Double.parseDouble(numStr);
+                double d = Double.parseDouble(numStr);
+                if (!Double.isFinite(d)) {
+                    throw new IllegalArgumentException("Número JSON fuera de rango en pos " + start);
+                }
+                return d;
             }
             try {
                 long val = Long.parseLong(numStr);
@@ -340,8 +449,16 @@ public final class JsonPersistenceEngine {
                 }
                 return val;
             } catch (NumberFormatException e) {
-                return Double.parseDouble(numStr);
+                double d = Double.parseDouble(numStr);
+                if (!Double.isFinite(d)) {
+                    throw new IllegalArgumentException("Número JSON fuera de rango en pos " + start);
+                }
+                return d;
             }
+        }
+
+        private static boolean isAsciiDigit(char c) {
+            return c >= '0' && c <= '9';
         }
     }
 }

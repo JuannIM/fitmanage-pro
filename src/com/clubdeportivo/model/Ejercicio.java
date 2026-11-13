@@ -1,6 +1,7 @@
 package com.clubdeportivo.model;
 
-import com.clubdeportivo.util.Formatters;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Representa un ejercicio físico individual con parámetros de carga y volumen.
@@ -42,7 +43,7 @@ public class Ejercicio {
     }
 
     public String mostrarResumen() {
-        return String.format("%s (%s): %d series x %d reps @ %.1f kg [Pausa: %ds]",
+        return String.format(Locale.of("es", "AR"), "%s (%s): %d series x %d reps @ %.1f kg [Pausa: %ds]",
                 nombre, grupoMuscular.getDescripcion(), series, repeticiones, pesoSugeridoKg, descansoSegundos);
     }
 
@@ -52,7 +53,10 @@ public class Ejercicio {
     }
 
     public void setId(String id) {
-        this.id = id;
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("El ID del ejercicio no puede ser nulo ni vacío.");
+        }
+        this.id = id.trim();
     }
 
     public String getNombre() {
@@ -60,7 +64,10 @@ public class Ejercicio {
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre del ejercicio no puede ser nulo ni vacío.");
+        }
+        this.nombre = nombre.trim();
     }
 
     public GrupoMuscular getGrupoMuscular() {
@@ -68,6 +75,9 @@ public class Ejercicio {
     }
 
     public void setGrupoMuscular(GrupoMuscular grupoMuscular) {
+        if (grupoMuscular == null) {
+            throw new IllegalArgumentException("El grupo muscular no puede ser nulo.");
+        }
         this.grupoMuscular = grupoMuscular;
     }
 
@@ -76,7 +86,10 @@ public class Ejercicio {
     }
 
     public void setSeries(int series) {
-        this.series = Math.max(1, series);
+        if (series <= 0) {
+            throw new IllegalArgumentException("Las series deben ser mayores a 0.");
+        }
+        this.series = series;
     }
 
     public int getRepeticiones() {
@@ -84,7 +97,10 @@ public class Ejercicio {
     }
 
     public void setRepeticiones(int repeticiones) {
-        this.repeticiones = Math.max(1, repeticiones);
+        if (repeticiones <= 0) {
+            throw new IllegalArgumentException("Las repeticiones deben ser mayores a 0.");
+        }
+        this.repeticiones = repeticiones;
     }
 
     public double getPesoSugeridoKg() {
@@ -92,7 +108,10 @@ public class Ejercicio {
     }
 
     public void setPesoSugeridoKg(double pesoSugeridoKg) {
-        this.pesoSugeridoKg = Math.max(0.0, pesoSugeridoKg);
+        if (!Double.isFinite(pesoSugeridoKg) || pesoSugeridoKg < 0.0) {
+            throw new IllegalArgumentException("El peso sugerido debe ser un número finito mayor o igual a 0.");
+        }
+        this.pesoSugeridoKg = pesoSugeridoKg;
     }
 
     public int getDescansoSegundos() {
@@ -100,7 +119,10 @@ public class Ejercicio {
     }
 
     public void setDescansoSegundos(int descansoSegundos) {
-        this.descansoSegundos = Math.max(15, descansoSegundos);
+        if (descansoSegundos < 0) {
+            throw new IllegalArgumentException("El descanso en segundos no puede ser negativo.");
+        }
+        this.descansoSegundos = descansoSegundos;
     }
 
     public String getNotasTecnicas() {
@@ -108,7 +130,22 @@ public class Ejercicio {
     }
 
     public void setNotasTecnicas(String notasTecnicas) {
-        this.notasTecnicas = notasTecnicas;
+        if (notasTecnicas == null) {
+            throw new IllegalArgumentException("Las notas técnicas no pueden ser nulas.");
+        }
+        this.notasTecnicas = notasTecnicas.trim();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Ejercicio ejercicio)) return false;
+        return Objects.equals(id, ejercicio.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

@@ -18,7 +18,8 @@
       "fechaInicio": "2026-05-11",
       "fechaVencimiento": "2026-06-11",
       "renovacionAutomatica": false
-    }
+    },
+    "rutinasAsignadasIds": []
   },
   {
     "id": "SOC-102",
@@ -39,7 +40,10 @@
       "fechaInicio": "2026-11-06",
       "fechaVencimiento": "2026-12-06",
       "renovacionAutomatica": true
-    }
+    },
+    "rutinasAsignadasIds": [
+      "RUT-102"
+    ]
   },
   {
     "id": "SOC-101",
@@ -60,7 +64,10 @@
       "fechaInicio": "2026-11-01",
       "fechaVencimiento": "2026-12-01",
       "renovacionAutomatica": true
-    }
+    },
+    "rutinasAsignadasIds": [
+      "RUT-101"
+    ]
   },
   {
     "id": "SOC-104",
@@ -81,7 +88,8 @@
       "fechaInicio": "2026-10-27",
       "fechaVencimiento": "2026-11-26",
       "renovacionAutomatica": true
-    }
+    },
+    "rutinasAsignadasIds": []
   },
   {
     "id": "SOC-103",
@@ -102,7 +110,8 @@
       "fechaInicio": "2026-09-11",
       "fechaVencimiento": "2026-11-06",
       "renovacionAutomatica": false
-    }
+    },
+    "rutinasAsignadasIds": []
   },
   {
     "id": "SOC-106",
@@ -123,7 +132,10 @@
       "fechaInicio": "2026-11-09",
       "fechaVencimiento": "2026-12-09",
       "renovacionAutomatica": true
-    }
+    },
+    "rutinasAsignadasIds": [
+      "RUT-103"
+    ]
   },
   {
     "id": "SOC-105",
@@ -144,7 +156,8 @@
       "fechaInicio": "2026-10-11",
       "fechaVencimiento": "2026-11-09",
       "renovacionAutomatica": true
-    }
+    },
+    "rutinasAsignadasIds": []
   },
   {
     "id": "SOC-108",
@@ -165,7 +178,8 @@
       "fechaInicio": "2026-11-10",
       "fechaVencimiento": "2026-12-10",
       "renovacionAutomatica": true
-    }
+    },
+    "rutinasAsignadasIds": []
   },
   {
     "id": "SOC-107",
@@ -186,7 +200,8 @@
       "fechaInicio": "2026-11-03",
       "fechaVencimiento": "2026-12-03",
       "renovacionAutomatica": true
-    }
+    },
+    "rutinasAsignadasIds": []
   },
   {
     "id": "SOC-109",
@@ -207,6 +222,7 @@
       "fechaInicio": "2026-11-08",
       "fechaVencimiento": "2026-12-08",
       "renovacionAutomatica": true
-    }
+    },
+    "rutinasAsignadasIds": []
   }
 ]

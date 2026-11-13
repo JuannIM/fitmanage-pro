@@ -1,6 +1,7 @@
 package com.clubdeportivo.repository;
 
 import com.clubdeportivo.model.*;
+import com.clubdeportivo.util.IdGenerator;
 import com.clubdeportivo.util.JsonPersistenceEngine;
 
 import java.io.IOException;
@@ -9,7 +10,6 @@ import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Repositorio de Clases Grupales y control de cupos con persistencia en data/clases.json.
@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ClaseRepository implements IRepository<ClaseGrupal, String> {
 
+    private final Object lock = new Object();
     private final Path archivoDatos;
     private final Map<String, ClaseGrupal> cacheEnMemoria;
     private SocioRepository socioRepo;
@@ -30,88 +31,148 @@ public class ClaseRepository implements IRepository<ClaseGrupal, String> {
     }
 
     public ClaseRepository(Path archivoDatos, SocioRepository socioRepo, InstructorRepository instructorRepo) {
-        this.archivoDatos = archivoDatos;
-        this.cacheEnMemoria = new ConcurrentHashMap<>();
+        this.archivoDatos = Objects.requireNonNull(archivoDatos, "La ruta del archivo de clases no puede ser nula.");
+        this.cacheEnMemoria = new LinkedHashMap<>();
         this.socioRepo = socioRepo;
         this.instructorRepo = instructorRepo;
-        cargarDesdeDisco();
+        cargarInicialDesdeDisco();
     }
 
     public void setDependencias(SocioRepository socioRepo, InstructorRepository instructorRepo) {
-        this.socioRepo = socioRepo;
-        this.instructorRepo = instructorRepo;
-        cargarDesdeDisco();
+        synchronized (lock) {
+            this.socioRepo = socioRepo;
+            this.instructorRepo = instructorRepo;
+            cargarInicialDesdeDisco();
+        }
     }
 
     @Override
     public ClaseGrupal guardar(ClaseGrupal clase) {
-        if (clase == null || clase.getId() == null) {
-            throw new IllegalArgumentException("La clase o su ID no pueden ser nulos.");
+        if (clase == null || clase.getId() == null || clase.getId().isBlank()) {
+            throw new IllegalArgumentException("La clase o su ID no pueden ser nulos ni vacíos.");
         }
-        cacheEnMemoria.put(clase.getId(), clase);
-        guardarEnDisco();
-        return clase;
+        synchronized (lock) {
+            ClaseGrupal previo = cacheEnMemoria.get(clase.getId());
+            cacheEnMemoria.put(clase.getId(), clase);
+            try {
+                guardarEnDisco();
+            } catch (PersistenceException e) {
+                if (previo != null) {
+                    cacheEnMemoria.put(clase.getId(), previo);
+                } else {
+                    cacheEnMemoria.remove(clase.getId());
+                }
+                throw e;
+            }
+            return clase;
+        }
     }
 
     @Override
     public Optional<ClaseGrupal> buscarPorId(String id) {
         if (id == null) return Optional.empty();
-        return Optional.ofNullable(cacheEnMemoria.get(id));
+        synchronized (lock) {
+            return Optional.ofNullable(cacheEnMemoria.get(id));
+        }
     }
 
     @Override
     public List<ClaseGrupal> listarTodos() {
-        List<ClaseGrupal> lista = new ArrayList<>(cacheEnMemoria.values());
-        lista.sort(Comparator.comparing(ClaseGrupal::getDiaSemana).thenComparing(ClaseGrupal::getHoraInicio));
-        return lista;
+        synchronized (lock) {
+            List<ClaseGrupal> lista = new ArrayList<>(cacheEnMemoria.values());
+            lista.sort(Comparator.comparing(ClaseGrupal::getDiaSemana).thenComparing(ClaseGrupal::getHoraInicio));
+            return lista;
+        }
     }
 
     @Override
     public boolean eliminarPorId(String id) {
         if (id == null) return false;
-        boolean eliminado = cacheEnMemoria.remove(id) != null;
-        if (eliminado) {
-            guardarEnDisco();
+        synchronized (lock) {
+            ClaseGrupal previo = cacheEnMemoria.remove(id);
+            if (previo == null) {
+                return false;
+            }
+            try {
+                guardarEnDisco();
+            } catch (PersistenceException e) {
+                cacheEnMemoria.put(id, previo);
+                throw e;
+            }
+            return true;
         }
-        return eliminado;
     }
 
     @Override
     public int contar() {
-        return cacheEnMemoria.size();
+        synchronized (lock) {
+            return cacheEnMemoria.size();
+        }
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void cargarDesdeDisco() {
-        cacheEnMemoria.clear();
-        try {
-            Object json = JsonPersistenceEngine.readFromFile(archivoDatos);
-            if (json instanceof List<?> lista) {
-                for (Object item : lista) {
-                    if (item instanceof Map<?, ?> map) {
-                        ClaseGrupal clase = deserializarClase((Map<String, Object>) map);
-                        if (clase != null) {
-                            cacheEnMemoria.put(clase.getId(), clase);
+        cargarInicialDesdeDisco();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void cargarInicialDesdeDisco() {
+        synchronized (lock) {
+            Map<String, ClaseGrupal> nuevosDatos = new LinkedHashMap<>();
+            int maxClase = 0;
+
+            try {
+                Object json = JsonPersistenceEngine.readFromFile(archivoDatos);
+                if (json != null) {
+                    if (!(json instanceof List<?> lista)) {
+                        throw new PersistenceException("Formato JSON inválido en " + archivoDatos + ": se esperaba una lista de clases.");
+                    }
+                    for (int i = 0; i < lista.size(); i++) {
+                        Object item = lista.get(i);
+                        if (!(item instanceof Map<?, ?> map)) {
+                            throw new PersistenceException("Registro corrupto en " + archivoDatos + " (índice " + i + "): se esperaba un objeto JSON.");
                         }
+                        ClaseGrupal clase;
+                        try {
+                            clase = deserializarClase((Map<String, Object>) map);
+                        } catch (RuntimeException e) {
+                            throw new PersistenceException("Error deserializando clase en " + archivoDatos + " (índice " + i + "): " + e.getMessage(), e);
+                        }
+                        if (clase == null || clase.getId() == null || clase.getId().isBlank()) {
+                            throw new PersistenceException("Registro de clase inválido o sin ID en " + archivoDatos + " (índice " + i + ").");
+                        }
+                        nuevosDatos.put(clase.getId(), clase);
+                        maxClase = Math.max(maxClase, IdGenerator.extraerSufijoNumerico(clase.getId(), "CLS-"));
                     }
                 }
+            } catch (IOException | RuntimeException e) {
+                if (e instanceof PersistenceException pe) {
+                    throw pe;
+                }
+                throw new PersistenceException("No se pudo leer " + archivoDatos + ": " + e.getMessage(), e);
             }
-        } catch (IOException e) {
-            System.err.println(">> [WARN] No se pudo leer " + archivoDatos + ": " + e.getMessage());
+
+            cacheEnMemoria.clear();
+            cacheEnMemoria.putAll(nuevosDatos);
+            IdGenerator.actualizarSecuenciaClase(maxClase);
         }
     }
 
     @Override
     public void guardarEnDisco() {
-        try {
-            List<Map<String, Object>> listaSerializada = new ArrayList<>();
-            for (ClaseGrupal c : cacheEnMemoria.values()) {
-                listaSerializada.add(serializarClase(c));
+        synchronized (lock) {
+            try {
+                List<Map<String, Object>> listaSerializada = new ArrayList<>();
+                for (ClaseGrupal c : cacheEnMemoria.values()) {
+                    listaSerializada.add(serializarClase(c));
+                }
+                JsonPersistenceEngine.saveToFile(archivoDatos, listaSerializada);
+            } catch (IOException | RuntimeException e) {
+                if (e instanceof PersistenceException pe) {
+                    throw pe;
+                }
+                throw new PersistenceException("Fallo al escribir en " + archivoDatos + ": " + e.getMessage(), e);
             }
-            JsonPersistenceEngine.saveToFile(archivoDatos, listaSerializada);
-        } catch (IOException e) {
-            System.err.println(">> [ERROR] Fallo al escribir en " + archivoDatos + ": " + e.getMessage());
         }
     }
 
@@ -135,43 +196,39 @@ public class ClaseRepository implements IRepository<ClaseGrupal, String> {
         return map;
     }
 
-    @SuppressWarnings("unchecked")
     private ClaseGrupal deserializarClase(Map<String, Object> map) {
-        try {
-            String id = (String) map.get("id");
-            String nombre = (String) map.get("nombre");
-            Disciplina disciplina = Disciplina.valueOf((String) map.get("disciplina"));
-            DayOfWeek dia = DayOfWeek.valueOf((String) map.get("diaSemana"));
-            LocalTime hora = LocalTime.parse((String) map.get("horaInicio"));
-            int duracion = ((Number) map.get("duracionMinutos")).intValue();
-            String sala = (String) map.get("sala");
-            int cupo = ((Number) map.get("cupoMaximo")).intValue();
+        String id = (String) map.get("id");
+        String nombre = (String) map.get("nombre");
+        Disciplina disciplina = Disciplina.valueOf((String) map.get("disciplina"));
+        DayOfWeek dia = DayOfWeek.valueOf((String) map.get("diaSemana"));
+        LocalTime hora = LocalTime.parse((String) map.get("horaInicio"));
+        int duracion = ((Number) map.get("duracionMinutos")).intValue();
+        String sala = (String) map.get("sala");
+        int cupo = ((Number) map.get("cupoMaximo")).intValue();
 
-            Instructor instructor = null;
-            String instId = (String) map.get("instructorId");
-            if (instId != null && instructorRepo != null) {
-                instructor = instructorRepo.buscarPorId(instId).orElse(null);
+        Instructor instructor = null;
+        String instId = (String) map.get("instructorId");
+        if (instId != null && instructorRepo != null) {
+            instructor = instructorRepo.buscarPorId(instId).orElse(null);
+        }
+
+        ClaseGrupal clase = new ClaseGrupal(id, nombre, disciplina, dia, hora, duracion, sala, cupo, instructor);
+
+        Object sociosRaw = map.get("sociosInscriptosIds");
+        if (sociosRaw != null) {
+            if (!(sociosRaw instanceof List<?> idsList)) {
+                throw new IllegalArgumentException("El campo 'sociosInscriptosIds' debe ser una lista.");
             }
-
-            ClaseGrupal clase = new ClaseGrupal(id, nombre, disciplina, dia, hora, duracion, sala, cupo, instructor);
-
-            if (map.get("sociosInscriptosIds") instanceof List<?> idsList && socioRepo != null) {
-                for (Object rawId : idsList) {
-                    if (rawId instanceof String sId) {
-                        socioRepo.buscarPorId(sId).ifPresent(s -> {
-                            try {
-                                clase.inscribirSocio(s);
-                            } catch (CupoAgotadoException ignored) {
-                            }
-                        });
-                    }
+            for (Object rawId : idsList) {
+                if (!(rawId instanceof String sId)) {
+                    throw new IllegalArgumentException("Elemento inválido en 'sociosInscriptosIds'.");
+                }
+                if (socioRepo != null) {
+                    socioRepo.buscarPorId(sId).ifPresent(clase::restaurarInscripcion);
                 }
             }
-
-            return clase;
-        } catch (Exception e) {
-            System.err.println(">> [ERROR] Deserializando clase: " + e.getMessage());
-            return null;
         }
+
+        return clase;
     }
 }
