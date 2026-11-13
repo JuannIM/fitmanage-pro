@@ -13,11 +13,16 @@ import java.awt.event.MouseEvent;
  * @author Sara
  * @version 1.0.0
  */
-public class ModernButton extends JButton {
+public final class ModernButton extends JButton {
 
-    private Color normalColor;
-    private Color hoverColor;
-    private Color pressedColor;
+    private static final long serialVersionUID = 1L;
+    private static final Color DISABLED_BG = new Color(226, 232, 240);
+    private static final Color DISABLED_FG = new Color(71, 85, 105);
+
+    private final Color normalColor;
+    private final Color hoverColor;
+    private final Color pressedColor;
+    private final Color enabledForeground;
     private boolean isHovered = false;
     private boolean isPressed = false;
     private int cornerRadius = 8;
@@ -31,6 +36,7 @@ public class ModernButton extends JButton {
         this.normalColor = bg;
         this.hoverColor = hoverBg;
         this.pressedColor = hoverBg.darker();
+        this.enabledForeground = fg;
 
         setFont(ThemeConfig.FONT_BOLD);
         setForeground(fg);
@@ -44,6 +50,9 @@ public class ModernButton extends JButton {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
+                if (!isEnabled()) {
+                    return;
+                }
                 isHovered = true;
                 repaint();
             }
@@ -56,6 +65,9 @@ public class ModernButton extends JButton {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                if (!isEnabled()) {
+                    return;
+                }
                 isPressed = true;
                 repaint();
             }
@@ -73,11 +85,11 @@ public class ModernButton extends JButton {
     }
 
     public static ModernButton createSuccess(String text) {
-        return new ModernButton(text, ThemeConfig.STATUS_GREEN, new Color(21, 128, 61), ThemeConfig.TEXT_WHITE);
+        return new ModernButton(text, ThemeConfig.STATUS_GREEN, new Color(20, 83, 45), ThemeConfig.TEXT_WHITE);
     }
 
     public static ModernButton createDanger(String text) {
-        return new ModernButton(text, ThemeConfig.STATUS_RED, new Color(185, 28, 28), ThemeConfig.TEXT_WHITE);
+        return new ModernButton(text, ThemeConfig.STATUS_RED, new Color(153, 27, 27), ThemeConfig.TEXT_WHITE);
     }
 
     public static ModernButton createSecondary(String text) {
@@ -85,15 +97,31 @@ public class ModernButton extends JButton {
     }
 
     @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if (!enabled) {
+            isHovered = false;
+            isPressed = false;
+        }
+        setCursor(Cursor.getPredefinedCursor(enabled ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+        setForeground(enabled ? enabledForeground : DISABLED_FG);
+        repaint();
+    }
+
+    @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Color targetBg = normalColor;
-        if (isPressed) {
+        Color targetBg;
+        if (!isEnabled()) {
+            targetBg = DISABLED_BG;
+        } else if (isPressed) {
             targetBg = pressedColor;
         } else if (isHovered) {
             targetBg = hoverColor;
+        } else {
+            targetBg = normalColor;
         }
 
         g2.setColor(targetBg);

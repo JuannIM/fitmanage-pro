@@ -14,7 +14,9 @@ import java.awt.event.FocusEvent;
  * @author Sara
  * @version 1.0.0
  */
-public class SearchTextField extends JTextField {
+public final class SearchTextField extends JTextField {
+
+    private static final long serialVersionUID = 1L;
 
     private final String placeholder;
     private boolean focused = false;
@@ -66,7 +68,9 @@ public class SearchTextField extends JTextField {
         // Placeholder si está vacío
         if (getText().isEmpty() && !focused) {
             g2.setFont(ThemeConfig.FONT_REGULAR);
-            g2.drawString(placeholder, 30, (getHeight() / 2) + 5);
+            FontMetrics fm = g2.getFontMetrics();
+            int textY = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
+            g2.drawString(placeholder, 30, textY);
         }
 
         g2.dispose();

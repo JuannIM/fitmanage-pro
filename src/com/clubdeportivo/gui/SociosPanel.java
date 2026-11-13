@@ -3,6 +3,7 @@ package com.clubdeportivo.gui;
 import com.clubdeportivo.gui.components.ModernButton;
 import com.clubdeportivo.gui.components.SearchTextField;
 import com.clubdeportivo.gui.components.StatusBadgeCellRenderer;
+import com.clubdeportivo.gui.components.TableFilterHelper;
 import com.clubdeportivo.gui.theme.ThemeConfig;
 import com.clubdeportivo.model.*;
 import com.clubdeportivo.service.FacturacionService;
@@ -17,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 /**
@@ -27,14 +29,16 @@ import java.util.List;
  * @author Alfonsina
  * @version 1.0.0
  */
-public class SociosPanel extends JPanel {
+public final class SociosPanel extends JPanel {
 
-    private final SocioService socioService;
-    private final FacturacionService facturacionService;
+    private static final long serialVersionUID = 1L;
+
+    private final transient SocioService socioService;
+    private final transient FacturacionService facturacionService;
 
     private JTable tablaSocios;
     private DefaultTableModel modeloSocios;
-    private TableRowSorter<DefaultTableModel> rowSorter;
+    private transient TableRowSorter<DefaultTableModel> rowSorter;
     private SearchTextField txtBuscar;
 
     public SociosPanel(SocioService socioService, FacturacionService facturacionService) {
@@ -86,8 +90,8 @@ public class SociosPanel extends JPanel {
                 new EmptyBorder(16, 16, 16, 16)
         ));
 
-        // Barra de búsqueda y botones contextuales
-        JPanel pnlToolbar = new JPanel(new BorderLayout());
+        // Barra de búsqueda y botones contextuales (responsivo a 1024px)
+        JPanel pnlToolbar = new JPanel(new GridBagLayout());
         pnlToolbar.setOpaque(false);
 
         txtBuscar = new SearchTextField("Buscar por DNI, Nombre o N° Socio...");
@@ -108,12 +112,7 @@ public class SociosPanel extends JPanel {
             }
 
             private void filtrar() {
-                String text = txtBuscar.getText().trim();
-                if (text.isEmpty()) {
-                    rowSorter.setRowFilter(null);
-                } else {
-                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
-                }
+                TableFilterHelper.aplicarFiltroTexto(rowSorter, txtBuscar.getText());
             }
         });
 
@@ -137,8 +136,21 @@ public class SociosPanel extends JPanel {
         pnlBotonesTabla.add(btnEditar);
         pnlBotonesTabla.add(btnEliminar);
 
-        pnlToolbar.add(txtBuscar, BorderLayout.WEST);
-        pnlToolbar.add(pnlBotonesTabla, BorderLayout.EAST);
+        GridBagConstraints gbcSearch = new GridBagConstraints();
+        gbcSearch.gridx = 0;
+        gbcSearch.gridy = 0;
+        gbcSearch.weightx = 1.0;
+        gbcSearch.fill = GridBagConstraints.HORIZONTAL;
+        pnlToolbar.add(txtBuscar, gbcSearch);
+
+        GridBagConstraints gbcButtons = new GridBagConstraints();
+        gbcButtons.gridx = 0;
+        gbcButtons.gridy = 1;
+        gbcButtons.weightx = 1.0;
+        gbcButtons.anchor = GridBagConstraints.EAST;
+        gbcButtons.insets = new Insets(8, 0, 0, 0);
+        pnlToolbar.add(pnlBotonesTabla, gbcButtons);
+
         pnlContenedor.add(pnlToolbar, BorderLayout.NORTH);
 
         // Definición de Tabla
@@ -151,6 +163,7 @@ public class SociosPanel extends JPanel {
         };
 
         tablaSocios = new JTable(modeloSocios);
+        tablaSocios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaSocios.setRowHeight(34);
         tablaSocios.setFont(ThemeConfig.FONT_REGULAR);
         tablaSocios.getTableHeader().setFont(ThemeConfig.FONT_BOLD);
@@ -201,89 +214,114 @@ public class SociosPanel extends JPanel {
     }
 
     private void verFichaSocioSeleccionado() {
-        Socio s = getSocioSeleccionado();
-        if (s == null) {
-            JOptionPane.showMessageDialog(this, "Por favor seleccione un socio de la tabla.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
+        try {
+            Socio s = getSocioSeleccionado();
+            if (s == null) {
+                JOptionPane.showMessageDialog(this, "Por favor seleccione un socio de la tabla.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String ficha = s.mostrarDetalle() + "\n\n" + s.generarComprobante();
+            JTextArea area = new JTextArea(ficha);
+            area.setEditable(false);
+            area.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            area.setCaretPosition(0);
+
+            JScrollPane sp = new JScrollPane(area);
+            sp.setPreferredSize(new Dimension(540, 340));
+            JOptionPane.showMessageDialog(this, sp, "Ficha Técnica y Liquidación - " + s.getNombreCompleto(), JOptionPane.INFORMATION_MESSAGE);
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "Error al consultar la ficha: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        String ficha = s.mostrarDetalle() + "\n\n" + s.generarComprobante();
-        JTextArea area = new JTextArea(ficha);
-        area.setEditable(false);
-        area.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        area.setCaretPosition(0);
-
-        JScrollPane sp = new JScrollPane(area);
-        sp.setPreferredSize(new Dimension(520, 320));
-        JOptionPane.showMessageDialog(this, sp, "Ficha Técnica y Liquidación - " + s.getNombreCompleto(), JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void cobrarSocioSeleccionado() {
-        Socio s = getSocioSeleccionado();
-        if (s == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione un socio para cobrar la cuota.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        try {
+            Socio s = getSocioSeleccionado();
+            if (s == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione un socio para cobrar la cuota.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-        MetodoPago[] metodos = MetodoPago.values();
-        MetodoPago metodo = (MetodoPago) JOptionPane.showInputDialog(
-                this,
-                String.format("Cobro para %s\nMonto a pagar: %s\nSeleccione Medio de Pago:",
-                        s.getNombreCompleto(), Formatters.formatearMoneda(s.calcularMontoTotal())),
-                "Caja y Facturación",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                metodos,
-                metodos[0]
-        );
+            if (s.getEstadoCuota() == EstadoCuota.AL_DIA) {
+                int confirmar = JOptionPane.showConfirmDialog(this,
+                        "El socio " + s.getNombreCompleto() + " ya tiene la cuota AL DÍA.\n¿Desea registrar un nuevo cobro de todas formas?",
+                        "Confirmar Cobro Adicional", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (confirmar != JOptionPane.YES_OPTION) {
+                    return;
+                }
+            }
 
-        if (metodo != null) {
-            Pago pago = facturacionService.cobrarCuota(s.getId(), metodo, "Pago Cuota Mensual");
-            cargarDatos();
-            JOptionPane.showMessageDialog(this,
-                    "Pago procesado con éxito!\n\n" + pago.generarReciboImprimible(),
-                    "Comprobante Emitido", JOptionPane.INFORMATION_MESSAGE);
+            MetodoPago[] metodos = MetodoPago.values();
+            MetodoPago metodo = (MetodoPago) JOptionPane.showInputDialog(
+                    this,
+                    String.format("Cobro para %s\nMonto a pagar: %s\nSeleccione Medio de Pago:",
+                            s.getNombreCompleto(), Formatters.formatearMoneda(s.calcularMontoTotal())),
+                    "Caja y Facturación",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    metodos,
+                    metodos[0]
+            );
+
+            if (metodo != null) {
+                Pago pago = facturacionService.cobrarCuota(s.getId(), metodo, "Pago Cuota Mensual");
+                cargarDatos();
+                JOptionPane.showMessageDialog(this,
+                        "Pago procesado con éxito!\n\n" + pago.generarReciboImprimible(),
+                        "Comprobante Emitido", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "Error al procesar el cobro: " + ex.getMessage(), "Error de Facturación", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void modificarEstadoSeleccionado() {
-        Socio s = getSocioSeleccionado();
-        if (s == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione un socio para modificar su estado.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        try {
+            Socio s = getSocioSeleccionado();
+            if (s == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione un socio para modificar su estado.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-        EstadoCuota[] estados = EstadoCuota.values();
-        EstadoCuota nuevo = (EstadoCuota) JOptionPane.showInputDialog(
-                this,
-                "Seleccione nuevo estado de cuota para " + s.getNombreCompleto() + ":",
-                "Actualizar Estado",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                estados,
-                s.getEstadoCuota()
-        );
+            EstadoCuota[] estados = EstadoCuota.values();
+            EstadoCuota nuevo = (EstadoCuota) JOptionPane.showInputDialog(
+                    this,
+                    "Seleccione nuevo estado de cuota para " + s.getNombreCompleto() + ":",
+                    "Actualizar Estado",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    estados,
+                    s.getEstadoCuota()
+            );
 
-        if (nuevo != null) {
-            socioService.actualizarEstadoCuota(s.getId(), nuevo);
-            cargarDatos();
+            if (nuevo != null) {
+                socioService.actualizarEstadoCuota(s.getId(), nuevo);
+                cargarDatos();
+            }
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "Error al actualizar estado: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void eliminarSocioSeleccionado() {
-        Socio s = getSocioSeleccionado();
-        if (s == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione un socio a eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        try {
+            Socio s = getSocioSeleccionado();
+            if (s == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione un socio a eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-        int resp = JOptionPane.showConfirmDialog(this,
-                "¿Está seguro de eliminar al socio " + s.getNombreCompleto() + " (" + s.getNumeroSocio() + ")?",
-                "Confirmar Baja", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            int resp = JOptionPane.showConfirmDialog(this,
+                    "¿Está seguro de eliminar al socio " + s.getNombreCompleto() + " (" + s.getNumeroSocio() + ")?",
+                    "Confirmar Baja", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
-        if (resp == JOptionPane.YES_OPTION) {
-            socioService.eliminarSocio(s.getId());
-            cargarDatos();
+            if (resp == JOptionPane.YES_OPTION) {
+                socioService.eliminarSocio(s.getId());
+                cargarDatos();
+            }
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo eliminar al socio: " + ex.getMessage(), "Error al Eliminar", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -293,9 +331,10 @@ public class SociosPanel extends JPanel {
         JTextField txtApellido = new JTextField();
         JTextField txtEmail = new JTextField();
         JTextField txtTelefono = new JTextField();
+        JTextField txtFechaNac = new JTextField();
         JComboBox<TipoMembresia> cbPlan = new JComboBox<>(TipoMembresia.values());
 
-        JPanel panel = new JPanel(new GridLayout(6, 2, 8, 8));
+        JPanel panel = new JPanel(new GridLayout(7, 2, 8, 8));
         panel.add(new JLabel("DNI (7-8 dígitos):"));
         panel.add(txtDni);
         panel.add(new JLabel("Nombre:"));
@@ -306,26 +345,42 @@ public class SociosPanel extends JPanel {
         panel.add(txtEmail);
         panel.add(new JLabel("Teléfono:"));
         panel.add(txtTelefono);
+        panel.add(new JLabel("Fecha Nacimiento (dd/MM/yyyy):"));
+        panel.add(txtFechaNac);
         panel.add(new JLabel("Plan / Membresía:"));
         panel.add(cbPlan);
 
-        int result = JOptionPane.showConfirmDialog(this, panel,
-                "Registrar Nuevo Socio", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        while (true) {
+            int result = JOptionPane.showConfirmDialog(this, panel,
+                    "Registrar Nuevo Socio", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-        if (result == JOptionPane.OK_OPTION) {
+            if (result != JOptionPane.OK_OPTION) {
+                break;
+            }
+
+            if (txtDni.getText().isBlank() || txtNombre.getText().isBlank() || txtApellido.getText().isBlank()
+                    || txtEmail.getText().isBlank() || txtTelefono.getText().isBlank() || txtFechaNac.getText().isBlank()) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Datos Incompletos", JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+
             try {
+                LocalDate fechaNac = LocalDate.parse(txtFechaNac.getText().trim(), Formatters.DATE_FORMATTER);
                 socioService.registrarSocio(
-                        txtDni.getText(),
-                        txtNombre.getText(),
-                        txtApellido.getText(),
-                        txtEmail.getText(),
-                        txtTelefono.getText(),
-                        LocalDate.now().minusYears(25),
+                        txtDni.getText().trim(),
+                        txtNombre.getText().trim(),
+                        txtApellido.getText().trim(),
+                        txtEmail.getText().trim(),
+                        txtTelefono.getText().trim(),
+                        fechaNac,
                         (TipoMembresia) cbPlan.getSelectedItem()
                 );
                 cargarDatos();
                 JOptionPane.showMessageDialog(this, "Socio registrado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
+                break;
+            } catch (DateTimeParseException ex) {
+                JOptionPane.showMessageDialog(this, "Fecha de nacimiento inválida. Use el formato dd/MM/yyyy.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            } catch (RuntimeException ex) {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error al Registrar", JOptionPane.ERROR_MESSAGE);
             }
         }

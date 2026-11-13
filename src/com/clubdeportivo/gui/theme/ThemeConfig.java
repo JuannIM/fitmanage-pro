@@ -29,7 +29,8 @@ public final class ThemeConfig {
 
     // Textos
     public static final Color TEXT_MAIN = new Color(15, 23, 42);        // #0f172a
-    public static final Color TEXT_MUTED = new Color(100, 116, 139);    // #64748b
+    public static final Color TEXT_MUTED = new Color(71, 85, 105);      // #475569
+    public static final Color TEXT_SIDEBAR_MUTED = new Color(148, 163, 184); // #94a3b8
     public static final Color TEXT_LIGHT = new Color(241, 245, 249);    // #f1f5f9
     public static final Color TEXT_WHITE = Color.WHITE;
 
@@ -38,16 +39,16 @@ public final class ThemeConfig {
     public static final Color BORDER_FOCUS = new Color(59, 130, 246);   // #3b82f6
 
     // Semáforos / Estados
-    public static final Color STATUS_GREEN = new Color(22, 163, 74);    // #16a34a
+    public static final Color STATUS_GREEN = new Color(22, 101, 52);    // #166534
     public static final Color STATUS_GREEN_BG = new Color(220, 252, 231);// #dcfce7
 
-    public static final Color STATUS_AMBER = new Color(217, 119, 6);    // #d97706
+    public static final Color STATUS_AMBER = new Color(146, 64, 14);    // #92400e
     public static final Color STATUS_AMBER_BG = new Color(254, 243, 199);// #fef3c7
 
-    public static final Color STATUS_RED = new Color(220, 38, 38);      // #dc2626
+    public static final Color STATUS_RED = new Color(185, 28, 28);      // #b91c1c
     public static final Color STATUS_RED_BG = new Color(254, 226, 226);  // #fee2e2
 
-    public static final Color STATUS_GRAY = new Color(100, 116, 139);   // #64748b
+    public static final Color STATUS_GRAY = new Color(71, 85, 105);     // #475569
     public static final Color STATUS_GRAY_BG = new Color(241, 245, 249); // #f1f5f9
 
     // Tipografías

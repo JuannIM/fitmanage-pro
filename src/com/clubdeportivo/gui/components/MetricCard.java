@@ -12,12 +12,14 @@ import java.awt.*;
  * @author Sara
  * @version 1.0.0
  */
-public class MetricCard extends JPanel {
+public final class MetricCard extends JPanel {
+
+    private static final long serialVersionUID = 1L;
 
     private final JLabel lblTitulo;
     private final JLabel lblValor;
     private final JLabel lblSubtitulo;
-    private Color accentColor = ThemeConfig.PRIMARY;
+    private final Color accentColor;
 
     public MetricCard(String titulo, String valorInicial, String subtitulo, Color accentColor) {
         this.accentColor = (accentColor != null) ? accentColor : ThemeConfig.PRIMARY;
@@ -35,7 +37,7 @@ public class MetricCard extends JPanel {
 
         lblSubtitulo = new JLabel(subtitulo);
         lblSubtitulo.setFont(ThemeConfig.FONT_SMALL);
-        lblSubtitulo.setForeground(accentColor);
+        lblSubtitulo.setForeground(this.accentColor);
 
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));

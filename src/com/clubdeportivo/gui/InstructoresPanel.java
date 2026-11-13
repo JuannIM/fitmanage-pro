@@ -2,7 +2,9 @@ package com.clubdeportivo.gui;
 
 import com.clubdeportivo.gui.components.ModernButton;
 import com.clubdeportivo.gui.components.SearchTextField;
+import com.clubdeportivo.gui.components.TableFilterHelper;
 import com.clubdeportivo.gui.theme.ThemeConfig;
+import com.clubdeportivo.model.ClaseGrupal;
 import com.clubdeportivo.model.Instructor;
 import com.clubdeportivo.service.InstructorService;
 import com.clubdeportivo.util.Formatters;
@@ -15,7 +17,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Panel de administración docente y liquidación mensual de instructores.
@@ -24,12 +28,14 @@ import java.util.List;
  * @author Alfonsina
  * @version 1.0.0
  */
-public class InstructoresPanel extends JPanel {
+public final class InstructoresPanel extends JPanel {
 
-    private final InstructorService instructorService;
+    private static final long serialVersionUID = 1L;
+
+    private final transient InstructorService instructorService;
     private JTable tablaInstructores;
     private DefaultTableModel modeloInstructores;
-    private TableRowSorter<DefaultTableModel> rowSorter;
+    private transient TableRowSorter<DefaultTableModel> rowSorter;
     private SearchTextField txtBuscar;
 
     public InstructoresPanel(InstructorService instructorService) {
@@ -80,7 +86,7 @@ public class InstructoresPanel extends JPanel {
                 new EmptyBorder(16, 16, 16, 16)
         ));
 
-        JPanel pnlToolbar = new JPanel(new BorderLayout());
+        JPanel pnlToolbar = new JPanel(new GridBagLayout());
         pnlToolbar.setOpaque(false);
 
         txtBuscar = new SearchTextField("Buscar por Legajo, Especialidad o Nombre...");
@@ -93,12 +99,7 @@ public class InstructoresPanel extends JPanel {
             public void changedUpdate(DocumentEvent e) { filtrar(); }
 
             private void filtrar() {
-                String text = txtBuscar.getText().trim();
-                if (text.isEmpty()) {
-                    rowSorter.setRowFilter(null);
-                } else {
-                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
-                }
+                TableFilterHelper.aplicarFiltroTexto(rowSorter, txtBuscar.getText());
             }
         });
 
@@ -114,8 +115,21 @@ public class InstructoresPanel extends JPanel {
         pnlBotonesTabla.add(btnLiquidacion);
         pnlBotonesTabla.add(btnEliminar);
 
-        pnlToolbar.add(txtBuscar, BorderLayout.WEST);
-        pnlToolbar.add(pnlBotonesTabla, BorderLayout.EAST);
+        GridBagConstraints gbcSearch = new GridBagConstraints();
+        gbcSearch.gridx = 0;
+        gbcSearch.gridy = 0;
+        gbcSearch.weightx = 1.0;
+        gbcSearch.fill = GridBagConstraints.HORIZONTAL;
+        pnlToolbar.add(txtBuscar, gbcSearch);
+
+        GridBagConstraints gbcButtons = new GridBagConstraints();
+        gbcButtons.gridx = 0;
+        gbcButtons.gridy = 1;
+        gbcButtons.weightx = 1.0;
+        gbcButtons.anchor = GridBagConstraints.EAST;
+        gbcButtons.insets = new Insets(8, 0, 0, 0);
+        pnlToolbar.add(pnlBotonesTabla, gbcButtons);
+
         pnlContenedor.add(pnlToolbar, BorderLayout.NORTH);
 
         String[] columnas = {"ID", "Legajo", "Profesor", "DNI", "Especialidad", "Turno", "Sueldo Base", "Honorario/Clase", "Clases Activas", "Liquidación Mensual"};
@@ -127,6 +141,7 @@ public class InstructoresPanel extends JPanel {
         };
 
         tablaInstructores = new JTable(modeloInstructores);
+        tablaInstructores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaInstructores.setRowHeight(34);
         tablaInstructores.setFont(ThemeConfig.FONT_REGULAR);
         tablaInstructores.getTableHeader().setFont(ThemeConfig.FONT_BOLD);
@@ -174,62 +189,79 @@ public class InstructoresPanel extends JPanel {
     }
 
     private void verLiquidacionSeleccionada() {
-        Instructor inst = getInstructorSeleccionado();
-        if (inst == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione un instructor de la nómina.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
+        try {
+            Instructor inst = getInstructorSeleccionado();
+            if (inst == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione un instructor de la nómina.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            long disciplinasDistintas = inst.getClasesAsignadas().stream()
+                    .map(ClaseGrupal::getDisciplina)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .count();
+
+            String reporte = String.format("""
+                    ====================================================
+                         FICHA DOCENTE Y LIQUIDACIÓN SALARIAL MENSUAL
+                    ====================================================
+                    Legajo           : %s
+                    Profesor         : %s (DNI: %s)
+                    Especialidad     : %s
+                    Turno            : %s
+                    ----------------------------------------------------
+                    Sueldo Base      : %s
+                    Honorario / Clase: %s
+                    Clases Semanales : %d clases asignadas
+                    Clases Mensuales : %d clases estimadas
+                    Variable Clases  : %s
+                    Bono Multi-Disc. : %s
+                    ----------------------------------------------------
+                    TOTAL A LIQUIDAR : %s
+                    ====================================================
+                    """,
+                    inst.getLegajo(), inst.getNombreCompleto(), inst.getDni(),
+                    inst.getEspecialidad(), inst.getTurnoDisponibilidad(),
+                    Formatters.formatearMoneda(inst.getSueldoBase()),
+                    Formatters.formatearMoneda(inst.getHonorarioPorClase()),
+                    inst.getClasesAsignadas().size(),
+                    inst.getClasesAsignadas().size() * 4,
+                    Formatters.formatearMoneda(inst.getClasesAsignadas().size() * 4 * inst.getHonorarioPorClase()),
+                    (disciplinasDistintas > 3 ? "$ 15.000,00" : "$ 0,00"),
+                    Formatters.formatearMoneda(inst.calcularLiquidacionMensual())
+            );
+
+            JTextArea txt = new JTextArea(reporte);
+            txt.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            txt.setEditable(false);
+            txt.setCaretPosition(0);
+            JScrollPane sp = new JScrollPane(txt);
+            sp.setPreferredSize(new Dimension(540, 340));
+            JOptionPane.showMessageDialog(this, sp, "Liquidación Docente - " + inst.getNombreCompleto(), JOptionPane.INFORMATION_MESSAGE);
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "Error al consultar liquidación: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        String reporte = String.format("""
-                ====================================================
-                     FICHA DOCENTE Y LIQUIDACIÓN SALARIAL MENSUAL
-                ====================================================
-                Legajo           : %s
-                Profesor         : %s (DNI: %s)
-                Especialidad     : %s
-                Turno            : %s
-                ----------------------------------------------------
-                Sueldo Base      : %s
-                Honorario / Clase: %s
-                Clases Semanales : %d clases asignadas
-                Clases Mensuales : %d clases estimadas
-                Variable Clases  : %s
-                Bono Multi-Disc. : %s
-                ----------------------------------------------------
-                TOTAL A LIQUIDAR : %s
-                ====================================================
-                """,
-                inst.getLegajo(), inst.getNombreCompleto(), inst.getDni(),
-                inst.getEspecialidad(), inst.getTurnoDisponibilidad(),
-                Formatters.formatearMoneda(inst.getSueldoBase()),
-                Formatters.formatearMoneda(inst.getHonorarioPorClase()),
-                inst.getClasesAsignadas().size(),
-                inst.getClasesAsignadas().size() * 4,
-                Formatters.formatearMoneda(inst.getClasesAsignadas().size() * 4 * inst.getHonorarioPorClase()),
-                (inst.getClasesAsignadas().size() >= 3 ? "$ 15.000,00" : "$ 0,00"),
-                Formatters.formatearMoneda(inst.calcularLiquidacionMensual())
-        );
-
-        JTextArea txt = new JTextArea(reporte);
-        txt.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        txt.setEditable(false);
-        JOptionPane.showMessageDialog(this, new JScrollPane(txt), "Liquidación Docente - " + inst.getNombreCompleto(), JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void eliminarSeleccionado() {
-        Instructor inst = getInstructorSeleccionado();
-        if (inst == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione un instructor a remover.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        try {
+            Instructor inst = getInstructorSeleccionado();
+            if (inst == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione un instructor a remover.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-        int resp = JOptionPane.showConfirmDialog(this,
-                "¿Desea dar de baja al instructor " + inst.getNombreCompleto() + " (" + inst.getLegajo() + ")?",
-                "Confirmar Baja", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            int resp = JOptionPane.showConfirmDialog(this,
+                    "¿Desea dar de baja al instructor " + inst.getNombreCompleto() + " (" + inst.getLegajo() + ")?",
+                    "Confirmar Baja", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
-        if (resp == JOptionPane.YES_OPTION) {
-            instructorService.eliminarInstructor(inst.getId());
-            cargarDatos();
+            if (resp == JOptionPane.YES_OPTION) {
+                instructorService.eliminarInstructor(inst.getId());
+                cargarDatos();
+            }
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo eliminar el instructor: " + ex.getMessage(), "Error al Eliminar", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -239,36 +271,59 @@ public class InstructoresPanel extends JPanel {
         JTextField txtApellido = new JTextField();
         JTextField txtEmail = new JTextField();
         JTextField txtTelefono = new JTextField();
+        JTextField txtFechaNac = new JTextField();
         JTextField txtEsp = new JTextField();
         JTextField txtSueldo = new JTextField("450000");
         JTextField txtHonorario = new JTextField("6500");
         JComboBox<String> cbTurno = new JComboBox<>(new String[]{"Turno Mañana", "Turno Tarde", "Turno Noche", "Jornada Completa"});
 
-        JPanel panel = new JPanel(new GridLayout(9, 2, 6, 6));
+        JPanel panel = new JPanel(new GridLayout(10, 2, 6, 6));
         panel.add(new JLabel("DNI:")); panel.add(txtDni);
         panel.add(new JLabel("Nombre:")); panel.add(txtNombre);
         panel.add(new JLabel("Apellido:")); panel.add(txtApellido);
         panel.add(new JLabel("Email:")); panel.add(txtEmail);
         panel.add(new JLabel("Teléfono:")); panel.add(txtTelefono);
+        panel.add(new JLabel("Fecha Nacimiento (dd/MM/yyyy):")); panel.add(txtFechaNac);
         panel.add(new JLabel("Especialidad:")); panel.add(txtEsp);
         panel.add(new JLabel("Sueldo Base ($):")); panel.add(txtSueldo);
         panel.add(new JLabel("Honorario por Clase ($):")); panel.add(txtHonorario);
         panel.add(new JLabel("Turno:")); panel.add(cbTurno);
 
-        int res = JOptionPane.showConfirmDialog(this, panel, "Registrar Nuevo Instructor", JOptionPane.OK_CANCEL_OPTION);
-        if (res == JOptionPane.OK_OPTION) {
+        while (true) {
+            int res = JOptionPane.showConfirmDialog(this, panel, "Registrar Nuevo Instructor", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (res != JOptionPane.OK_OPTION) {
+                break;
+            }
+
+            if (txtDni.getText().isBlank() || txtNombre.getText().isBlank() || txtApellido.getText().isBlank()
+                    || txtEmail.getText().isBlank() || txtTelefono.getText().isBlank() || txtFechaNac.getText().isBlank()
+                    || txtEsp.getText().isBlank() || txtSueldo.getText().isBlank() || txtHonorario.getText().isBlank()) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Datos Incompletos", JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+
             try {
+                LocalDate fechaNac = LocalDate.parse(txtFechaNac.getText().trim(), Formatters.DATE_FORMATTER);
                 double sueldo = Double.parseDouble(txtSueldo.getText().trim());
                 double honorario = Double.parseDouble(txtHonorario.getText().trim());
+                if (sueldo <= 0 || honorario <= 0) {
+                    JOptionPane.showMessageDialog(this, "El sueldo base y el honorario deben ser números positivos mayores a 0.", "Datos Inválidos", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
 
                 instructorService.registrarInstructor(
-                        txtDni.getText(), txtNombre.getText(), txtApellido.getText(),
-                        txtEmail.getText(), txtTelefono.getText(), LocalDate.now().minusYears(30),
-                        txtEsp.getText(), sueldo, honorario, (String) cbTurno.getSelectedItem()
+                        txtDni.getText().trim(), txtNombre.getText().trim(), txtApellido.getText().trim(),
+                        txtEmail.getText().trim(), txtTelefono.getText().trim(), fechaNac,
+                        txtEsp.getText().trim(), sueldo, honorario, (String) cbTurno.getSelectedItem()
                 );
                 cargarDatos();
                 JOptionPane.showMessageDialog(this, "Instructor registrado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
+                break;
+            } catch (DateTimeParseException ex) {
+                JOptionPane.showMessageDialog(this, "Fecha de nacimiento inválida. Use el formato dd/MM/yyyy.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Sueldo base y honorario por clase deben ser valores numéricos válidos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            } catch (RuntimeException ex) {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error al Registrar", JOptionPane.ERROR_MESSAGE);
             }
         }

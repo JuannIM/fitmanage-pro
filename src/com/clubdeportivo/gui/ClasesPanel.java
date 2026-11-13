@@ -3,6 +3,7 @@ package com.clubdeportivo.gui;
 import com.clubdeportivo.gui.components.ModernButton;
 import com.clubdeportivo.gui.components.SearchTextField;
 import com.clubdeportivo.gui.components.StatusBadgeCellRenderer;
+import com.clubdeportivo.gui.components.TableFilterHelper;
 import com.clubdeportivo.gui.theme.ThemeConfig;
 import com.clubdeportivo.model.*;
 import com.clubdeportivo.service.ClaseService;
@@ -19,6 +20,7 @@ import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
@@ -31,15 +33,17 @@ import java.util.Locale;
  * @author Rocio
  * @version 1.0.0
  */
-public class ClasesPanel extends JPanel {
+public final class ClasesPanel extends JPanel {
 
-    private final ClaseService claseService;
-    private final SocioService socioService;
-    private final InstructorService instructorService;
+    private static final long serialVersionUID = 1L;
+
+    private final transient ClaseService claseService;
+    private final transient SocioService socioService;
+    private final transient InstructorService instructorService;
 
     private JTable tablaClases;
     private DefaultTableModel modeloClases;
-    private TableRowSorter<DefaultTableModel> rowSorter;
+    private transient TableRowSorter<DefaultTableModel> rowSorter;
     private SearchTextField txtBuscar;
 
     public ClasesPanel(ClaseService claseService, SocioService socioService, InstructorService instructorService) {
@@ -92,7 +96,7 @@ public class ClasesPanel extends JPanel {
                 new EmptyBorder(16, 16, 16, 16)
         ));
 
-        JPanel pnlToolbar = new JPanel(new BorderLayout());
+        JPanel pnlToolbar = new JPanel(new GridBagLayout());
         pnlToolbar.setOpaque(false);
 
         txtBuscar = new SearchTextField("Buscar por Clase, Disciplina o Sala...");
@@ -105,12 +109,7 @@ public class ClasesPanel extends JPanel {
             public void changedUpdate(DocumentEvent e) { filtrar(); }
 
             private void filtrar() {
-                String text = txtBuscar.getText().trim();
-                if (text.isEmpty()) {
-                    rowSorter.setRowFilter(null);
-                } else {
-                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
-                }
+                TableFilterHelper.aplicarFiltroTexto(rowSorter, txtBuscar.getText());
             }
         });
 
@@ -130,8 +129,21 @@ public class ClasesPanel extends JPanel {
         pnlBotonesTabla.add(btnVerAlumnos);
         pnlBotonesTabla.add(btnEliminar);
 
-        pnlToolbar.add(txtBuscar, BorderLayout.WEST);
-        pnlToolbar.add(pnlBotonesTabla, BorderLayout.EAST);
+        GridBagConstraints gbcSearch = new GridBagConstraints();
+        gbcSearch.gridx = 0;
+        gbcSearch.gridy = 0;
+        gbcSearch.weightx = 1.0;
+        gbcSearch.fill = GridBagConstraints.HORIZONTAL;
+        pnlToolbar.add(txtBuscar, gbcSearch);
+
+        GridBagConstraints gbcButtons = new GridBagConstraints();
+        gbcButtons.gridx = 0;
+        gbcButtons.gridy = 1;
+        gbcButtons.weightx = 1.0;
+        gbcButtons.anchor = GridBagConstraints.EAST;
+        gbcButtons.insets = new Insets(8, 0, 0, 0);
+        pnlToolbar.add(pnlBotonesTabla, gbcButtons);
+
         pnlContenedor.add(pnlToolbar, BorderLayout.NORTH);
 
         String[] columnas = {"ID", "Actividad", "Disciplina", "Día", "Horario", "Duración", "Sala", "Ocupación", "Profesor", "Estado Cupo"};
@@ -143,6 +155,7 @@ public class ClasesPanel extends JPanel {
         };
 
         tablaClases = new JTable(modeloClases);
+        tablaClases.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaClases.setRowHeight(34);
         tablaClases.setFont(ThemeConfig.FONT_REGULAR);
         tablaClases.getTableHeader().setFont(ThemeConfig.FONT_BOLD);
@@ -168,7 +181,7 @@ public class ClasesPanel extends JPanel {
         modeloClases.setRowCount(0);
         List<ClaseGrupal> lista = claseService.listarTodas();
         for (ClaseGrupal c : lista) {
-            String diaStr = c.getDiaSemana().getDisplayName(TextStyle.FULL, new Locale("es", "AR")).toUpperCase();
+            String diaStr = c.getDiaSemana().getDisplayName(TextStyle.FULL, Locale.of("es", "AR")).toUpperCase();
             String ocupacion = c.getSociosInscriptos().size() + " / " + c.getCupoMaximo();
             String prof = (c.getInstructor() != null) ? c.getInstructor().getNombreCompleto() : "A confirmar";
             String estadoCupo = c.tieneCupoDisponible() ? "DISPONIBLE" : "COMPLETO";
@@ -197,85 +210,114 @@ public class ClasesPanel extends JPanel {
     }
 
     private void inscribirSocioSeleccionado() {
-        ClaseGrupal clase = getClaseSeleccionada();
-        if (clase == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione una clase de la tabla.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        List<Socio> socios = socioService.listarTodos();
-        JComboBox<SocioItem> cbSocios = new JComboBox<>();
-        for (Socio s : socios) {
-            cbSocios.addItem(new SocioItem(s));
-        }
-
-        JPanel panel = new JPanel(new GridLayout(2, 1, 6, 6));
-        panel.add(new JLabel("Seleccione el socio a inscribir en " + clase.getNombre() + ":"));
-        panel.add(cbSocios);
-
-        int res = JOptionPane.showConfirmDialog(this, panel, "Inscribir Alumno a Clase", JOptionPane.OK_CANCEL_OPTION);
-        if (res == JOptionPane.OK_OPTION && cbSocios.getSelectedItem() instanceof SocioItem item) {
-            try {
-                boolean ok = claseService.inscribirSocioEnClase(clase.getId(), item.socio.getId());
-                cargarDatos();
-                if (ok) {
-                    JOptionPane.showMessageDialog(this, "Socio inscripto exitosamente en " + clase.getNombre(), "Inscripción Exitosa", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(this, "No se pudo inscribir. Verifique que la membresía del socio permita clases o que no esté ya inscripto.", "Aviso", JOptionPane.WARNING_MESSAGE);
-                }
-            } catch (CupoAgotadoException ex) {
-                // Captura formal de la excepción de cupo agotado
-                JOptionPane.showMessageDialog(this,
-                        "¡CUPO AGOTADO!\n" + ex.getMessage(),
-                        "Regla de Negocio: Aforo Máximo Excedido", JOptionPane.ERROR_MESSAGE);
+        try {
+            ClaseGrupal clase = getClaseSeleccionada();
+            if (clase == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione una clase de la tabla.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
             }
+
+            List<Socio> socios = socioService.listarTodos();
+            if (socios.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No hay socios registrados para inscribir en la clase.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JComboBox<SocioItem> cbSocios = new JComboBox<>();
+            for (Socio s : socios) {
+                cbSocios.addItem(new SocioItem(s));
+            }
+
+            JPanel panel = new JPanel(new GridLayout(2, 1, 6, 6));
+            panel.add(new JLabel("Seleccione el socio a inscribir en " + clase.getNombre() + ":"));
+            panel.add(cbSocios);
+
+            int res = JOptionPane.showConfirmDialog(this, panel, "Inscribir Alumno a Clase", JOptionPane.OK_CANCEL_OPTION);
+            if (res == JOptionPane.OK_OPTION && cbSocios.getSelectedItem() instanceof SocioItem item) {
+                try {
+                    boolean ok = claseService.inscribirSocioEnClase(clase.getId(), item.socio.getId());
+                    cargarDatos();
+                    if (ok) {
+                        JOptionPane.showMessageDialog(this, "Socio inscripto exitosamente en " + clase.getNombre(), "Inscripción Exitosa", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        String motivo = claseService.obtenerMotivoRechazoInscripcion(clase.getId(), item.socio.getId());
+                        JOptionPane.showMessageDialog(this, motivo, "No se pudo inscribir", JOptionPane.WARNING_MESSAGE);
+                    }
+                } catch (CupoAgotadoException ex) {
+                    // Captura formal de la excepción de cupo agotado
+                    JOptionPane.showMessageDialog(this,
+                            "¡CUPO AGOTADO!\n" + ex.getMessage(),
+                            "Regla de Negocio: Aforo Máximo Excedido", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "Error al inscribir socio: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void verAlumnosSeleccionados() {
-        ClaseGrupal clase = getClaseSeleccionada();
-        if (clase == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione una clase.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        try {
+            ClaseGrupal clase = getClaseSeleccionada();
+            if (clase == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione una clase.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append(clase.mostrarFichaClase()).append("\n\n");
-        sb.append("NÓMINA DE SOCIOS INSCRIPTOS (").append(clase.getSociosInscriptos().size()).append("):\n");
-        sb.append("----------------------------------------------------\n");
-        int idx = 1;
-        for (Socio s : clase.getSociosInscriptos()) {
-            sb.append(String.format(" %2d. [%s] %s | DNI: %s | Cuota: %s\n",
-                    idx++, s.getNumeroSocio(), s.getNombreCompleto(), s.getDni(), s.getEstadoCuota().getEtiqueta()));
-        }
-        if (clase.getSociosInscriptos().isEmpty()) {
-            sb.append(" (Sin socios inscriptos aún)\n");
-        }
+            StringBuilder sb = new StringBuilder();
+            sb.append(clase.mostrarFichaClase()).append("\n\n");
+            sb.append("NÓMINA DE SOCIOS INSCRIPTOS (").append(clase.getSociosInscriptos().size()).append("):\n");
+            sb.append("----------------------------------------------------\n");
+            int idx = 1;
+            for (Socio s : clase.getSociosInscriptos()) {
+                sb.append(String.format(" %2d. [%s] %s | DNI: %s | Cuota: %s\n",
+                        idx++, s.getNumeroSocio(), s.getNombreCompleto(), s.getDni(), s.getEstadoCuota().getEtiqueta()));
+            }
+            if (clase.getSociosInscriptos().isEmpty()) {
+                sb.append(" (Sin socios inscriptos aún)\n");
+            }
 
-        JTextArea txt = new JTextArea(sb.toString());
-        txt.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        txt.setEditable(false);
-        JOptionPane.showMessageDialog(this, new JScrollPane(txt), "Alumnos - " + clase.getNombre(), JOptionPane.INFORMATION_MESSAGE);
+            JTextArea txt = new JTextArea(sb.toString());
+            txt.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            txt.setEditable(false);
+            txt.setCaretPosition(0);
+            JScrollPane sp = new JScrollPane(txt);
+            sp.setPreferredSize(new Dimension(540, 340));
+            JOptionPane.showMessageDialog(this, sp, "Alumnos - " + clase.getNombre(), JOptionPane.INFORMATION_MESSAGE);
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "Error al consultar inscriptos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void eliminarClaseSeleccionada() {
-        ClaseGrupal clase = getClaseSeleccionada();
-        if (clase == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione una clase a eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        try {
+            ClaseGrupal clase = getClaseSeleccionada();
+            if (clase == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione una clase a eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-        int resp = JOptionPane.showConfirmDialog(this,
-                "¿Desea cancelar y eliminar la clase " + clase.getNombre() + "?",
-                "Confirmar Cancelación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            int resp = JOptionPane.showConfirmDialog(this,
+                    "¿Desea cancelar y eliminar la clase " + clase.getNombre() + "?",
+                    "Confirmar Cancelación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 
-        if (resp == JOptionPane.YES_OPTION) {
-            claseService.eliminarClase(clase.getId());
-            cargarDatos();
+            if (resp == JOptionPane.YES_OPTION) {
+                claseService.eliminarClase(clase.getId());
+                cargarDatos();
+            }
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo eliminar la clase: " + ex.getMessage(), "Error al Eliminar", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void mostrarDialogoNuevaClase() {
+        List<Instructor> instructores = instructorService.listarTodos();
+        if (instructores.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "No hay instructores registrados. Registre un instructor antes de programar una clase.",
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         JTextField txtNombre = new JTextField();
         JComboBox<Disciplina> cbDisciplina = new JComboBox<>(Disciplina.values());
         JComboBox<DayOfWeek> cbDia = new JComboBox<>(new DayOfWeek[]{
@@ -287,7 +329,6 @@ public class ClasesPanel extends JPanel {
         JTextField txtSala = new JTextField("Sala Principal");
         JTextField txtCupo = new JTextField("15");
 
-        List<Instructor> instructores = instructorService.listarTodos();
         JComboBox<InstructorItem> cbProf = new JComboBox<>();
         for (Instructor i : instructores) {
             cbProf.addItem(new InstructorItem(i));
@@ -303,21 +344,40 @@ public class ClasesPanel extends JPanel {
         panel.add(new JLabel("Cupo Máximo:")); panel.add(txtCupo);
         panel.add(new JLabel("Instructor Titular:")); panel.add(cbProf);
 
-        int res = JOptionPane.showConfirmDialog(this, panel, "Programar Nueva Clase Grupal", JOptionPane.OK_CANCEL_OPTION);
-        if (res == JOptionPane.OK_OPTION) {
+        while (true) {
+            int res = JOptionPane.showConfirmDialog(this, panel, "Programar Nueva Clase Grupal", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (res != JOptionPane.OK_OPTION) {
+                break;
+            }
+
+            if (txtNombre.getText().isBlank() || txtHora.getText().isBlank() || txtDuracion.getText().isBlank()
+                    || txtSala.getText().isBlank() || txtCupo.getText().isBlank()) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Datos Incompletos", JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+
             try {
-                LocalTime hora = LocalTime.parse(txtHora.getText().trim());
+                LocalTime hora = LocalTime.parse(txtHora.getText().trim(), Formatters.TIME_FORMATTER);
                 int dur = Integer.parseInt(txtDuracion.getText().trim());
                 int cupo = Integer.parseInt(txtCupo.getText().trim());
+                if (dur <= 0 || cupo <= 0) {
+                    JOptionPane.showMessageDialog(this, "La duración y el cupo máximo deben ser mayores a 0.", "Datos Inválidos", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
                 Instructor inst = (cbProf.getSelectedItem() instanceof InstructorItem item) ? item.inst : null;
 
                 claseService.crearClase(
-                        txtNombre.getText(), (Disciplina) cbDisciplina.getSelectedItem(),
-                        (DayOfWeek) cbDia.getSelectedItem(), hora, dur, txtSala.getText(), cupo, inst
+                        txtNombre.getText().trim(), (Disciplina) cbDisciplina.getSelectedItem(),
+                        (DayOfWeek) cbDia.getSelectedItem(), hora, dur, txtSala.getText().trim(), cupo, inst
                 );
                 cargarDatos();
                 JOptionPane.showMessageDialog(this, "Clase programada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception ex) {
+                break;
+            } catch (DateTimeParseException ex) {
+                JOptionPane.showMessageDialog(this, "Hora de inicio inválida. Use el formato HH:mm (ej: 18:00).", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Duración y cupo máximo deben ser números enteros válidos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            } catch (RuntimeException ex) {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), "Error al Crear Clase", JOptionPane.ERROR_MESSAGE);
             }
         }

@@ -4,11 +4,12 @@ import com.clubdeportivo.gui.components.ModernButton;
 import com.clubdeportivo.gui.theme.ThemeConfig;
 import com.clubdeportivo.model.Ejercicio;
 import com.clubdeportivo.model.GrupoMuscular;
+import com.clubdeportivo.model.Instructor;
 import com.clubdeportivo.model.Rutina;
 import com.clubdeportivo.model.Socio;
+import com.clubdeportivo.service.InstructorService;
 import com.clubdeportivo.service.RutinaService;
 import com.clubdeportivo.service.SocioService;
-import com.clubdeportivo.util.Formatters;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -25,10 +26,13 @@ import java.util.List;
  * @author Sara
  * @version 1.0.0
  */
-public class RutinasPanel extends JPanel {
+public final class RutinasPanel extends JPanel {
 
-    private final RutinaService rutinaService;
-    private final SocioService socioService;
+    private static final long serialVersionUID = 1L;
+
+    private final transient RutinaService rutinaService;
+    private final transient SocioService socioService;
+    private final transient InstructorService instructorService;
 
     private JTable tablaRutinas;
     private DefaultTableModel modeloRutinas;
@@ -37,9 +41,10 @@ public class RutinasPanel extends JPanel {
 
     private JLabel lblDetalleVolumen;
 
-    public RutinasPanel(RutinaService rutinaService, SocioService socioService) {
+    public RutinasPanel(RutinaService rutinaService, SocioService socioService, InstructorService instructorService) {
         this.rutinaService = rutinaService;
         this.socioService = socioService;
+        this.instructorService = instructorService;
 
         setLayout(new BorderLayout(15, 15));
         setBackground(ThemeConfig.BG_MAIN);
@@ -47,6 +52,10 @@ public class RutinasPanel extends JPanel {
 
         initUI();
         cargarRutinas();
+    }
+
+    public RutinasPanel(RutinaService rutinaService, SocioService socioService) {
+        this(rutinaService, socioService, null);
     }
 
     private void initUI() {
@@ -126,6 +135,7 @@ public class RutinasPanel extends JPanel {
         };
 
         tablaRutinas = new JTable(modeloRutinas);
+        tablaRutinas.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaRutinas.setRowHeight(30);
         tablaRutinas.setFont(ThemeConfig.FONT_REGULAR);
         tablaRutinas.getTableHeader().setFont(ThemeConfig.FONT_BOLD);
@@ -184,6 +194,7 @@ public class RutinasPanel extends JPanel {
         };
 
         tablaEjercicios = new JTable(modeloEjercicios);
+        tablaEjercicios.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaEjercicios.setRowHeight(28);
         tablaEjercicios.setFont(ThemeConfig.FONT_REGULAR);
         tablaEjercicios.getTableHeader().setFont(ThemeConfig.FONT_BOLD);
@@ -197,6 +208,7 @@ public class RutinasPanel extends JPanel {
         splitPane.setBottomComponent(pnlEjercicios);
 
         add(splitPane, BorderLayout.CENTER);
+        SwingUtilities.invokeLater(() -> splitPane.setDividerLocation(0.45));
     }
 
     public void cargarRutinas() {
@@ -224,7 +236,8 @@ public class RutinasPanel extends JPanel {
     private Rutina getRutinaSeleccionada() {
         int row = tablaRutinas.getSelectedRow();
         if (row < 0) return null;
-        String id = (String) modeloRutinas.getValueAt(row, 0);
+        int modelRow = tablaRutinas.convertRowIndexToModel(row);
+        String id = (String) modeloRutinas.getValueAt(modelRow, 0);
         return rutinaService.buscarPorId(id).orElse(null);
     }
 
@@ -255,19 +268,70 @@ public class RutinasPanel extends JPanel {
     }
 
     private void mostrarDialogoNuevaRutina() {
+        JComboBox<InstructorItem> cbInstructor = null;
+        JTextField txtInstructorId = null;
+
+        if (instructorService != null) {
+            List<Instructor> instructores = instructorService.listarTodos();
+            if (instructores.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "No hay instructores registrados. Registre un instructor antes de crear una rutina.",
+                        "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            cbInstructor = new JComboBox<>();
+            for (Instructor inst : instructores) {
+                cbInstructor.addItem(new InstructorItem(inst));
+            }
+        } else {
+            txtInstructorId = new JTextField();
+        }
+
         JTextField txtNombre = new JTextField();
         JTextField txtObjetivo = new JTextField("Hipertrofia Muscular");
         JComboBox<String> cbNivel = new JComboBox<>(new String[]{"Principiante", "Intermedio", "Avanzado"});
 
-        JPanel panel = new JPanel(new GridLayout(3, 2, 6, 6));
+        JPanel panel = new JPanel(new GridLayout(4, 2, 6, 6));
         panel.add(new JLabel("Nombre de la Rutina:")); panel.add(txtNombre);
         panel.add(new JLabel("Objetivo Principal:")); panel.add(txtObjetivo);
         panel.add(new JLabel("Nivel de Dificultad:")); panel.add(cbNivel);
+        if (cbInstructor != null) {
+            panel.add(new JLabel("Instructor Creador:")); panel.add(cbInstructor);
+        } else {
+            panel.add(new JLabel("ID Instructor:")); panel.add(txtInstructorId);
+        }
 
-        int res = JOptionPane.showConfirmDialog(this, panel, "Crear Nueva Rutina", JOptionPane.OK_CANCEL_OPTION);
-        if (res == JOptionPane.OK_OPTION && !txtNombre.getText().isBlank()) {
-            rutinaService.crearRutina(txtNombre.getText(), txtObjetivo.getText(), (String) cbNivel.getSelectedItem(), "ADMIN");
-            cargarRutinas();
+        while (true) {
+            int res = JOptionPane.showConfirmDialog(this, panel, "Crear Nueva Rutina", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (res != JOptionPane.OK_OPTION) {
+                break;
+            }
+
+            if (txtNombre.getText().isBlank() || txtObjetivo.getText().isBlank()
+                    || (txtInstructorId != null && txtInstructorId.getText().isBlank())) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Datos Incompletos", JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+
+            String instructorId;
+            if (cbInstructor != null) {
+                if (!(cbInstructor.getSelectedItem() instanceof InstructorItem item)) {
+                    JOptionPane.showMessageDialog(this, "Seleccione un instructor válido.", "Datos Incompletos", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
+                instructorId = item.inst.getId();
+            } else {
+                instructorId = txtInstructorId.getText().trim();
+            }
+
+            try {
+                rutinaService.crearRutina(txtNombre.getText().trim(), txtObjetivo.getText().trim(), (String) cbNivel.getSelectedItem(), instructorId);
+                cargarRutinas();
+                JOptionPane.showMessageDialog(this, "Rutina creada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                break;
+            } catch (RuntimeException ex) {
+                JOptionPane.showMessageDialog(this, "Error al crear rutina: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -295,88 +359,140 @@ public class RutinasPanel extends JPanel {
         panel.add(new JLabel("Descanso (segundos):")); panel.add(txtDescanso);
         panel.add(new JLabel("Notas Técnicas:")); panel.add(txtNotas);
 
-        int res = JOptionPane.showConfirmDialog(this, panel, "Agregar Ejercicio a " + rutina.getNombre(), JOptionPane.OK_CANCEL_OPTION);
-        if (res == JOptionPane.OK_OPTION && !txtNombre.getText().isBlank()) {
+        while (true) {
+            int res = JOptionPane.showConfirmDialog(this, panel, "Agregar Ejercicio a " + rutina.getNombre(), JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            if (res != JOptionPane.OK_OPTION) {
+                break;
+            }
+
+            if (txtNombre.getText().isBlank() || txtSeries.getText().isBlank() || txtReps.getText().isBlank()
+                    || txtPeso.getText().isBlank() || txtDescanso.getText().isBlank()) {
+                JOptionPane.showMessageDialog(this, "Complete todos los campos obligatorios.", "Datos Incompletos", JOptionPane.ERROR_MESSAGE);
+                continue;
+            }
+
             try {
                 int series = Integer.parseInt(txtSeries.getText().trim());
                 int reps = Integer.parseInt(txtReps.getText().trim());
                 double peso = Double.parseDouble(txtPeso.getText().trim());
                 int descanso = Integer.parseInt(txtDescanso.getText().trim());
+                if (series <= 0 || reps <= 0 || peso <= 0 || descanso <= 0) {
+                    JOptionPane.showMessageDialog(this, "Series, repeticiones, peso y descanso deben ser números positivos mayores a 0.", "Datos Inválidos", JOptionPane.ERROR_MESSAGE);
+                    continue;
+                }
 
                 rutinaService.agregarEjercicioARutina(
-                        rutina.getId(), txtNombre.getText(), (GrupoMuscular) cbGrupo.getSelectedItem(),
-                        series, reps, peso, descanso, txtNotas.getText()
+                        rutina.getId(), txtNombre.getText().trim(), (GrupoMuscular) cbGrupo.getSelectedItem(),
+                        series, reps, peso, descanso, txtNotas.getText().trim()
                 );
 
                 cargarRutinas();
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error en los datos numéricos: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Ejercicio agregado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                break;
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Series, repeticiones, peso y descanso deben ser números válidos.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            } catch (RuntimeException ex) {
+                JOptionPane.showMessageDialog(this, "Error al agregar ejercicio: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
     private void eliminarEjercicioSeleccionado() {
-        Rutina rutina = getRutinaSeleccionada();
-        int row = tablaEjercicios.getSelectedRow();
-        if (rutina == null || row < 0) {
-            JOptionPane.showMessageDialog(this, "Seleccione un ejercicio de la tabla inferior.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        try {
+            Rutina rutina = getRutinaSeleccionada();
+            int row = tablaEjercicios.getSelectedRow();
+            if (rutina == null || row < 0) {
+                JOptionPane.showMessageDialog(this, "Seleccione un ejercicio de la tabla inferior.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-        String ejercicioId = (String) modeloEjercicios.getValueAt(row, 0);
-        int resp = JOptionPane.showConfirmDialog(this, "¿Eliminar este ejercicio de la rutina?", "Confirmar", JOptionPane.YES_NO_OPTION);
-        if (resp == JOptionPane.YES_OPTION) {
-            rutinaService.eliminarEjercicioDeRutina(rutina.getId(), ejercicioId);
-            cargarRutinas();
+            int modelRow = tablaEjercicios.convertRowIndexToModel(row);
+            String ejercicioId = (String) modeloEjercicios.getValueAt(modelRow, 0);
+            int resp = JOptionPane.showConfirmDialog(this, "¿Eliminar este ejercicio de la rutina?", "Confirmar", JOptionPane.YES_NO_OPTION);
+            if (resp == JOptionPane.YES_OPTION) {
+                rutinaService.eliminarEjercicioDeRutina(rutina.getId(), ejercicioId);
+                cargarRutinas();
+            }
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo eliminar el ejercicio: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void asignarRutinaASocio() {
-        Rutina rutina = getRutinaSeleccionada();
-        if (rutina == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione una rutina.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        try {
+            Rutina rutina = getRutinaSeleccionada();
+            if (rutina == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione una rutina.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-        List<Socio> socios = socioService.listarTodos();
-        JComboBox<SocioItem> cb = new JComboBox<>();
-        for (Socio s : socios) {
-            cb.addItem(new SocioItem(s));
-        }
+            List<Socio> socios = socioService.listarTodos();
+            if (socios.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "No hay socios registrados para asignar la rutina.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
-        int res = JOptionPane.showConfirmDialog(this, cb, "Seleccione el socio destinatario:", JOptionPane.OK_CANCEL_OPTION);
-        if (res == JOptionPane.OK_OPTION && cb.getSelectedItem() instanceof SocioItem item) {
-            rutinaService.asignarRutinaASocio(rutina.getId(), item.socio.getId());
-            JOptionPane.showMessageDialog(this,
-                    "Rutina '" + rutina.getNombre() + "' asignada con éxito a " + item.socio.getNombreCompleto(),
-                    "Prescripción Confirmada", JOptionPane.INFORMATION_MESSAGE);
+            JComboBox<SocioItem> cb = new JComboBox<>();
+            for (Socio s : socios) {
+                cb.addItem(new SocioItem(s));
+            }
+
+            int res = JOptionPane.showConfirmDialog(this, cb, "Seleccione el socio destinatario:", JOptionPane.OK_CANCEL_OPTION);
+            if (res == JOptionPane.OK_OPTION && cb.getSelectedItem() instanceof SocioItem item) {
+                rutinaService.asignarRutinaASocio(rutina.getId(), item.socio.getId());
+                JOptionPane.showMessageDialog(this,
+                        "Rutina '" + rutina.getNombre() + "' asignada con éxito a " + item.socio.getNombreCompleto(),
+                        "Prescripción Confirmada", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo asignar la rutina: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void verFichaRutina() {
-        Rutina r = getRutinaSeleccionada();
-        if (r == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione una rutina.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
+        try {
+            Rutina r = getRutinaSeleccionada();
+            if (r == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione una rutina.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            JTextArea txt = new JTextArea(r.mostrarFichaRutina());
+            txt.setFont(new Font("Monospaced", Font.PLAIN, 12));
+            txt.setEditable(false);
+            txt.setCaretPosition(0);
+            JScrollPane sp = new JScrollPane(txt);
+            sp.setPreferredSize(new Dimension(540, 340));
+            JOptionPane.showMessageDialog(this, sp, "Ficha de Entrenamiento - " + r.getNombre(), JOptionPane.INFORMATION_MESSAGE);
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "Error al consultar la ficha: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        JTextArea txt = new JTextArea(r.mostrarFichaRutina());
-        txt.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        txt.setEditable(false);
-        JOptionPane.showMessageDialog(this, new JScrollPane(txt), "Ficha de Entrenamiento - " + r.getNombre(), JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void eliminarRutinaSeleccionada() {
-        Rutina r = getRutinaSeleccionada();
-        if (r == null) {
-            JOptionPane.showMessageDialog(this, "Seleccione una rutina a eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            return;
+        try {
+            Rutina r = getRutinaSeleccionada();
+            if (r == null) {
+                JOptionPane.showMessageDialog(this, "Seleccione una rutina a eliminar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            int resp = JOptionPane.showConfirmDialog(this,
+                    "¿Eliminar la rutina '" + r.getNombre() + "' y todos sus ejercicios asociados (Composición)?",
+                    "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (resp == JOptionPane.YES_OPTION) {
+                rutinaService.eliminarRutina(r.getId());
+                cargarRutinas();
+            }
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(this, "No se pudo eliminar la rutina: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-        int resp = JOptionPane.showConfirmDialog(this,
-                "¿Eliminar la rutina '" + r.getNombre() + "' y todos sus ejercicios asociados (Composición)?",
-                "Confirmar", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-        if (resp == JOptionPane.YES_OPTION) {
-            rutinaService.eliminarRutina(r.getId());
-            cargarRutinas();
+    }
+
+    private static class InstructorItem {
+        final Instructor inst;
+        InstructorItem(Instructor inst) { this.inst = inst; }
+        @Override
+        public String toString() {
+            return inst.getNombreCompleto() + " (" + inst.getEspecialidad() + ")";
         }
     }
 

@@ -5,8 +5,9 @@ import com.clubdeportivo.gui.theme.ThemeConfig;
 import com.clubdeportivo.model.*;
 import com.clubdeportivo.service.AccesoService;
 import com.clubdeportivo.service.ClaseService;
+import com.clubdeportivo.service.InstructorService;
 import com.clubdeportivo.service.SocioService;
-import com.clubdeportivo.util.Formatters;
+import com.clubdeportivo.util.ValidationUtils;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -16,6 +17,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Modal interactivo para el control rápido de ingresos en molinete o recepción.
@@ -25,12 +27,15 @@ import java.util.List;
  * @author Joel
  * @version 1.0.0
  */
-public class CheckInDialog extends JDialog {
+public final class CheckInDialog extends JDialog {
 
-    private final AccesoService accesoService;
-    private final SocioService socioService;
-    private final ClaseService claseService;
-    private final Runnable onCheckInExitoso;
+    private static final long serialVersionUID = 1L;
+
+    private final transient AccesoService accesoService;
+    private final transient SocioService socioService;
+    private final transient InstructorService instructorService;
+    private final transient ClaseService claseService;
+    private final transient Runnable onCheckInExitoso;
 
     private JTextField txtCredencial;
     private JRadioButton rbGeneral;
@@ -38,22 +43,30 @@ public class CheckInDialog extends JDialog {
     private JComboBox<ClaseGrupalItem> cbClases;
     private JPanel panelResultado;
     private JLabel lblResultadoTitulo;
-    private JLabel lblResultadoMensaje;
-    private JLabel lblResultadoDetalle;
+    private JTextArea txtResultadoMensaje;
+    private JTextArea txtResultadoDetalle;
+
+    public CheckInDialog(Frame parent, AccesoService accesoService,
+                         SocioService socioService, InstructorService instructorService,
+                         ClaseService claseService, Runnable onCheckInExitoso) {
+        super(parent, "Control de Acceso / Molinete - FitManage Pro", true);
+        this.accesoService = accesoService;
+        this.socioService = socioService;
+        this.instructorService = instructorService;
+        this.claseService = claseService;
+        this.onCheckInExitoso = onCheckInExitoso;
+
+        setMinimumSize(new Dimension(600, 500));
+        setResizable(true);
+        initUI();
+        pack();
+        setLocationRelativeTo(parent);
+    }
 
     public CheckInDialog(Frame parent, AccesoService accesoService,
                          SocioService socioService, ClaseService claseService,
                          Runnable onCheckInExitoso) {
-        super(parent, "Control de Acceso / Molinete - FitManage Pro", true);
-        this.accesoService = accesoService;
-        this.socioService = socioService;
-        this.claseService = claseService;
-        this.onCheckInExitoso = onCheckInExitoso;
-
-        setSize(560, 480);
-        setLocationRelativeTo(parent);
-        setResizable(false);
-        initUI();
+        this(parent, accesoService, socioService, null, claseService, onCheckInExitoso);
     }
 
     private void initUI() {
@@ -101,9 +114,10 @@ public class CheckInDialog extends JDialog {
         pnlCenter.add(Box.createVerticalStrut(12));
 
         // Opciones de Acceso
-        JPanel pnlOpciones = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        JPanel pnlOpciones = new JPanel(new GridBagLayout());
         pnlOpciones.setOpaque(false);
         pnlOpciones.setAlignmentX(Component.LEFT_ALIGNMENT);
+        pnlOpciones.setMaximumSize(new Dimension(Integer.MAX_VALUE, 90));
 
         rbGeneral = new JRadioButton("Acceso General (Pesas/Cardio)", true);
         rbGeneral.setFont(ThemeConfig.FONT_REGULAR);
@@ -125,9 +139,30 @@ public class CheckInDialog extends JDialog {
         rbGeneral.addActionListener(e -> cbClases.setEnabled(false));
         rbClase.addActionListener(e -> cbClases.setEnabled(true));
 
-        pnlOpciones.add(rbGeneral);
-        pnlOpciones.add(rbClase);
-        pnlOpciones.add(cbClases);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        pnlOpciones.add(rbGeneral, gbc);
+
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(6, 0, 0, 8);
+        pnlOpciones.add(rbClase, gbc);
+
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.insets = new Insets(6, 0, 0, 0);
+        pnlOpciones.add(cbClases, gbc);
+
         pnlCenter.add(pnlOpciones);
         pnlCenter.add(Box.createVerticalStrut(16));
 
@@ -139,25 +174,24 @@ public class CheckInDialog extends JDialog {
                 new EmptyBorder(16, 16, 16, 16)
         ));
         panelResultado.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panelResultado.setMaximumSize(new Dimension(Integer.MAX_VALUE, 130));
 
         lblResultadoTitulo = new JLabel("ESPERANDO CREDENCIAL...");
         lblResultadoTitulo.setFont(ThemeConfig.FONT_SUBTITLE);
         lblResultadoTitulo.setForeground(ThemeConfig.TEXT_MUTED);
+        lblResultadoTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        lblResultadoMensaje = new JLabel("Ingrese datos y presione 'Validar Ingreso' o ENTER");
-        lblResultadoMensaje.setFont(ThemeConfig.FONT_REGULAR);
-        lblResultadoMensaje.setForeground(ThemeConfig.TEXT_MUTED);
+        txtResultadoMensaje = crearTextoResultado(ThemeConfig.FONT_REGULAR, ThemeConfig.TEXT_MUTED,
+                "Ingrese datos y presione 'Validar Ingreso' o ENTER");
+        txtResultadoDetalle = crearTextoResultado(ThemeConfig.FONT_SMALL, ThemeConfig.TEXT_MUTED, " ");
 
-        lblResultadoDetalle = new JLabel(" ");
-        lblResultadoDetalle.setFont(ThemeConfig.FONT_SMALL);
-        lblResultadoDetalle.setForeground(ThemeConfig.TEXT_MUTED);
-
-        JPanel pnlTextosRes = new JPanel(new GridLayout(3, 1, 2, 2));
+        JPanel pnlTextosRes = new JPanel();
+        pnlTextosRes.setLayout(new BoxLayout(pnlTextosRes, BoxLayout.Y_AXIS));
         pnlTextosRes.setOpaque(false);
         pnlTextosRes.add(lblResultadoTitulo);
-        pnlTextosRes.add(lblResultadoMensaje);
-        pnlTextosRes.add(lblResultadoDetalle);
+        pnlTextosRes.add(Box.createVerticalStrut(6));
+        pnlTextosRes.add(txtResultadoMensaje);
+        pnlTextosRes.add(Box.createVerticalStrut(4));
+        pnlTextosRes.add(txtResultadoDetalle);
 
         panelResultado.add(pnlTextosRes, BorderLayout.CENTER);
         pnlCenter.add(panelResultado);
@@ -191,6 +225,20 @@ public class CheckInDialog extends JDialog {
         setContentPane(root);
     }
 
+    private JTextArea crearTextoResultado(Font font, Color fg, String textoInicial) {
+        JTextArea area = new JTextArea(textoInicial);
+        area.setFont(font);
+        area.setForeground(fg);
+        area.setOpaque(false);
+        area.setEditable(false);
+        area.setFocusable(false);
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true);
+        area.setBorder(null);
+        area.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return area;
+    }
+
     private void cargarClasesCombo() {
         cbClases.removeAllItems();
         List<ClaseGrupal> clases = claseService.listarTodas();
@@ -208,31 +256,72 @@ public class CheckInDialog extends JDialog {
 
         TipoAcceso tipo = rbClase.isSelected() ? TipoAcceso.CLASE_GRUPAL : TipoAcceso.GENERAL;
         String claseId = null;
-        if (rbClase.isSelected() && cbClases.getSelectedItem() instanceof ClaseGrupalItem item) {
-            claseId = item.clase.getId();
+        if (rbClase.isSelected()) {
+            if (cbClases.getSelectedItem() instanceof ClaseGrupalItem item) {
+                claseId = item.clase.getId();
+            } else {
+                mostrarResultado(false, "CLASE NO SELECCIONADA",
+                        "No hay ninguna clase grupal seleccionada o disponible para registrar el ingreso.",
+                        "Seleccione una clase válida o cambie a Acceso General.");
+                return;
+            }
         }
 
-        Asistencia asistencia = accesoService.registrarCheckIn(cred, tipo, claseId);
+        Asistencia asistencia;
+        try {
+            asistencia = accesoService.registrarCheckIn(cred, tipo, claseId);
+        } catch (RuntimeException ex) {
+            mostrarResultado(false, "ERROR DE SISTEMA",
+                    "No se pudo procesar el check-in: " + ex.getMessage(),
+                    "Verifique la conexión o los datos de persistencia e intente nuevamente.");
+            return;
+        }
 
         boolean ok = asistencia.esAccesoValido();
-        String detalleSocio = "-";
+        String detallePersona = "-";
         var optSocio = socioService.buscarPorId(asistencia.getSocioId());
         if (optSocio.isEmpty()) {
             optSocio = socioService.buscarPorDni(cred);
         }
         if (optSocio.isPresent()) {
             Socio s = optSocio.get();
-            detalleSocio = String.format("Socio: %s (N° %s) | Plan: %s | Cuota: %s",
+            detallePersona = String.format("Socio: %s (N° %s) | Plan: %s | Cuota: %s",
                     s.getNombreCompleto(), s.getNumeroSocio(),
                     (s.getMembresiaActual() != null ? s.getMembresiaActual().getTipo().getNombre() : "-"),
                     s.getEstadoCuota().getEtiqueta());
+        } else if (instructorService != null) {
+            Optional<Instructor> optInst = instructorService.buscarPorId(asistencia.getSocioId());
+            if (optInst.isEmpty()) {
+                optInst = instructorService.buscarPorId(cred);
+            }
+            if (optInst.isEmpty()) {
+                optInst = instructorService.buscarPorLegajo(cred);
+            }
+            if (optInst.isEmpty()) {
+                String dniLimpio = ValidationUtils.sanitizarDni(cred);
+                if (!dniLimpio.isEmpty()) {
+                    optInst = instructorService.listarTodos().stream()
+                            .filter(i -> dniLimpio.equals(i.getDni()))
+                            .findFirst();
+                }
+            }
+            if (optInst.isPresent()) {
+                Instructor inst = optInst.get();
+                detallePersona = String.format("Instructor: Prof. %s | Legajo: %s | Especialidad: %s",
+                        inst.getNombreCompleto(), inst.getLegajo(), inst.getEspecialidad());
+            }
         }
 
         String titulo = ok ? "✔ ACCESO CONCEDIDO" : "✖ ACCESO DENEGADO";
-        mostrarResultado(ok, titulo, asistencia.getObservacion(), detalleSocio);
+        mostrarResultado(ok, titulo, asistencia.getObservacion(), detallePersona);
 
         if (onCheckInExitoso != null) {
-            onCheckInExitoso.run();
+            try {
+                onCheckInExitoso.run();
+            } catch (RuntimeException ex) {
+                mostrarResultado(ok, titulo, asistencia.getObservacion(),
+                        detallePersona + " (Aviso: no se pudo refrescar el panel: " + ex.getMessage() + ")");
+            }
         }
 
         txtCredencial.selectAll();
@@ -253,11 +342,11 @@ public class CheckInDialog extends JDialog {
         lblResultadoTitulo.setText(titulo);
         lblResultadoTitulo.setForeground(fg);
 
-        lblResultadoMensaje.setText(mensaje);
-        lblResultadoMensaje.setForeground(ThemeConfig.TEXT_MAIN);
+        txtResultadoMensaje.setText(mensaje);
+        txtResultadoMensaje.setForeground(ThemeConfig.TEXT_MAIN);
 
-        lblResultadoDetalle.setText(detalle);
-        lblResultadoDetalle.setForeground(ThemeConfig.TEXT_MUTED);
+        txtResultadoDetalle.setText(detalle);
+        txtResultadoDetalle.setForeground(ThemeConfig.TEXT_MUTED);
 
         panelResultado.revalidate();
         panelResultado.repaint();

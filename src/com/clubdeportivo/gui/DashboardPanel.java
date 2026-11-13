@@ -6,6 +6,7 @@ import com.clubdeportivo.gui.components.StatusBadgeCellRenderer;
 import com.clubdeportivo.gui.theme.ThemeConfig;
 import com.clubdeportivo.model.Asistencia;
 import com.clubdeportivo.model.EstadoCuota;
+import com.clubdeportivo.model.Instructor;
 import com.clubdeportivo.model.Socio;
 import com.clubdeportivo.service.*;
 import com.clubdeportivo.util.Formatters;
@@ -24,14 +25,16 @@ import java.util.List;
  * @author Juan
  * @version 1.0.0
  */
-public class DashboardPanel extends JPanel {
+public final class DashboardPanel extends JPanel {
 
-    private final SocioService socioService;
-    private final InstructorService instructorService;
-    private final ClaseService claseService;
-    private final FacturacionService facturacionService;
-    private final AccesoService accesoService;
-    private final Runnable abrirCheckInModal;
+    private static final long serialVersionUID = 1L;
+
+    private final transient SocioService socioService;
+    private final transient InstructorService instructorService;
+    private final transient ClaseService claseService;
+    private final transient FacturacionService facturacionService;
+    private final transient AccesoService accesoService;
+    private final transient Runnable abrirCheckInModal;
 
     private MetricCard cardSocios;
     private MetricCard cardPresentes;
@@ -141,6 +144,7 @@ public class DashboardPanel extends JPanel {
         };
 
         tablaAsistencias = new JTable(modeloAsistencias);
+        tablaAsistencias.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tablaAsistencias.setRowHeight(34);
         tablaAsistencias.setFont(ThemeConfig.FONT_REGULAR);
         tablaAsistencias.getTableHeader().setFont(ThemeConfig.FONT_BOLD);
@@ -161,48 +165,64 @@ public class DashboardPanel extends JPanel {
     }
 
     public void actualizarMetricas() {
-        // 1. Conteo de socios al día
-        List<Socio> socios = socioService.listarTodos();
-        long alDia = socios.stream().filter(s -> s.getEstadoCuota() == EstadoCuota.AL_DIA).count();
-        cardSocios.setValor(String.valueOf(alDia));
-        cardSocios.setSubtitulo("De " + socios.size() + " socios totales");
+        try {
+            // 1. Conteo de socios al día
+            List<Socio> socios = socioService.listarTodos();
+            long alDia = socios.stream().filter(s -> s.getEstadoCuota() == EstadoCuota.AL_DIA).count();
+            cardSocios.setValor(String.valueOf(alDia));
+            cardSocios.setSubtitulo("De " + socios.size() + " socios totales");
 
-        // 2. Conteo de presentes hoy
-        int presentes = accesoService.contarPresentesHoy();
-        cardPresentes.setValor(String.valueOf(presentes));
-        cardPresentes.setSubtitulo("Ingresos autorizados");
+            // 2. Conteo de presentes hoy
+            int presentes = accesoService.contarPresentesHoy();
+            cardPresentes.setValor(String.valueOf(presentes));
+            cardPresentes.setSubtitulo("Ingresos autorizados");
 
-        // 3. Clases
-        int clasesCount = claseService.listarTodas().size();
-        cardClases.setValor(String.valueOf(clasesCount));
-        cardClases.setSubtitulo(instructorService.listarTodos().size() + " profesores activos");
+            // 3. Clases
+            int clasesCount = claseService.listarTodas().size();
+            cardClases.setValor(String.valueOf(clasesCount));
+            cardClases.setSubtitulo(instructorService.listarTodos().size() + " profesores activos");
 
-        // 4. Caja
-        double totalCaja = facturacionService.calcularTotalRecaudado();
-        cardCaja.setValor(Formatters.formatearMoneda(totalCaja));
-        cardCaja.setSubtitulo(facturacionService.listarTodos().size() + " cobros registrados");
+            // 4. Caja
+            double totalCaja = facturacionService.calcularTotalRecaudado();
+            cardCaja.setValor(Formatters.formatearMoneda(totalCaja));
+            cardCaja.setSubtitulo(facturacionService.listarTodos().size() + " cobros registrados");
 
-        // 5. Tabla de Asistencias
-        modeloAsistencias.setRowCount(0);
-        List<Asistencia> asistencias = accesoService.listarTodas();
-        int max = Math.min(25, asistencias.size());
-        for (int i = 0; i < max; i++) {
-            Asistencia a = asistencias.get(i);
-            String nombreSocio = a.getSocioId();
-            String dniSocio = "-";
-            var optSocio = socioService.buscarPorId(a.getSocioId());
-            if (optSocio.isPresent()) {
-                nombreSocio = optSocio.get().getNombreCompleto();
-                dniSocio = optSocio.get().getDni();
+            // 5. Tabla de Asistencias
+            modeloAsistencias.setRowCount(0);
+            List<Asistencia> asistencias = accesoService.listarTodas();
+            int max = Math.min(25, asistencias.size());
+            for (int i = 0; i < max; i++) {
+                Asistencia a = asistencias.get(i);
+                String nombreSocio = a.getSocioId();
+                String dniSocio = "-";
+                var optSocio = socioService.buscarPorId(a.getSocioId());
+                if (optSocio.isPresent()) {
+                    nombreSocio = optSocio.get().getNombreCompleto();
+                    dniSocio = optSocio.get().getDni();
+                } else if (instructorService != null) {
+                    var optInst = instructorService.buscarPorId(a.getSocioId());
+                    if (optInst.isPresent()) {
+                        Instructor inst = optInst.get();
+                        nombreSocio = "Prof. " + inst.getNombreCompleto();
+                        dniSocio = inst.getDni();
+                    }
+                }
+                modeloAsistencias.addRow(new Object[]{
+                        Formatters.formatearFechaHora(a.getFechaHora()),
+                        nombreSocio,
+                        dniSocio,
+                        a.getTipoAcceso().getDescripcion(),
+                        a.getEstadoAcceso().getMensaje(),
+                        a.getObservacion()
+                });
             }
-            modeloAsistencias.addRow(new Object[]{
-                    Formatters.formatearFechaHora(a.getFechaHora()),
-                    nombreSocio,
-                    dniSocio,
-                    a.getTipoAcceso().getDescripcion(),
-                    a.getEstadoAcceso().getMensaje(),
-                    a.getObservacion()
-            });
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se pudieron actualizar las métricas del dashboard:\n" + ex.getMessage(),
+                    "Error de Carga",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 }

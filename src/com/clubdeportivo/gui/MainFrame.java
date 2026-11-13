@@ -8,6 +8,7 @@ import com.clubdeportivo.service.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,9 @@ import java.util.List;
  * @author Joel
  * @version 1.0.0
  */
-public class MainFrame extends JFrame {
+public final class MainFrame extends JFrame {
+
+    private static final long serialVersionUID = 1L;
 
     // Nombres de tarjetas para el CardLayout
     private static final String CARD_DASHBOARD = "DASHBOARD";
@@ -32,17 +35,18 @@ public class MainFrame extends JFrame {
     private static final String CARD_PAGOS = "PAGOS";
 
     // Servicios
-    private final SocioService socioService;
-    private final InstructorService instructorService;
-    private final ClaseService claseService;
-    private final RutinaService rutinaService;
-    private final FacturacionService facturacionService;
-    private final AccesoService accesoService;
+    private final transient SocioService socioService;
+    private final transient InstructorService instructorService;
+    private final transient ClaseService claseService;
+    private final transient RutinaService rutinaService;
+    private final transient FacturacionService facturacionService;
+    private final transient AccesoService accesoService;
 
     // Componentes de interfaz
     private CardLayout cardLayout;
     private JPanel cardsPanel;
-    private List<NavButton> navButtons;
+    private transient List<NavButton> navButtons;
+    private JLabel lblEstadoPersistencia;
 
     // Paneles de contenido
     private DashboardPanel dashboardPanel;
@@ -91,7 +95,7 @@ public class MainFrame extends JFrame {
         sociosPanel = new SociosPanel(socioService, facturacionService);
         instructoresPanel = new InstructoresPanel(instructorService);
         clasesPanel = new ClasesPanel(claseService, socioService, instructorService);
-        rutinasPanel = new RutinasPanel(rutinaService, socioService);
+        rutinasPanel = new RutinasPanel(rutinaService, socioService, instructorService);
         pagosPanel = new PagosPanel(facturacionService, socioService);
 
         cardsPanel.add(dashboardPanel, CARD_DASHBOARD);
@@ -104,6 +108,7 @@ public class MainFrame extends JFrame {
         root.add(cardsPanel, BorderLayout.CENTER);
 
         setContentPane(root);
+        actualizarEstadoPersistencia(true, null);
     }
 
     private JPanel createSidebar() {
@@ -118,11 +123,11 @@ public class MainFrame extends JFrame {
 
         JLabel lblLogo = new JLabel("FITMANAGE PRO");
         lblLogo.setFont(ThemeConfig.FONT_TITLE);
-        lblLogo.setForeground(Color.WHITE);
+        lblLogo.setForeground(ThemeConfig.TEXT_WHITE);
 
         JLabel lblSubLogo = new JLabel("Club Deportivo & Fitness");
         lblSubLogo.setFont(ThemeConfig.FONT_SMALL);
-        lblSubLogo.setForeground(ThemeConfig.TEXT_MUTED);
+        lblSubLogo.setForeground(ThemeConfig.TEXT_SIDEBAR_MUTED);
 
         pnlLogo.add(lblLogo);
         pnlLogo.add(lblSubLogo);
@@ -171,19 +176,39 @@ public class MainFrame extends JFrame {
         pnlFooter.setOpaque(false);
         pnlFooter.setBorder(new EmptyBorder(16, 20, 16, 20));
 
-        JLabel lblEstado = new JLabel("● Persistencia JSON OK");
-        lblEstado.setFont(ThemeConfig.FONT_SMALL);
-        lblEstado.setForeground(ThemeConfig.STATUS_GREEN);
+        lblEstadoPersistencia = new JLabel("● Persistencia JSON OK");
+        lblEstadoPersistencia.setFont(ThemeConfig.FONT_SMALL);
+        lblEstadoPersistencia.setForeground(new Color(74, 222, 128));
 
         JLabel lblVersion = new JLabel("Java 21 LTS - Cátedra POO");
         lblVersion.setFont(ThemeConfig.FONT_SMALL);
-        lblVersion.setForeground(ThemeConfig.TEXT_MUTED);
+        lblVersion.setForeground(ThemeConfig.TEXT_SIDEBAR_MUTED);
 
-        pnlFooter.add(lblEstado);
+        pnlFooter.add(lblEstadoPersistencia);
         pnlFooter.add(lblVersion);
         sidebar.add(pnlFooter, BorderLayout.SOUTH);
 
         return sidebar;
+    }
+
+    public void actualizarEstadoPersistencia(boolean ok, String detalle) {
+        if (lblEstadoPersistencia == null) {
+            return;
+        }
+        if (ok) {
+            String texto = (detalle != null && !detalle.isBlank())
+                    ? "● " + detalle
+                    : "● Persistencia JSON OK";
+            lblEstadoPersistencia.setText(texto);
+            lblEstadoPersistencia.setForeground(new Color(74, 222, 128));
+            lblEstadoPersistencia.setToolTipText(texto);
+        } else {
+            lblEstadoPersistencia.setText("● Error de persistencia JSON");
+            lblEstadoPersistencia.setForeground(new Color(248, 113, 113));
+            lblEstadoPersistencia.setToolTipText(
+                    (detalle != null && !detalle.isBlank()) ? detalle : "Error al leer o guardar datos JSON"
+            );
+        }
     }
 
     private void cambiarTarjeta(String cardName) {
@@ -195,41 +220,60 @@ public class MainFrame extends JFrame {
         }
 
         // Refrescar datos según tarjeta seleccionada
-        switch (cardName) {
-            case CARD_DASHBOARD -> dashboardPanel.actualizarMetricas();
-            case CARD_SOCIOS -> sociosPanel.cargarDatos();
-            case CARD_INSTRUCTORES -> instructoresPanel.cargarDatos();
-            case CARD_CLASES -> clasesPanel.cargarDatos();
-            case CARD_RUTINAS -> rutinasPanel.cargarRutinas();
-            case CARD_PAGOS -> pagosPanel.cargarDatos();
+        try {
+            switch (cardName) {
+                case CARD_DASHBOARD -> dashboardPanel.actualizarMetricas();
+                case CARD_SOCIOS -> sociosPanel.cargarDatos();
+                case CARD_INSTRUCTORES -> instructoresPanel.cargarDatos();
+                case CARD_CLASES -> clasesPanel.cargarDatos();
+                case CARD_RUTINAS -> rutinasPanel.cargarRutinas();
+                case CARD_PAGOS -> pagosPanel.cargarDatos();
+            }
+            actualizarEstadoPersistencia(true, null);
+        } catch (RuntimeException ex) {
+            actualizarEstadoPersistencia(false, ex.getMessage());
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error al actualizar la vista:\n" + ex.getMessage(),
+                    "Error de Persistencia",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
     public void abrirModalCheckIn() {
-        CheckInDialog dialog = new CheckInDialog(this, accesoService, socioService, claseService, () -> {
-            dashboardPanel.actualizarMetricas();
-            sociosPanel.cargarDatos();
+        CheckInDialog dialog = new CheckInDialog(this, accesoService, socioService, instructorService, claseService, () -> {
+            try {
+                dashboardPanel.actualizarMetricas();
+                sociosPanel.cargarDatos();
+                clasesPanel.cargarDatos();
+                actualizarEstadoPersistencia(true, null);
+            } catch (RuntimeException ex) {
+                actualizarEstadoPersistencia(false, ex.getMessage());
+            }
         });
         dialog.setVisible(true);
     }
 
     // Botón de navegación estilizado para la barra lateral
-    private class NavButton extends JButton {
+    private final class NavButton extends JButton {
+        private static final long serialVersionUID = 1L;
         final String targetCard;
         private boolean active;
+        private boolean hovered;
 
         NavButton(String text, String targetCard, boolean active) {
             super(text);
             this.targetCard = targetCard;
             this.active = active;
+            this.hovered = false;
 
-            setFont(ThemeConfig.FONT_REGULAR);
-            setForeground(active ? Color.WHITE : ThemeConfig.TEXT_MUTED);
-            setBackground(active ? ThemeConfig.BG_SIDEBAR_ACTIVE : ThemeConfig.BG_SIDEBAR);
+            setFont(active ? ThemeConfig.FONT_BOLD : ThemeConfig.FONT_REGULAR);
+            setForeground(active ? ThemeConfig.TEXT_WHITE : ThemeConfig.TEXT_SIDEBAR_MUTED);
             setFocusPainted(false);
             setBorderPainted(false);
             setContentAreaFilled(false);
-            setOpaque(true);
+            setOpaque(false);
             setHorizontalAlignment(SwingConstants.LEFT);
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
@@ -240,17 +284,19 @@ public class MainFrame extends JFrame {
             addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseEntered(java.awt.event.MouseEvent e) {
+                    hovered = true;
                     if (!NavButton.this.active) {
-                        setBackground(ThemeConfig.BG_SIDEBAR_HOVER);
-                        setForeground(Color.WHITE);
+                        setForeground(ThemeConfig.TEXT_WHITE);
+                        repaint();
                     }
                 }
 
                 @Override
                 public void mouseExited(java.awt.event.MouseEvent e) {
+                    hovered = false;
                     if (!NavButton.this.active) {
-                        setBackground(ThemeConfig.BG_SIDEBAR);
-                        setForeground(ThemeConfig.TEXT_MUTED);
+                        setForeground(ThemeConfig.TEXT_SIDEBAR_MUTED);
+                        repaint();
                     }
                 }
             });
@@ -258,10 +304,26 @@ public class MainFrame extends JFrame {
 
         void setActive(boolean active) {
             this.active = active;
-            setBackground(active ? ThemeConfig.BG_SIDEBAR_ACTIVE : ThemeConfig.BG_SIDEBAR);
-            setForeground(active ? Color.WHITE : ThemeConfig.TEXT_MUTED);
+            setForeground(active ? ThemeConfig.TEXT_WHITE : (hovered ? ThemeConfig.TEXT_WHITE : ThemeConfig.TEXT_SIDEBAR_MUTED));
             setFont(active ? ThemeConfig.FONT_BOLD : ThemeConfig.FONT_REGULAR);
             repaint();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            if (active) {
+                g2.setColor(ThemeConfig.BG_SIDEBAR_ACTIVE);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+            } else if (hovered) {
+                g2.setColor(ThemeConfig.BG_SIDEBAR_HOVER);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 8, 8);
+            }
+
+            g2.dispose();
+            super.paintComponent(g);
         }
     }
 
@@ -274,19 +336,25 @@ public class MainFrame extends JFrame {
         boolean seedOnly = args.length > 0 && "--seed-only".equalsIgnoreCase(args[0]);
 
         if (seedOnly) {
-            SocioRepository socioRepo = new SocioRepository();
-            InstructorRepository instructorRepo = new InstructorRepository();
-            ClaseRepository claseRepo = new ClaseRepository();
-            claseRepo.setDependencias(socioRepo, instructorRepo);
-            RutinaRepository rutinaRepo = new RutinaRepository();
-            PagoRepository pagoRepo = new PagoRepository();
-            AsistenciaRepository asistenciaRepo = new AsistenciaRepository();
+            try {
+                SocioRepository socioRepo = new SocioRepository();
+                InstructorRepository instructorRepo = new InstructorRepository();
+                RutinaRepository rutinaRepo = new RutinaRepository();
+                socioRepo.setRutinaRepository(rutinaRepo);
+                ClaseRepository claseRepo = new ClaseRepository(Paths.get("data", "clases.json"), socioRepo, instructorRepo);
+                PagoRepository pagoRepo = new PagoRepository();
+                AsistenciaRepository asistenciaRepo = new AsistenciaRepository();
 
-            DataSeedService seedService = new DataSeedService(
-                    socioRepo, instructorRepo, claseRepo, rutinaRepo, pagoRepo, asistenciaRepo
-            );
-            seedService.sembrarSiEsNecesario();
-            System.out.println(">> [OK] Semillero ejecutado en modo consola.");
+                DataSeedService seedService = new DataSeedService(
+                        socioRepo, instructorRepo, claseRepo, rutinaRepo, pagoRepo, asistenciaRepo
+                );
+                seedService.sembrarSiEsNecesario();
+                System.out.println(">> [OK] Semillero ejecutado en modo consola.");
+            } catch (Throwable ex) {
+                System.err.println(">> [ERROR] Falló la ejecución del semillero: " + ex.getMessage());
+                ex.printStackTrace(System.err);
+                System.exit(1);
+            }
             return;
         }
 
@@ -297,35 +365,46 @@ public class MainFrame extends JFrame {
         }
 
         SwingUtilities.invokeLater(() -> {
-            // 1. Inicializar Repositorios
-            SocioRepository socioRepo = new SocioRepository();
-            InstructorRepository instructorRepo = new InstructorRepository();
-            ClaseRepository claseRepo = new ClaseRepository();
-            claseRepo.setDependencias(socioRepo, instructorRepo);
-            RutinaRepository rutinaRepo = new RutinaRepository();
-            PagoRepository pagoRepo = new PagoRepository();
-            AsistenciaRepository asistenciaRepo = new AsistenciaRepository();
+            try {
+                // 1. Inicializar Repositorios
+                SocioRepository socioRepo = new SocioRepository();
+                InstructorRepository instructorRepo = new InstructorRepository();
+                RutinaRepository rutinaRepo = new RutinaRepository();
+                socioRepo.setRutinaRepository(rutinaRepo);
+                ClaseRepository claseRepo = new ClaseRepository(Paths.get("data", "clases.json"), socioRepo, instructorRepo);
+                PagoRepository pagoRepo = new PagoRepository();
+                AsistenciaRepository asistenciaRepo = new AsistenciaRepository();
 
-            // 2. Sembrar datos demo si no existen
-            DataSeedService seedService = new DataSeedService(
-                    socioRepo, instructorRepo, claseRepo, rutinaRepo, pagoRepo, asistenciaRepo
-            );
-            seedService.sembrarSiEsNecesario();
+                // 2. Sembrar datos demo si no existen
+                DataSeedService seedService = new DataSeedService(
+                        socioRepo, instructorRepo, claseRepo, rutinaRepo, pagoRepo, asistenciaRepo
+                );
+                seedService.sembrarSiEsNecesario();
 
-            // 3. Inicializar Servicios
-            SocioService socioService = new SocioService(socioRepo);
-            InstructorService instructorService = new InstructorService(instructorRepo);
-            ClaseService claseService = new ClaseService(claseRepo, socioService.buscarPorId("") != null ? socioRepo : socioRepo);
-            RutinaService rutinaService = new RutinaService(rutinaRepo, socioRepo);
-            FacturacionService facturacionService = new FacturacionService(pagoRepo, socioRepo);
-            AccesoService accesoService = new AccesoService(socioRepo, asistenciaRepo, claseRepo);
+                // 3. Inicializar Servicios
+                SocioService socioService = new SocioService(socioRepo, claseRepo, pagoRepo, asistenciaRepo);
+                InstructorService instructorService = new InstructorService(instructorRepo, claseRepo, rutinaRepo);
+                ClaseService claseService = new ClaseService(claseRepo, socioRepo, instructorRepo);
+                RutinaService rutinaService = new RutinaService(rutinaRepo, socioRepo, instructorRepo);
+                FacturacionService facturacionService = new FacturacionService(pagoRepo, socioRepo);
+                AccesoService accesoService = new AccesoService(socioRepo, instructorRepo, asistenciaRepo, claseRepo);
 
-            // 4. Iniciar Ventana Principal
-            MainFrame frame = new MainFrame(
-                    socioService, instructorService, claseService,
-                    rutinaService, facturacionService, accesoService
-            );
-            frame.setVisible(true);
+                // 4. Iniciar Ventana Principal
+                MainFrame frame = new MainFrame(
+                        socioService, instructorService, claseService,
+                        rutinaService, facturacionService, accesoService
+                );
+                frame.setVisible(true);
+            } catch (Throwable ex) {
+                ex.printStackTrace(System.err);
+                JOptionPane.showMessageDialog(
+                        null,
+                        "No se pudo iniciar FitManage Pro:\n" + ex.getMessage(),
+                        "Error Crítico de Inicialización",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                System.exit(1);
+            }
         });
     }
 }
